@@ -14,24 +14,24 @@ export default function DashboardPage() {
         // fake data for now
         setMetrics([
             {
-                title: "Total Revenue",
-                value: "$45,231.89",
+                title: "Total Nominations",
+                value: "45",
                 description: "+20.1% from last month",
             },
             {
-                title: "Subscriptions",
-                value: "+2,350",
-                description: "+180.1% from last month",
+                title: "RSVPS",
+                value: "35",
+                description: "+18% from last month",
             },
             {
-                title: "Sales",
-                value: "+12,234",
-                description: "+19% from last month",
+                title: "Total Nominations",
+                value: "45",
+                description: "+20.1% from last month",
             },
             {
-                title: "Active Now",
-                value: "+573",
-                description: "+201 since last hour",
+                title: "RSVPS",
+                value: "35",
+                description: "+18% from last month",
             },
         ]);
     }, []);

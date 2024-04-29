@@ -20,6 +20,9 @@ export default function NominationsPage() {
     const [detailsLoading, setDetailsLoading] = useState(false);
     const [showAISummary, setShowAISummary] = useState(false);
     const { features } = useFeatureFlags();
+    const [searchQuery, setSearchQuery] = useState("");
+    const [locationFilter, setLocationFilter] = useState<"All" | "UK" | "SA">("All");
+
 
     const [contextMenu, setContextMenu] = useState<{
         x: number;
@@ -103,13 +106,40 @@ export default function NominationsPage() {
         <div className="flex flex-col lg:flex-row h-full relative">
             {/* Left panel - Nomination cards */}
             <div className="lg:w-1/2 xl:w-2/5 p-4 overflow-y-auto border-gray-200 dark:border-gray-700">
-                <h2 className="text-xl font-bold mb-4 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
-                    {category?.name} Nominations
-                </h2>
+                <div className="mb-4 space-y-2">
+                    <h2 className="text-xl font-semibold text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
+                        {category?.name} Nominations
+                    </h2>
+
+                    <div className="flex flex-col sm:flex-row gap-4 mt-3">
+                        <input
+                            type="text"
+                            placeholder="Search by name..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm w-full sm:w-1/2 bg-white dark:bg-gray-800 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
+                        />
+
+                        <select
+                            value={locationFilter}
+                            onChange={(e) => setLocationFilter(e.target.value as "All" | "UK" | "SA")}
+                            className="px-2 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm bg-white dark:bg-gray-800 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
+                        >
+                            <option value="All">All Locations</option>
+                            <option value="UK">UK</option>
+                            <option value="SA">SA</option>
+                        </select>
+                    </div>
+                </div>
 
                 <div className="flex flex-col gap-4">
                     {data
-                        .slice()
+                        .filter((n: any) => {
+                            const name = category?.type === CategoryType.Individual ? n.nomineeName : n.teamName;
+                            const matchesSearch = name?.toLowerCase().includes(searchQuery.toLowerCase());
+                            const matchesLocation = locationFilter === "All" || n.location === locationFilter;
+                            return matchesSearch && matchesLocation;
+                        })
                         .sort((a, b) => {
                             const getScore = (item: any) =>
                                 (item.isWinner ? 4 : 0) +
@@ -151,7 +181,7 @@ export default function NominationsPage() {
                         {/* Header with navigation */}
                         <div className="flex justify-between items-center mb-6">
                             <div>
-                                <h2 className="text-xl font-bold mb-2 dark:text-gray-300">
+                                <h2 className="text-xl font-semibold mb-2 dark:text-gray-300">
                                     {category?.type === CategoryType.Individual
                                         ? currentNomination.nomineeId
                                             ? `${currentNomination.nomineeName}`
@@ -206,11 +236,11 @@ export default function NominationsPage() {
 
                         {/* Nomination Details */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-semibold dark:text-gray-300">Nomination Details</h3>
+                            <h3 className="text-lg dark:text-gray-300">Nomination Details</h3>
                             {currentNomination.answers?.length > 0 ? (
                                 currentNomination.answers.map((answer) => (
                                     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-                                        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                                        <h4 className="text-sm text-gray-800 dark:text-gray-100 mb-2">
                                             {answer.question}
                                         </h4>
                                         <p className="text-sm text-gray-700 dark:text-gray-300">{answer.answer}</p>

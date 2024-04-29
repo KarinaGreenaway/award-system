@@ -1,4 +1,4 @@
-import { Home, List, Mail, Megaphone, Menu, Settings, Trophy } from "lucide-react";
+import {ClipboardEdit, Home, List, Mail, Megaphone, Menu, Settings, Trophy} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import ThemeToggle from "@/components/ui/themeToggle";
 import LogoDark from "@/assets/logo-white.png";
@@ -15,6 +15,7 @@ const navItems = [
     { name: "Nominations", icon: List, to: "/nominations" },
     { name: "Awards Event", icon: Trophy, to: "/events" },
     { name: "Announcements", icon: Megaphone, to: "/announcements" },
+    { name: "Category Profile", icon: ClipboardEdit, to: "/category-profile" },
     { name: "Feedback", icon: Mail, to: "/feedback" },
     { name: "Settings", icon: Settings, to: "/settings" },
 ];

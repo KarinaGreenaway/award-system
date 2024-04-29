@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AwardCategoryResponseDto } from "@/types/AwardCategory";
+import {AwardCategoryResponseDto, AwardCategoryUpdatePayload} from "@/types/AwardCategory";
 import {NomineeSummary, Nomination, NomineeSummaryUpdatePayload} from "@/types/Nominations";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
@@ -45,6 +45,11 @@ const Api = {
         const { data } = await axios.get(url);
         return data;
     },
+
+    updateAwardCategory: async (id: number, updates: AwardCategoryUpdatePayload) => {
+        const url = `${BASE_URL}/api/AwardCategory/${id}`;
+        return axios.put(url, updates);
+    }
 
 };
 

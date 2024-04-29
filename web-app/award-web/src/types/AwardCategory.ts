@@ -11,3 +11,12 @@ export interface AwardCategoryResponseDto {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface AwardCategoryUpdatePayload {
+  name: string;
+  type: CategoryType;
+  sponsorId: number;
+  introductionVideo?: string;
+  introductionParagraph?: string;
+  profileStatus: string;
+}
