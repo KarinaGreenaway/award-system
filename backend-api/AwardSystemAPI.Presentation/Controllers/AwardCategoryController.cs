@@ -153,4 +153,19 @@ public class AwardCategoryController : ControllerBase
             }
         );
     }
+    
+    
+    
+    [HttpPost("upload-video")]
+    [Authorize(Policy = "CategoryOwnerPolicy")]
+    public async Task<IActionResult> UploadVideo(IFormFile video, [FromServices] IBlobService blobService)
+    {
+        if (video == null || video.Length == 0 || !video.ContentType.StartsWith("video/"))
+            return BadRequest("Invalid video file.");
+
+        var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(video.FileName)}";
+        var url = await blobService.UploadAsync(video, fileName);
+
+        return Ok(new { url });
+    }
 }

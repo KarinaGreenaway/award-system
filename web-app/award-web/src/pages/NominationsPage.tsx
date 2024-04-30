@@ -107,11 +107,11 @@ export default function NominationsPage() {
             {/* Left panel - Nomination cards */}
             <div className="lg:w-1/2 xl:w-2/5 p-4 overflow-y-auto border-gray-200 dark:border-gray-700">
                 <div className="mb-4 space-y-2">
-                    <h2 className="text-xl font-semibold text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
+                    <h2 className="text-2xl text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
                         {category?.name} Nominations
                     </h2>
 
-                    <div className="flex flex-col sm:flex-row gap-4 mt-3">
+                    <div className="mb-2 flex flex-col sm:flex-row gap-4 mt-6">
                         <input
                             type="text"
                             placeholder="Search by name..."
@@ -285,7 +285,7 @@ export default function NominationsPage() {
                                     </div>
                                     <button
                                         onClick={() => setShowAISummary(false)}
-                                        className="text-gray-400 hover:text-red-400 text-sm"
+                                        className="text-gray-400 hover:text-[color:var(--color-brand)] text-sm"
                                     >
                                         ×
                                     </button>

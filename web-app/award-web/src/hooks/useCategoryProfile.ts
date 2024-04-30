@@ -25,16 +25,37 @@ export function useCategoryProfile(categoryId: number) {
         if (!category) return;
         try {
             await Api.updateAwardCategory(category.id, updates);
-            await fetchProfile(); // Refetch to get the updated state
+            await fetchProfile(); // Refresh
         } catch (err) {
             console.error("Failed to update category", err);
             throw err;
         }
     };
 
+    const saveProfileWithVideo = async (updates: Omit<AwardCategoryUpdatePayload, "introductionVideo"> & { videoFile?: File }) => {
+        if (!category) return;
+
+        let videoUrl = category.introductionVideo;
+        if (updates.videoFile) {
+            videoUrl = await Api.uploadVideo(updates.videoFile); // POST video
+        }
+
+        await updateProfile({
+            ...updates,
+            introductionVideo: videoUrl,
+        });
+    };
+
     useEffect(() => {
         if (categoryId) fetchProfile();
     }, [categoryId]);
 
-    return { category, loading, error, updateProfile, refetch: fetchProfile };
+    return {
+        category,
+        loading,
+        error,
+        updateProfile,
+        saveProfileWithVideo,
+        refetch: fetchProfile,
+    };
 }

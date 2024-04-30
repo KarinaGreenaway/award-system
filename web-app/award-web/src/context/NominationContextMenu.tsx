@@ -40,25 +40,25 @@ const NominationContextMenu = forwardRef<HTMLDivElement, NominationContextMenuPr
         return (
             <div
                 ref={ref}
-                className="fixed z-50 bg-white dark:bg-gray-800 shadow-md rounded-md py-2 w-48 text-sm"
+                className="fixed z-50 w-52 py-1 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700"
                 style={{ top: position.y, left: position.x }}
                 onContextMenu={(e) => e.preventDefault()}
             >
                 <button
                     onClick={() => handleUpdate("isPinned")}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+                    className="block w-full text-left px-4 py-2 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
                 >
                     {nomination.isPinned ? "Unpin" : "Pin"}
                 </button>
                 <button
                     onClick={() => handleUpdate("isShortlisted")}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+                    className="block w-full text-left px-4 py-2 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
                 >
                     {nomination.isShortlisted ? "Unmark as Shortlisted" : "Mark as Shortlisted"}
                 </button>
                 <button
                     onClick={() => handleUpdate("isWinner")}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+                    className="block w-full text-left px-4 py-2 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
                 >
                     {nomination.isWinner ? "Unmark as Winner" : "Mark as Winner"}
                 </button>

@@ -34,6 +34,7 @@ builder.Services.AddScoped<IAuthorizationHandler, CategoryOwnerHandler>();
 builder.Services.AddScoped<IDeviceTokenRepository, DeviceTokenRepository>();
 builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
 builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
+builder.Services.AddScoped<IBlobService, BlobService>();
 builder.Services.AddScoped<IPushNotificationService, PushNotificationService>();
 builder.Services.AddSingleton<IFirebaseNotificationService, FirebaseNotificationService>();
 // builder.Services.AddSingleton<IFirebaseMessagingClient, FirebaseMessagingClient>();

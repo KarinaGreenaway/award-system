@@ -14,9 +14,9 @@ export interface AwardCategoryResponseDto {
 
 export interface AwardCategoryUpdatePayload {
   name: string;
-  type: CategoryType;
+  type: string;
   sponsorId: number;
-  introductionVideo?: string;
-  introductionParagraph?: string;
-  profileStatus: string;
+  introductionVideo: string | undefined;
+  introductionParagraph: string;
+  profileStatus: "draft" | "published"
 }

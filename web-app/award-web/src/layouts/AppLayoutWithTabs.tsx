@@ -28,7 +28,7 @@ export default function AppLayoutWithTabs() {
                 >
                     {/* Category Tabs Fixed Header */}
                     <div
-                        className="fixed top-0 right-0 z-40 flex items-center h-16 px-6 transition-all duration-300"
+                        className="fixed top-0 right-0 z-40 flex items-center h-16 px-6 transition-all duration-300  bg-[color:var(--color-content-light)] dark:bg-[color:var(--color-content-dark)] rounded-lg"
                         style={{ left: collapsed ? "5rem" : "16rem" }}
                     >
 
