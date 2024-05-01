@@ -144,16 +144,25 @@ public class AppDbContext : DbContext
                 v => v, 
                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
             );
+        
         modelBuilder.Entity<Nomination>()
             .Property(a => a.UpdatedAt)
             .HasConversion(
                 v => v, 
                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
             );
+        
         modelBuilder.Entity<Announcement>()
             .Property(a => a.Audience)
             .HasConversion<string>();
-    
+        
+        modelBuilder.Entity<Announcement>()
+            .Property(a => a.ScheduledTime)
+            .HasConversion(
+                v => v.HasValue ? v.Value.ToUniversalTime() : v,
+                v => DateTime.SpecifyKind((DateTime)v, DateTimeKind.Utc)
+            );
+        
         base.OnModelCreating(modelBuilder);
     }
 

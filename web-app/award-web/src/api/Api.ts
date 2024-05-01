@@ -89,6 +89,21 @@ const Api = {
         return response.data.url; // URL returned from backend
     },
 
+    uploadImage: async (file: File): Promise<string> => {
+        const url = `${BASE_URL}/api/Announcement/upload-image`;
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const response = await axios.post(url, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+        });
+
+        return response.data.url;
+    },
+
+
 
 };
 

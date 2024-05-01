@@ -34,3 +34,51 @@
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
 }
+
+.btn-brand {
+    @apply bg-[color:var(--color-brand)] text-white rounded-lg transition-all duration-200 ease-in-out transform;
+}
+
+.btn-brand:hover {
+    @apply bg-[color:var(--color-brand-hover)];
+}
+
+.btn-brand:active {
+    @apply scale-[0.98];
+}
+
+.btn-brand:focus {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+}
+
+.btn-brand:disabled {
+    @apply opacity-70 cursor-not-allowed;
+    transform: none !important;
+}
+
+
+.file-input-brand {
+    @apply w-full text-sm text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]
+    file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0
+    file:bg-[color:var(--color-brand)] file:text-white
+    dark:file:bg-[color:var(--color-brand)] dark:file:text-white
+    rounded-xl;
+}
+
+.card-interactive {
+    @apply cursor-pointer transition-all duration-200 ease-out hover:scale-[1.01] active:scale-[0.98] border border-transparent hover:border-[color:var(--color-content-light)] dark:hover:border-[color:var(--color-content-dark)];
+}
+
+.card-interactive-selected {
+    @apply ring-2 ring-[color:var(--color-brand)];
+}
+
+.card-content-row {
+    @apply p-4 flex flex-row items-center justify-between;
+}
+
+.card-icon-wrap {
+    @apply p-2 rounded-full bg-[color:var(--color-tabs-light)] dark:bg-[color:var(--color-tabs-dark)];
+}
+

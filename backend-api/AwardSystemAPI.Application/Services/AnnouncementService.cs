@@ -49,6 +49,12 @@ public class AnnouncementService : IAnnouncementService
         _logger.LogInformation("Created Announcement with ID {Id}.", entity.Id);
 
         var responseDto = _mapper.Map<AnnouncementResponseDto>(entity);
+        
+        if (entity.ScheduledTime.HasValue)
+        {
+            entity.ScheduledTime = entity.ScheduledTime.Value.ToUniversalTime();
+        }
+
         return responseDto;
     }
 
@@ -63,6 +69,12 @@ public class AnnouncementService : IAnnouncementService
 
         _mapper.Map(dto, entity);
         entity.UpdatedAt = DateTime.UtcNow;
+        
+        if (entity.ScheduledTime.HasValue)
+        {
+            entity.ScheduledTime = entity.ScheduledTime.Value.ToUniversalTime();
+        }
+
 
         await _repository.UpdateAsync(entity);
         _logger.LogInformation("Updated Announcement with ID {Id}.", id);

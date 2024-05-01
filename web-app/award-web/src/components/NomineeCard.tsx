@@ -19,15 +19,14 @@ export default function NomineeCard({ nominee, isSelected, onClick, onRightClick
                 onRightClick?.(e);
             }}
             className={cn(
-                "cursor-pointer transition-all duration-200 ease-out hover:scale-[1.01] active:scale-[0.98] border border-transparent",
-                "hover:border-[color:var(--color-content-light)] dark:hover:border-[color:var(--color-content-dark)]",
-                isSelected && "ring-2 ring-[color:var(--color-brand)]"
+                "card-interactive",
+                isSelected && "card-interactive-selected",
             )}
         >
-            <CardContent className="p-4 flex flex-row items-center justify-between">
+            <CardContent className="card-content-row">
                 {/* Left - icon and info */}
                 <div className="flex items-center gap-4 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
-                    <div className="p-2 bg-[color:var(--color-tabs-light)] dark:bg-[color:var(--color-tabs-dark)] rounded-full">
+                    <div className="card-icon-wrap">
                         <User className="h-6 w-6 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]" />
                     </div>
                     <div>

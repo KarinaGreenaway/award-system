@@ -79,11 +79,7 @@ export default function CategoryProfilePage() {
                                 alert("Please select a valid video file.");
                             }
                         }}
-                        className="w-full text-sm text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]
-                        file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
-                        file:bg-[color:var(--color-brand)] file:text-white
-                        dark:file:bg-[color:var(--color-brand)] dark:file:text-white
-                        rounded-md"
+                        className="file-input-brand"
                     />
                 </div>
 
@@ -138,7 +134,7 @@ export default function CategoryProfilePage() {
                 <div className="pt-4">
                     <Button
                         onClick={handleSave}
-                        className="bg-[color:var(--color-brand)] text-white hover:bg-[color:var(--color-brand-hover)] hover:scale-[1.01] active:scale-[0.98]"
+                        className="btn-brand"
                         disabled={isSaving}
                     >
                         {isSaving ? "Saving..." : "Save"}

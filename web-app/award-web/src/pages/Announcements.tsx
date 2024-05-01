@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from "react";
 import {useSelectedCategory} from "@/context/CategoryProvider";
 import {Button} from "@/components/ui/button";
-import {Bell, Plus, Trash2} from "lucide-react";
+import {Bell, Plus} from "lucide-react";
 import Api from "@/api/Api";
 import {TargetAudience} from "@/types/enums/TargetAudience.ts";
 import {Announcement, CreateAnnouncementPayload} from "@/types/Announcements.ts";
@@ -98,37 +98,60 @@ export default function AnnouncementsPage() {
     };
 
     const handleSave = async () => {
-        if (!title || !description || !selectedCategoryId) return;
+        if (!title || !description || !selectedCategoryId) {
+            alert("Please fill in all required fields");
+            return;
+        }
+
+        if (status === "published" && description.trim() === "") {
+            alert("To publish, please write your announcement description.");
+            return;
+        }
 
         setIsSaving(true);
-        const payload = {
-            title,
-            description,
-            imageUrl: selectedAnnouncement?.imageUrl || "",
-            isPushNotification,
-            scheduledTime: isScheduled ? scheduledTime : null,
-            status,
-            audience: TargetAudience.MobileUsers,
-        } as CreateAnnouncementPayload;
 
         try {
-            let response: Announcement;
+            let imageUrl = selectedAnnouncement?.imageUrl || '';
+
+            // Upload new image if one was selected
+            if (image) {
+                try {
+                    imageUrl = await Api.uploadImage(image);
+                } catch (err) {
+                    console.error("Image upload failed", err);
+                    alert("Image upload failed. Please try again.");
+                    return;
+                }
+            }
+
+            const payload = {
+                title,
+                description,
+                imageUrl,
+                isPushNotification,
+                scheduledTime: isScheduled ? scheduledTime : null,
+                status,
+                audience: TargetAudience.MobileUsers,
+            } as CreateAnnouncementPayload;
+
+            let response: Announcement | null = null;
             if (isCreating) {
                 response = await Api.createAnnouncement(payload);
-                setAnnouncements(prev => [response, ...prev]);
+                setAnnouncements(prev => [response!, ...prev]);
             } else if (selectedAnnouncement) {
                 response = await Api.updateAnnouncement(selectedAnnouncement.id, payload);
-                setAnnouncements(prev => prev.map(a => a.id === response.id ? response : a));
+                setAnnouncements(prev => prev.map(a => a.id === response!.id ? response! : a));
             }
+
             setIsCreating(false);
-            setSelectedAnnouncement(response || null);
+            setSelectedAnnouncement(response);
         } catch (err) {
             console.error("Failed to save announcement", err);
+            alert("Failed to save announcement. Please try again.");
         } finally {
             setIsSaving(false);
         }
     };
-
     const handleDeleteAnnouncement = async () => {
         if (!selectedAnnouncement) return;
 
@@ -256,50 +279,83 @@ export default function AnnouncementsPage() {
                         </div>
 
                         {/* Image Upload */}
+                        {/* Image Upload */}
                         <div>
                             <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Image
                             </label>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => setImage(e.target.files?.[0] || null)}
-                                className="w-full text-sm text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]
-                                file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
-                                file:bg-[color:var(--color-brand)] file:text-white
-                                dark:file:bg-[color:var(--color-brand)] dark:file:text-white
-                                rounded-md"
-                            />
-                            {/* Current Image Preview */}
-                            {selectedAnnouncement?.imageUrl && !image && (
-                                <div className="mt-4">
-                                    <p className="text-sm text-gray-500 mb-2">Current Image:</p>
-                                    <img
-                                        src={selectedAnnouncement.imageUrl}
-                                        alt="Current announcement"
-                                        className="max-w-full h-auto max-h-48 rounded-md border dark:border-gray-700"
+                            <div className="flex items-center gap-4">
+                                <label className="cursor-pointer">
+                                    <span className="sr-only">Choose image</span>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => setImage(e.target.files?.[0] || null)}
+                                        className="hidden"
+                                        id="announcement-image-upload"
                                     />
-                                </div>
-                            )}
-                            {/* New Image Preview */}
-                            {image && (
-                                <div className="mt-4">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <p className="text-sm text-gray-500">New Image Preview:</p>
-                                        <button
-                                            onClick={() => setImage(null)}
-                                            className="text-xs px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-[color:var(--color-brand)] transition"
-                                        >
-                                            Remove
-                                        </button>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="border-[color:var(--color-brand)] text-[color:var(--color-brand)] hover:bg-[color:var(--color-brand-light)]"
+                                        onClick={() => document.getElementById('announcement-image-upload')?.click()}
+                                    >
+                                        Choose Image
+                                    </Button>
+                                </label>
+                                {image && (
+                                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                {image.name}
+            </span>
+                                )}
+                            </div>
+
+                            {/* Image Previews */}
+                            <div className="mt-4 space-y-4">
+                                {/* Current Image Preview */}
+                                {selectedAnnouncement?.imageUrl && !image && (
+                                    <div>
+                                        <p className="text-sm text-gray-500 mb-2">Current Image:</p>
+                                        <div className="relative">
+                                            <img
+                                                src={selectedAnnouncement.imageUrl}
+                                                alt="Current announcement"
+                                                className="max-w-full h-auto max-h-48 rounded-md border dark:border-gray-700"
+                                            />
+                                            <button
+                                                onClick={() => {
+                                                    // This would need API support to clear the image
+                                                    setImage(null);
+                                                    // You might want to add a API call to clear the image
+                                                }}
+                                                className="absolute top-2 right-2 p-1 bg-white/80 dark:bg-gray-800/80 rounded-full hover:bg-white dark:hover:bg-gray-700"
+                                                title="Remove image"
+                                            >
+                                            </button>
+                                        </div>
                                     </div>
-                                    <img
-                                        src={URL.createObjectURL(image)}
-                                        alt="Preview"
-                                        className="max-w-full h-auto max-h-48 rounded-md border dark:border-gray-700"
-                                    />
-                                </div>
-                            )}
+                                )}
+
+                                {/* New Image Preview */}
+                                {image && (
+                                    <div>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <p className="text-sm text-gray-500">Preview:</p>
+                                            <button
+                                                onClick={() => setImage(null)}
+                                                className="text-xs px-2 py-1 rounded btn-brand"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                        <img
+                                            src={URL.createObjectURL(image)}
+                                            alt="Preview"
+                                            className="max-w-full h-auto max-h-48 rounded-md border dark:border-gray-700"
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {/* Toggles */}
@@ -379,7 +435,7 @@ export default function AnnouncementsPage() {
                         <div className="flex gap-4 pt-4">
                             <Button
                                 onClick={handleSave}
-                                className="bg-[color:var(--color-brand)] text-white hover:bg-[color:var(--color-brand-hover)]"
+                                className="btn-brand"
                                 disabled={isSaving}
                             >
                                 {isSaving ? "Saving..." : "Save"}
@@ -388,7 +444,7 @@ export default function AnnouncementsPage() {
                                 <Button
                                     variant="destructive"
                                     onClick={handleDeleteAnnouncement}
-                                    className="bg-[color:var(--color-brand)] text-white hover:bg-[color:var(--color-brand-hover)]"
+                                    className="btn-brand"
                                 >
                                     Delete
                                 </Button>

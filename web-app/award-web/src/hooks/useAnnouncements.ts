@@ -57,6 +57,17 @@ export function useAnnouncements(sponsorId: number | null) {
         }
     };
 
+    const handleImageUpload = async (file: File) => {
+        try {
+            const uploadedUrl = await Api.uploadImage(file);
+            return uploadedUrl;
+        } catch (err) {
+            console.error("Image upload failed", err);
+            return "";
+        }
+    };
+
+
     useEffect(() => {
         fetchAnnouncements();
     }, [sponsorId]);
@@ -68,6 +79,7 @@ export function useAnnouncements(sponsorId: number | null) {
         createAnnouncement,
         updateAnnouncement,
         deleteAnnouncement,
+        handleImageUpload,
         refetch: fetchAnnouncements
     };
 }

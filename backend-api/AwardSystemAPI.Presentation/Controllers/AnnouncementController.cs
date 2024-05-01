@@ -172,4 +172,17 @@ public class AnnouncementController : ControllerBase
                 ? NotFound(new { Error = error })
                 : BadRequest(new { Error = error }));
     }
+    
+    [HttpPost("upload-image")]
+    public async Task<IActionResult> UploadImage(IFormFile image, [FromServices] IBlobService blobService)
+    {
+        if (image == null || image.Length == 0 || !image.ContentType.StartsWith("image/"))
+            return BadRequest("Invalid image file.");
+
+        var fileName = $"{Guid.NewGuid()}_{image.FileName}";
+        var url = await blobService.UploadAsync(image, fileName);
+
+        return Ok(new { url });
+    }
+
 }
