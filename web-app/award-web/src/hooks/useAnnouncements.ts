@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import Api from "@/api/Api";
-import {Announcement, CreateAnnouncementPayload} from "@/types/Announcements";
+import { Announcement, CreateAnnouncementPayload } from "@/types/Announcements";
 
 export function useAnnouncements(sponsorId: number | null) {
     const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const fetchAnnouncements = async () => {
-        if (!sponsorId) return;
-
+        if (!sponsorId || sponsorId <= 0) return; // prevent bad fetch
         setLoading(true);
         setError(null);
         try {
@@ -23,51 +22,6 @@ export function useAnnouncements(sponsorId: number | null) {
         }
     };
 
-    const createAnnouncement = async (payload: CreateAnnouncementPayload) => {
-        try {
-            const newAnnouncement = await Api.createAnnouncement(payload);
-            setAnnouncements(prev => [newAnnouncement, ...prev]);
-            return newAnnouncement;
-        } catch (err: any) {
-            console.error("Failed to create announcement", err);
-            throw err;
-        }
-    };
-
-    const updateAnnouncement = async (id: number, payload: Partial<CreateAnnouncementPayload>) => {
-        try {
-            const updatedAnnouncement = await Api.updateAnnouncement(id, payload);
-            setAnnouncements(prev =>
-                prev.map(ann => ann.id === id ? updatedAnnouncement : ann)
-            );
-            return updatedAnnouncement;
-        } catch (err: any) {
-            console.error("Failed to update announcement", err);
-            throw err;
-        }
-    };
-
-    const deleteAnnouncement = async (id: number) => {
-        try {
-            await Api.deleteAnnouncement(id);
-            setAnnouncements(prev => prev.filter(ann => ann.id !== id));
-        } catch (err: any) {
-            console.error("Failed to delete announcement", err);
-            throw err;
-        }
-    };
-
-    const handleImageUpload = async (file: File) => {
-        try {
-            const uploadedUrl = await Api.uploadImage(file);
-            return uploadedUrl;
-        } catch (err) {
-            console.error("Image upload failed", err);
-            return "";
-        }
-    };
-
-
     useEffect(() => {
         fetchAnnouncements();
     }, [sponsorId]);
@@ -76,10 +30,27 @@ export function useAnnouncements(sponsorId: number | null) {
         announcements,
         loading,
         error,
-        createAnnouncement,
-        updateAnnouncement,
-        deleteAnnouncement,
-        handleImageUpload,
-        refetch: fetchAnnouncements
+        createAnnouncement: async (payload: CreateAnnouncementPayload) => {
+            const newAnnouncement = await Api.createAnnouncement(payload);
+            setAnnouncements(prev => [newAnnouncement, ...prev]);
+            return newAnnouncement;
+        },
+        updateAnnouncement: async (id: number, payload: Partial<CreateAnnouncementPayload>) => {
+            const updated = await Api.updateAnnouncement(id, payload);
+            setAnnouncements(prev => prev.map(a => a.id === id ? updated : a));
+            return updated;
+        },
+        deleteAnnouncement: async (id: number) => {
+            await Api.deleteAnnouncement(id);
+            setAnnouncements(prev => prev.filter(a => a.id !== id));
+        },
+        handleImageUpload: async (file: File) => {
+            try {
+                return await Api.uploadImage(file);
+            } catch {
+                return "";
+            }
+        },
+        refetch: fetchAnnouncements,
     };
 }

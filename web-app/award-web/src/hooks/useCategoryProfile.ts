@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import Api from "@/api/Api";
 import { AwardCategoryResponseDto, AwardCategoryUpdatePayload } from "@/types/AwardCategory";
 
-export function useCategoryProfile(categoryId: number) {
+export function useCategoryProfile(categoryId: number | null) {
     const [category, setCategory] = useState<AwardCategoryResponseDto | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false); // Start as false
     const [error, setError] = useState<string | null>(null);
 
     const fetchProfile = async () => {
+        if (!categoryId || categoryId <= 0) return; // preventing invalid fetch
         setLoading(true);
         setError(null);
         try {
@@ -21,23 +22,29 @@ export function useCategoryProfile(categoryId: number) {
         }
     };
 
+    useEffect(() => {
+        fetchProfile(); // only runs if categoryId is valid
+    }, [categoryId]);
+
     const updateProfile = async (updates: AwardCategoryUpdatePayload) => {
         if (!category) return;
         try {
             await Api.updateAwardCategory(category.id, updates);
-            await fetchProfile(); // Refresh
+            await fetchProfile();
         } catch (err) {
             console.error("Failed to update category", err);
             throw err;
         }
     };
 
-    const saveProfileWithVideo = async (updates: Omit<AwardCategoryUpdatePayload, "introductionVideo"> & { videoFile?: File }) => {
+    const saveProfileWithVideo = async (
+        updates: Omit<AwardCategoryUpdatePayload, "introductionVideo"> & { videoFile?: File }
+    ) => {
         if (!category) return;
 
         let videoUrl = category.introductionVideo;
         if (updates.videoFile) {
-            videoUrl = await Api.uploadVideo(updates.videoFile); // POST video
+            videoUrl = await Api.uploadVideo(updates.videoFile);
         }
 
         await updateProfile({
@@ -45,10 +52,6 @@ export function useCategoryProfile(categoryId: number) {
             introductionVideo: videoUrl,
         });
     };
-
-    useEffect(() => {
-        if (categoryId) fetchProfile();
-    }, [categoryId]);
 
     return {
         category,

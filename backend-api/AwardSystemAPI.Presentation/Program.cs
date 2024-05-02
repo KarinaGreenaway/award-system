@@ -17,12 +17,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IAwardProcessService, AwardProcessService>();
+builder.Services.AddScoped<IAwardProcessRepository, AwardProcessRepository>();
 builder.Services.AddScoped<IAwardCategoryRepository, AwardCategoryRepository>();
 builder.Services.AddScoped<IAwardCategoryService, AwardCategoryService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IMobileUserSettingsService, MobileUserSettingsService>();
 builder.Services.AddScoped<IJudgingRoundService, JudgingRoundService>();
 builder.Services.AddScoped<IAwardEventService, AwardEventService>();
+builder.Services.AddScoped<IAwardEventRepository, AwardEventRepository>();
 builder.Services.AddScoped<INominationService, NominationService>();
 builder.Services.AddScoped<INominationRepository, NominationRepository>();
 builder.Services.AddScoped<INomineeSummaryService, NomineeSummaryService>();

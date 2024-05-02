@@ -11,6 +11,7 @@ namespace AwardSystemAPI.Application.Services
     {
         Task<ApiResponse<IEnumerable<AwardEventResponseDto>, string>> GetAllAwardEventsAsync();
         Task<ApiResponse<AwardEventResponseDto?, string>> GetAwardEventByIdAsync(int id);
+        Task<ApiResponse<AwardEventResponseDto, string>> GetAwardEventByAwardProcessIdAsync(int id);
         Task<ApiResponse<AwardEventResponseDto, string>> CreateAwardEventAsync(AwardEventCreateDto dto);
         Task<ApiResponse<bool, string>> UpdateAwardEventAsync(int id, AwardEventUpdateDto dto);
         Task<ApiResponse<bool, string>> DeleteAwardEventAsync(int id);
@@ -18,11 +19,11 @@ namespace AwardSystemAPI.Application.Services
     
     public class AwardEventService : IAwardEventService
     {
-        private readonly IGenericRepository<AwardEvent> _repository;
+        private readonly IAwardEventRepository _repository;
         private readonly ILogger<AwardEventService> _logger;
         private readonly IMapper _mapper;
 
-        public AwardEventService(IGenericRepository<AwardEvent> repository, ILogger<AwardEventService> logger, IMapper mapper)
+        public AwardEventService(IAwardEventRepository repository, ILogger<AwardEventService> logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -46,6 +47,13 @@ namespace AwardSystemAPI.Application.Services
             }
             var responseDto = _mapper.Map<AwardEventResponseDto>(awardEvent);
             return responseDto;
+        }
+        
+        public async Task<ApiResponse<AwardEventResponseDto, string>> GetAwardEventByAwardProcessIdAsync(int id)
+        {
+            var events = await _repository.GetByAwardProcessIdAsync(id);
+            var dtos = _mapper.Map<AwardEventResponseDto>(events);
+            return dtos;
         }
 
         public async Task<ApiResponse<AwardEventResponseDto, string>> CreateAwardEventAsync(AwardEventCreateDto dto)

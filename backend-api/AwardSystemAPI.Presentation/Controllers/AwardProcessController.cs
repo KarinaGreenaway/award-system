@@ -54,6 +54,20 @@ public class AwardProcessController : ControllerBase
             }
         );
     }
+    
+    [HttpGet("active")]
+    public async Task<ActionResult<AwardProcessResponseDto>> GetActive()
+    {
+        var response = await _awardProcessService.GetActiveAwardProcessesAsync();
+        return response.Match<ActionResult>(
+            onSuccess: result => Ok(result),
+            onError: error =>
+            {
+                _logger.LogError("Failed to retrieve active AwardProcess. Error: {Error}", error);
+                return BadRequest(new { Error = error });
+            }
+        );
+    }
 
     [HttpPost]
     public async Task<ActionResult<AwardProcessResponseDto>> Create([FromBody] AwardProcessCreateDto dto)

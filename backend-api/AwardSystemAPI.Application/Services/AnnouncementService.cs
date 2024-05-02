@@ -47,13 +47,15 @@ public class AnnouncementService : IAnnouncementService
 
         await _repository.AddAsync(entity);
         _logger.LogInformation("Created Announcement with ID {Id}.", entity.Id);
+        
+        if (dto.ScheduledTime.HasValue && dto.ScheduledTime.Value.Kind == DateTimeKind.Unspecified)
+        {
+            dto.ScheduledTime = DateTime.SpecifyKind(dto.ScheduledTime.Value, DateTimeKind.Utc);
+        }
+        entity.CreatedAt = DateTime.SpecifyKind(entity.CreatedAt, DateTimeKind.Utc);
+        entity.UpdatedAt = DateTime.SpecifyKind(entity.UpdatedAt, DateTimeKind.Utc);
 
         var responseDto = _mapper.Map<AnnouncementResponseDto>(entity);
-        
-        if (entity.ScheduledTime.HasValue)
-        {
-            entity.ScheduledTime = entity.ScheduledTime.Value.ToUniversalTime();
-        }
 
         return responseDto;
     }
@@ -68,14 +70,17 @@ public class AnnouncementService : IAnnouncementService
         }
 
         _mapper.Map(dto, entity);
-        entity.UpdatedAt = DateTime.UtcNow;
-        
-        if (entity.ScheduledTime.HasValue)
+
+        if (entity.ScheduledTime.HasValue && entity.ScheduledTime.Value.Kind == DateTimeKind.Unspecified)
         {
-            entity.ScheduledTime = entity.ScheduledTime.Value.ToUniversalTime();
+            entity.ScheduledTime = DateTime.SpecifyKind(entity.ScheduledTime.Value, DateTimeKind.Utc);
         }
 
+        entity.UpdatedAt = DateTime.UtcNow;
+        entity.UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
+        entity.CreatedAt = DateTime.SpecifyKind(entity.CreatedAt, DateTimeKind.Utc);
 
+        _logger.LogDebug("Final ScheduledTime kind: {Kind}", entity.ScheduledTime?.Kind);
         await _repository.UpdateAsync(entity);
         _logger.LogInformation("Updated Announcement with ID {Id}.", id);
 

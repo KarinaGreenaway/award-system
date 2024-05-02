@@ -67,7 +67,9 @@
 }
 
 .card-interactive {
-    @apply cursor-pointer transition-all duration-200 ease-out hover:scale-[1.01] active:scale-[0.98] border border-transparent hover:border-[color:var(--color-content-light)] dark:hover:border-[color:var(--color-content-dark)];
+    @apply cursor-pointer
+    transition-all duration-200 ease-out hover:scale-[1.01] active:scale-[0.98]
+    border border-transparent hover:border-[color:var(--color-content-light)] dark:hover:border-[color:var(--color-content-dark)];
 }
 
 .card-interactive-selected {
@@ -82,3 +84,6 @@
     @apply p-2 rounded-full bg-[color:var(--color-tabs-light)] dark:bg-[color:var(--color-tabs-dark)];
 }
 
+.right-panel {
+    @apply lg:w-1/2 xl:w-1/2 flex-1 p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded-md ml-4 relative;
+}

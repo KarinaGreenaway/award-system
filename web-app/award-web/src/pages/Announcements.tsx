@@ -1,7 +1,9 @@
 import {useEffect, useRef, useState} from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils.ts";
 import {useSelectedCategory} from "@/context/CategoryProvider";
 import {Button} from "@/components/ui/button";
-import {Bell, Plus} from "lucide-react";
+import {Megaphone, Plus} from "lucide-react";
 import Api from "@/api/Api";
 import {TargetAudience} from "@/types/enums/TargetAudience.ts";
 import {Announcement, CreateAnnouncementPayload} from "@/types/Announcements.ts";
@@ -54,7 +56,7 @@ export default function AnnouncementsPage() {
             setDescription(selectedAnnouncement.description);
             setIsPushNotification(selectedAnnouncement.isPushNotification);
             setIsScheduled(!!selectedAnnouncement.scheduledTime);
-            setScheduledTime(selectedAnnouncement.scheduledTime || "");
+            setScheduledTime(formatDatetimeLocal(selectedAnnouncement.scheduledTime));
             setStatus(selectedAnnouncement.status || "draft");
         }
     }, [selectedAnnouncement, isCreating]);
@@ -124,6 +126,10 @@ export default function AnnouncementsPage() {
                 }
             }
 
+            isScheduled
+                ? new Date(scheduledTime).toISOString()
+                : null;
+
             const payload = {
                 title,
                 description,
@@ -140,7 +146,12 @@ export default function AnnouncementsPage() {
                 setAnnouncements(prev => [response!, ...prev]);
             } else if (selectedAnnouncement) {
                 response = await Api.updateAnnouncement(selectedAnnouncement.id, payload);
-                setAnnouncements(prev => prev.map(a => a.id === response!.id ? response! : a));
+
+                const refreshed = await Api.getAnnouncementById(selectedAnnouncement.id);
+                setAnnouncements(prev =>
+                    prev.map(a => a.id === response!.id ? refreshed : a)
+                );
+                response = refreshed;
             }
 
             setIsCreating(false);
@@ -168,6 +179,14 @@ export default function AnnouncementsPage() {
         setStatus(newStatus ? "published" : "draft");
     };
 
+    function formatDatetimeLocal(datetime: string | Date | null): string {
+        if (!datetime) return "";
+        const dt = typeof datetime === "string" ? new Date(datetime) : datetime;
+        const offset = dt.getTimezoneOffset();
+        const local = new Date(dt.getTime() - offset * 60000);
+        return local.toISOString().slice(0, 16); //
+    }
+
     if (loading) {
         return (
             <p className="p-8 text-gray-500 dark:text-gray-400">
@@ -179,7 +198,7 @@ export default function AnnouncementsPage() {
     return (
         <div className="flex flex-col lg:flex-row h-full relative">
             {/* Left panel - Announcement cards */}
-            <div className="lg:w-1/2 xl:w-2/5 p-4 overflow-y-auto border-gray-200 dark:border-gray-700">
+            <div className="lg:w-1/2 xl:w-1/2 p-4 overflow-y-auto border-gray-200 dark:border-gray-700">
                 <div className="mb-4 space-y-2">
                     <h2 className="text-2xl text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)] mb-6">
                         The Announcements
@@ -187,7 +206,7 @@ export default function AnnouncementsPage() {
 
                     <Button
                         onClick={handleNewAnnouncement}
-                        className="mb-4 bg-[color:var(--color-brand)] text-white hover:bg-[color:var(--color-brand-hover)]"
+                        className="btn-brand mb-3"
                     >
                         <Plus className="h-4 w-4 mr-2" />
                         New Announcement
@@ -198,7 +217,7 @@ export default function AnnouncementsPage() {
                         placeholder="Search announcements..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm w-full bg-white dark:bg-gray-800 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
+                        className="px-3 py-2 mb-4 border border-gray-300 dark:border-gray-700 rounded-md text-sm w-full bg-white dark:bg-gray-800 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
                     />
                 </div>
 
@@ -208,42 +227,50 @@ export default function AnnouncementsPage() {
                             announcement.title.toLowerCase().includes(searchQuery.toLowerCase())
                         )
                         .map(announcement => (
-                            <div
+                            <Card
                                 key={announcement.id}
-                                className={`relative p-4 rounded-lg border ${announcement.status === 'draft'
-                                    ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 shadow-inner'
-                                    : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm'} 
-                                    cursor-pointer hover:shadow-md transition-shadow`}
                                 onClick={() => handleAnnouncementClick(announcement)}
-                                onContextMenu={(e) => handleRightClick(e, announcement)}
-                            >
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2 rounded-full bg-[color:var(--color-brand-light)] dark:bg-[color:var(--color-brand-dark)] text-[color:var(--color-brand)]">
-                                        <Bell className="h-5 w-5" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-medium text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
-                                            {announcement.title}
-                                        </h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                            {announcement.description.length > 100
-                                                ? `${announcement.description.substring(0, 100)}...`
-                                                : announcement.description}
-                                        </p>
-                                    </div>
-                                </div>
-                                {announcement.status === 'draft' && (
-                                    <span className="absolute bottom-2 right-2 px-2 py-1 text-xs font-medium rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                                        DRAFT
-                                    </span>
+                                onContextMenu={(e) => {
+                                    e.preventDefault();
+                                    handleRightClick(e, announcement);
+                                }}
+                                className={cn(
+                                    "card-interactive",
+                                    selectedAnnouncement?.id === announcement.id && "card-interactive-selected"
                                 )}
-                            </div>
+                            >
+                                <CardContent className="card-content-row">
+                                    {/* Left - icon and info */}
+                                    <div className="flex items-center gap-4 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
+                                        <div className="card-icon-wrap text-[color:var(--color-brand)]">
+                                            <Megaphone className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-semibold">{announcement.title}</h3>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                {announcement.description.length > 100
+                                                    ? `${announcement.description.substring(0, 100)}...`
+                                                    : announcement.description}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Right - draft badge */}
+                                    {announcement.status === 'draft' && (
+                                        <span className="px-2 py-1 text-xs font-medium rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                                            DRAFT
+                                        </span>
+                                    )}
+                                </CardContent>
+                            </Card>
+
                         ))}
                 </div>
+
             </div>
 
             {/* Right panel - Details/Edit Form */}
-            <div className="lg:w-1/2 xl:w-3/5 flex-1 p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded-md relative">
+            <div className="right-panel">
                 {isCreating || selectedAnnouncement ? (
                     <div className="space-y-6">
                         <h2 className="text-xl font-semibold text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
@@ -279,7 +306,6 @@ export default function AnnouncementsPage() {
                         </div>
 
                         {/* Image Upload */}
-                        {/* Image Upload */}
                         <div>
                             <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Image
@@ -291,22 +317,14 @@ export default function AnnouncementsPage() {
                                         type="file"
                                         accept="image/*"
                                         onChange={(e) => setImage(e.target.files?.[0] || null)}
-                                        className="hidden"
+                                        className="file-input-brand"
                                         id="announcement-image-upload"
                                     />
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        className="border-[color:var(--color-brand)] text-[color:var(--color-brand)] hover:bg-[color:var(--color-brand-light)]"
-                                        onClick={() => document.getElementById('announcement-image-upload')?.click()}
-                                    >
-                                        Choose Image
-                                    </Button>
                                 </label>
                                 {image && (
                                     <span className="text-sm text-gray-600 dark:text-gray-400">
-                {image.name}
-            </span>
+                                        {image.name}
+                                    </span>
                                 )}
                             </div>
 
@@ -452,7 +470,7 @@ export default function AnnouncementsPage() {
                         </div>
                     </div>
                 ) : (
-                    <div className="flex items-center justify-center h-full">
+                    <div className="flex justify-between items-center mb-6">
                         <p className="text-gray-500 dark:text-gray-400">
                             {announcements.length === 0
                                 ? "No announcements yet. Create your first one!"

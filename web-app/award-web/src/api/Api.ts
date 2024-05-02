@@ -2,6 +2,7 @@ import axios from "axios";
 import {AwardCategoryResponseDto, AwardCategoryUpdatePayload} from "@/types/AwardCategory";
 import {NomineeSummary, Nomination, NomineeSummaryUpdatePayload} from "@/types/Nominations";
 import {Announcement, CreateAnnouncementPayload, UpdateAnnouncementPayload} from "@/types/Announcements";
+import {AwardEvent, UpdateAwardEventPayload} from "@/types/AwardEvent.ts";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 console.log(BASE_URL);
@@ -58,6 +59,12 @@ const Api = {
         return data;
     },
 
+    async getAnnouncementById(id: number) {
+        const url = `${BASE_URL}/api/Announcement/${id}`;
+        const { data } = await axios.get(url);
+        return data;
+    },
+
     createAnnouncement: async (payload: CreateAnnouncementPayload): Promise<Announcement> => {
         const url = `${BASE_URL}/api/Announcement`;
         const { data } = await axios.post(url, payload);
@@ -101,6 +108,24 @@ const Api = {
         });
 
         return response.data.url;
+    },
+
+    async getActiveAwardProcess() {
+        const url = `${BASE_URL}/api/AwardProcess/active`;
+        const { data } = await axios.get(url);
+        return data;
+    },
+
+    getAwardEventByProcessId: async (processId: number) => {
+        const url = `${BASE_URL}/api/AwardEvent/awardProcess/${processId}`;
+        const { data } = await axios.get(url);
+        return data;
+    },
+
+    updateAwardEvent: async (eventId: number, payload: UpdateAwardEventPayload): Promise<AwardEvent> => {
+        const url = `${BASE_URL}/api/AwardEvent/${eventId}`;
+        const { data } = await axios.put(url, payload);
+        return data;
     },
 
 

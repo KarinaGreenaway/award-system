@@ -1,4 +1,4 @@
-import {Calendar, ClipboardEdit, Home, Mail, Megaphone, Menu, Settings, Trophy} from "lucide-react";
+import {Calendar, ClipboardEdit, Home, Megaphone, Menu, MessageCircle, Settings, Trophy} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import ThemeToggle from "@/components/ui/themeToggle";
 import LogoDark from "@/assets/logo-white.png";
@@ -16,7 +16,7 @@ const navItems = [
     { name: "Awards Event", icon: Calendar, to: "/events" },
     { name: "Announcements", icon: Megaphone, to: "/announcements" },
     { name: "Category Profile", icon: ClipboardEdit, to: "/category-profile" },
-    { name: "Feedback", icon: Mail, to: "/feedback" },
+    { name: "Feedback", icon: MessageCircle, to: "/feedback" },
     { name: "Settings", icon: Settings, to: "/settings" },
 ];
 

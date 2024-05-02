@@ -11,6 +11,7 @@ namespace AwardSystemAPI.Application.Services
     {
         Task<ApiResponse<IEnumerable<AwardProcessResponseDto>, string>> GetAllAwardProcessesAsync();
         Task<ApiResponse<AwardProcessResponseDto?, string>> GetAwardProcessByIdAsync(int id);
+        Task<ApiResponse<AwardProcessResponseDto, string>> GetActiveAwardProcessesAsync();
         Task<ApiResponse<AwardProcessResponseDto, string>> CreateAwardProcessAsync(AwardProcessCreateDto dto);
         Task<ApiResponse<bool, string>> UpdateAwardProcessAsync(int id, AwardProcessUpdateDto dto);
         Task<ApiResponse<bool, string>> DeleteAwardProcessAsync(int id);
@@ -18,12 +19,12 @@ namespace AwardSystemAPI.Application.Services
     
     public class AwardProcessService : IAwardProcessService
     {
-        private readonly IGenericRepository<AwardProcess> _repository;
+        private readonly IAwardProcessRepository _repository;
         private readonly ILogger<AwardProcessService> _logger;
         private readonly IMapper _mapper;
 
         public AwardProcessService(
-            IGenericRepository<AwardProcess> repository, 
+            IAwardProcessRepository repository, 
             ILogger<AwardProcessService> logger,
             IMapper mapper)
         {
@@ -48,6 +49,18 @@ namespace AwardSystemAPI.Application.Services
             }
             
             var result = _mapper.Map<AwardProcessResponseDto>(process);
+            return result;
+        }
+        
+        public async Task<ApiResponse<AwardProcessResponseDto, string>> GetActiveAwardProcessesAsync()
+        {
+            var activeProcesses = await _repository.GetActiveAsync();
+            if (activeProcesses == null)
+            {
+                return "No active AwardProcess found.";
+            }
+            
+            var result = _mapper.Map<AwardProcessResponseDto>(activeProcesses);
             return result;
         }
 

@@ -106,14 +106,26 @@ CREATE TABLE "nominationAnswer" (
     "Answer" TEXT
 );
 
+-- Create Award Process Table
+CREATE TABLE "awardProcess" (
+    "Id" SERIAL PRIMARY KEY,
+    "AwardsName" VARCHAR(255) NOT NULL,
+    "StartDate" TIMESTAMP NOT NULL,
+    "EndDate" TIMESTAMP,
+    "Status" VARCHAR(50) NOT NULL,  -- e.g., 'active', 'completed'
+    "CreatedAt" TIMESTAMP DEFAULT now(),
+    "UpdatedAt" TIMESTAMP DEFAULT now()
+);
+
 -- Create Award Event Table
 CREATE TABLE "awardEvent" (
     "Id" SERIAL PRIMARY KEY,
+    "AwardProcessId" INT NOT NULL REFERENCES "awardProcess"("Id"),
     "Name" VARCHAR(255) NOT NULL,
     "Location" VARCHAR(255) NOT NULL,
     "EventDateTime" TIMESTAMP NOT NULL,
     "Description" TEXT,
-    "Directions" VARCHAR(500) NOT NULL,
+    "Directions" VARCHAR(500),
     "CreatedAt" TIMESTAMP DEFAULT now(),
     "UpdatedAt" TIMESTAMP DEFAULT now()
 );
@@ -196,17 +208,6 @@ CREATE TABLE "notification" (
     "Description" TEXT,
     "Read" BOOLEAN DEFAULT false,
     "CreatedAt" TIMESTAMP DEFAULT now()
-);
-
--- Create Award Process Table
-CREATE TABLE "awardProcess" (
-    "Id" SERIAL PRIMARY KEY,
-    "AwardsName" VARCHAR(255) NOT NULL,
-    "StartDate" TIMESTAMP NOT NULL,
-    "EndDate" TIMESTAMP,
-    "Status" VARCHAR(50) NOT NULL,  -- e.g., 'active', 'completed'
-    "CreatedAt" TIMESTAMP DEFAULT now(),
-    "UpdatedAt" TIMESTAMP DEFAULT now()
 );
 
 -- Create Judging Round Table

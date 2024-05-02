@@ -13,7 +13,7 @@ import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 export default function NominationsPage() {
     const { selectedCategoryId } = useSelectedCategory();
-    const { category, data, loading, refetch } = useNominations(selectedCategoryId ?? 0);
+    const { category, data, loading, refetch } = useNominations(selectedCategoryId ?? null);
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [nominations, setNominations] = useState<Nomination[]>([]);
     const [currentNominationIndex, setCurrentNominationIndex] = useState(0);
@@ -105,7 +105,7 @@ export default function NominationsPage() {
     return (
         <div className="flex flex-col lg:flex-row h-full relative">
             {/* Left panel - Nomination cards */}
-            <div className="lg:w-1/2 xl:w-2/5 p-4 overflow-y-auto border-gray-200 dark:border-gray-700">
+            <div className="lg:w-1/2 xl:w-1/2 p-4 overflow-y-auto border-gray-200 dark:border-gray-700">
                 <div className="mb-4 space-y-2">
                     <h2 className="text-2xl text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
                         {category?.name} Nominations
@@ -173,7 +173,7 @@ export default function NominationsPage() {
             </div>
 
             {/* Right panel - Details */}
-            <div className="lg:w-1/2 xl:w-3/5 flex-1 p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded-md relative">
+            <div className="right-panel">
                 {detailsLoading ? (
                     <p className="text-sm text-gray-400">Loading details...</p>
                 ) : currentNomination ? (
@@ -302,7 +302,7 @@ export default function NominationsPage() {
                     </p>
                 ) : (
                     <p className="text-gray-500 dark:text-gray-400">
-                        Select a nominee or team to view details.
+                        Select a nominee or team to view details
                     </p>
                 )}
             </div>

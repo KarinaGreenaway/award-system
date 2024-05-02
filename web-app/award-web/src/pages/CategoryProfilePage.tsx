@@ -6,7 +6,7 @@ import { CategoryType } from "@/types/enums/CategoryType";
 
 export default function CategoryProfilePage() {
     const { selectedCategoryId } = useSelectedCategory();
-    const { category, loading, error, saveProfileWithVideo } = useCategoryProfile(selectedCategoryId ?? 0);
+    const { category, loading, error, saveProfileWithVideo } = useCategoryProfile(selectedCategoryId ?? null);
 
     const [video, setVideo] = useState<File | null>(null);
     const [paragraph, setParagraph] = useState<string>("");
@@ -57,7 +57,7 @@ export default function CategoryProfilePage() {
     return (
         <div className="flex flex-col lg:flex-row h-full relative">
             {/* Left panel - Form fields */}
-            <div className="lg:w-1/2 xl:w-3/5 p-6 overflow-y-auto">
+            <div className="lg:w-1/2 xl:w-1/2 p-6 overflow-y-auto">
                 <h1 className="text-2xl text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)] mb-6">
                     Hi {category?.name} Sponsor! Let's edit your profile
                 </h1>
@@ -143,7 +143,7 @@ export default function CategoryProfilePage() {
             </div>
 
             {/* Right panel - Video previews */}
-            <div className="lg:w-1/2 xl:w-2/5 flex-1 p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded-md">
+            <div className="right-panel">
                 <div className="space-y-6">
                     {/* Current Video from DB */}
                     {category?.introductionVideo && (
@@ -178,7 +178,7 @@ export default function CategoryProfilePage() {
                     )}
 
                     {!category?.introductionVideo && !video && (
-                        <div className="flex items-center justify-center h-full">
+                        <div className="flex justify-between items-center mb-6">
                             <p className="text-gray-500 dark:text-gray-400">
                                 Video preview will appear here after selection
                             </p>

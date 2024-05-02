@@ -1,26 +1,37 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useCategories } from "@/hooks/useCategories";
+import { AwardCategoryResponseDto } from "@/types/AwardCategory";
 
 interface CategoryContextType {
     selectedCategoryId: number | null;
     setSelectedCategoryId: (id: number) => void;
+    selectedCategory: AwardCategoryResponseDto | null;
 }
 
-const CategoryContext = createContext<CategoryContextType | undefined>(undefined);
+const CategoryContext = createContext<CategoryContextType>({
+    selectedCategoryId: null,
+    setSelectedCategoryId: () => {},
+    selectedCategory: null,
+});
 
-export const CategoryProvider = ({ children }: { children: ReactNode }) => {
+export const CategoryProvider = ({ children }: { children: React.ReactNode }) => {
+    const { categories, loading } = useCategories();
     const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
+    // 🔧 Default to first category once loaded
+    useEffect(() => {
+        if (!loading && categories.length > 0 && !selectedCategoryId) {
+            setSelectedCategoryId(categories[0].id);
+        }
+    }, [loading, categories, selectedCategoryId]);
+
+    const selectedCategory = categories.find(cat => cat.id === selectedCategoryId) ?? null;
+
     return (
-        <CategoryContext.Provider value={{ selectedCategoryId, setSelectedCategoryId }}>
+        <CategoryContext.Provider value={{ selectedCategoryId, setSelectedCategoryId, selectedCategory }}>
             {children}
         </CategoryContext.Provider>
     );
 };
 
-export function useSelectedCategory() {
-    const context = useContext(CategoryContext);
-    if (!context) {
-        throw new Error("useSelectedCategory must be used within a CategoryProvider");
-    }
-    return context;
-}
+export const useSelectedCategory = () => useContext(CategoryContext);

@@ -8,6 +8,9 @@ namespace AwardSystemAPI.Domain.Entities
     {
         [Key]
         public int Id { get; set; }
+        
+        [Required]
+        public int AwardProcessId { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -23,7 +26,6 @@ namespace AwardSystemAPI.Domain.Entities
         [MaxLength(1000)]
         public string? Description { get; set; }
 
-        [Required]
         [MaxLength(255)]
         public required string Directions { get; set; }
 
