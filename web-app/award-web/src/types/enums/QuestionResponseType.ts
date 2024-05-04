@@ -1,4 +1,4 @@
-export enum RsvpResponseType {
+export enum QuestionResponseType {
     Text,
     YesNo,
     MultipleChoice

@@ -21,4 +21,7 @@ public class NominationQuestion
     public ResponseType ResponseType { get; set; }
 
     public List<string>? Options { get; set; }
+    
+    [Required]
+    public int QuestionOrder { get; set; }
 }

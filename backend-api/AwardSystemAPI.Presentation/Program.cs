@@ -22,6 +22,8 @@ builder.Services.AddScoped<IAwardCategoryRepository, AwardCategoryRepository>();
 builder.Services.AddScoped<IAwardCategoryService, AwardCategoryService>();
 builder.Services.AddScoped<IRsvpService, RsvpService>();
 builder.Services.AddScoped<IRsvpFormQuestionsRepository, RsvpFormQuestionsRepository>();
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<IFeedbackFormQuestionRepository, FeedbackFormQuestionRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IMobileUserSettingsService, MobileUserSettingsService>();
 builder.Services.AddScoped<IJudgingRoundService, JudgingRoundService>();
@@ -61,6 +63,7 @@ builder.Services.AddAutoMapper(typeof(TeamMemberProfile));
 builder.Services.AddAutoMapper(typeof(NominationQuestionProfile));
 builder.Services.AddAutoMapper(typeof(AnnouncementProfile));
 builder.Services.AddAutoMapper(typeof(RsvpProfile));
+builder.Services.AddAutoMapper(typeof(FeedbackFormQuestionProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddAuthorization(options =>

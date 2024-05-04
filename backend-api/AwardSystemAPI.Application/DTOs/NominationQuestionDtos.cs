@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using AwardSystemAPI.Domain.Enums;
 
 namespace AwardSystemAPI.Application.DTOs;
 
@@ -12,14 +13,16 @@ public class NominationQuestionCreateDto: IValidatableObject
     public string QuestionText { get; set; } = string.Empty;
     
     [Required]
-    [RegularExpression("text|yes_no|multiple_choice", ErrorMessage = "Invalid response type.")]
-    public string ResponseType { get; set; } = "text";
+    public ResponseType ResponseType { get; set; }
 
     public List<string>? Options { get; set; }
 
+    [Required]
+    public int QuestionOrder { get; set; }
+
     public IEnumerable<ValidationResult> Validate(ValidationContext _) 
     {
-        if (ResponseType == "multiple_choice")
+        if (ResponseType == Domain.Enums.ResponseType.MultipleChoice)
         {
             if (Options == null || Options.Count < 2)
                 yield return new ValidationResult(
@@ -47,14 +50,15 @@ public class NominationQuestionUpdateDto: IValidatableObject
     public string QuestionText { get; set; } = string.Empty;
     
     [Required]
-    [RegularExpression("text|yes_no|multiple_choice", ErrorMessage = "Invalid response type.")]
-    public string ResponseType { get; set; } = "text";
+    public ResponseType ResponseType { get; set; }
 
     public List<string>? Options { get; set; }
 
+    public int QuestionOrder { get; set; }
+
     public IEnumerable<ValidationResult> Validate(ValidationContext _) 
     {
-        if (ResponseType == "multiple_choice")
+        if (ResponseType == Domain.Enums.ResponseType.MultipleChoice)
         {
             if (Options == null || Options.Count < 2)
                 yield return new ValidationResult(
@@ -75,6 +79,7 @@ public class NominationQuestionResponseDto
     public int Id { get; set; }
     public int CategoryId { get; set; }
     public string QuestionText { get; set; } = string.Empty;
-    public string ResponseType { get; set; } = "text";
+    public ResponseType ResponseType { get; set; }
     public List<string>? Options { get; set; }
+    public int QuestionOrder { get; set; }
 }

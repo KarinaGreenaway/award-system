@@ -181,6 +181,14 @@ public class AppDbContext : DbContext
                 v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>()
             )
             .HasColumnType("jsonb");
+        
+        modelBuilder.Entity<FeedbackFormQuestion>()
+            .Property(q => q.Options)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>()
+            )
+            .HasColumnType("jsonb");
 
         
         base.OnModelCreating(modelBuilder);

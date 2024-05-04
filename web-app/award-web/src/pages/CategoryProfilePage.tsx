@@ -3,15 +3,27 @@ import { useCategoryProfile } from "@/hooks/useCategoryProfile";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { CategoryType } from "@/types/enums/CategoryType";
+import { QuestionResponseType } from "@/types/enums/QuestionResponseType.ts";
 
 export default function CategoryProfilePage() {
     const { selectedCategoryId } = useSelectedCategory();
-    const { category, loading, error, saveProfileWithVideo } = useCategoryProfile(selectedCategoryId ?? null);
+    const {
+        category,
+        loading,
+        error,
+        saveProfileWithVideo,
+        nominationQuestions,
+        setNominationQuestions,
+        saveNominationQuestions,
+    } = useCategoryProfile(selectedCategoryId ?? null);
 
     const [video, setVideo] = useState<File | null>(null);
     const [paragraph, setParagraph] = useState<string>("");
     const [status, setStatus] = useState<"draft" | "published">("draft");
     const [isSaving, setIsSaving] = useState(false);
+
+    const userRole = localStorage.getItem("mock_role");
+    const isAdmin = userRole === "Admin";
 
     useEffect(() => {
         if (category) {
@@ -51,22 +63,58 @@ export default function CategoryProfilePage() {
         setStatus(newStatus ? "published" : "draft");
     };
 
+    const handleQuestionChange = (id: number, field: string, value: any) => {
+        setNominationQuestions(prev =>
+            prev.map(q => {
+                if (q.id !== id) return q;
+                const updated = { ...q, [field]: value };
+                if (field === "optionsInput") {
+                    updated.options = value
+                        .split(",")
+                        .map((o: string) => o.trim())
+                        .filter(Boolean);
+                }
+                return updated;
+            })
+        );
+    };
+
+    const handleAddQuestion = () => {
+        if (!category) return;
+        setNominationQuestions(prev => [
+            ...prev,
+            {
+                id: 0,
+                categoryId: category.id,
+                questionText: "",
+                responseType: QuestionResponseType.Text,
+                options: [],
+                optionsInput: "",
+                questionOrder: prev.length + 1,
+            }
+        ]);
+    };
+
     if (loading) return <p className="p-6 text-gray-400">Loading category profile...</p>;
     if (error) return <p className="p-6 text-[color:var(--color-brand)]">{error}</p>;
 
     return (
         <div className="flex flex-col lg:flex-row h-full relative">
-            {/* Left panel - Form fields */}
+            {/* Left panel */}
             <div className="lg:w-1/2 xl:w-1/2 p-6 overflow-y-auto">
                 <h1 className="text-2xl text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)] mb-6">
                     Hi {category?.name} Sponsor! Let's edit your profile
                 </h1>
 
-                {/* Upload Video Input */}
-                <div className="space-y-2 mb-6">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Upload Introduction Video
-                    </label>
+                {!isAdmin && (
+                    <div className="mb-4 p-3 rounded bg-[color:var(--color-brand-hover)] text-white rounded-xl">
+                        You are in read-only mode. Only admins can edit this page.
+                    </div>
+                )}
+
+                {/* Upload */}
+                <div className="mb-6">
+                    <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Upload Introduction Video</label>
                     <input
                         type="file"
                         accept="video/*"
@@ -80,33 +128,36 @@ export default function CategoryProfilePage() {
                             }
                         }}
                         className="file-input-brand"
+                        disabled={!isAdmin}
                     />
+                    {video && (
+                        <video src={URL.createObjectURL(video)} controls className="mt-2 w-full rounded border shadow" />
+                    )}
+                    {!video && category?.introductionVideo && (
+                        <video src={category.introductionVideo} controls className="mt-2 w-full rounded border shadow" />
+                    )}
                 </div>
 
                 {/* Paragraph */}
                 <div className="mb-6">
-                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                         Introductory Paragraph (max 300 words)
                     </label>
                     <textarea
-                        maxLength={300 * 6}
                         rows={6}
                         value={paragraph}
                         onChange={(e) => setParagraph(e.target.value)}
-                        placeholder="Write up your intro..."
-                        className="w-full rounded-md p-3 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
+                        maxLength={300 * 6}
+                        disabled={!isAdmin}
+                        className="w-full rounded-md p-3 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
                     />
                 </div>
 
                 {/* Status Toggle */}
                 <div className="space-y-2 mb-6">
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                        Current Status:{" "}
-                        <span className="font-medium">
-                            {category?.profileStatus}
-                        </span>
+                        Current Status: <span className="font-medium">{status}</span>
                     </p>
-
                     <div className="flex items-center gap-3">
                         <span className={`text-sm font-medium ${status === "draft" ? "text-[color:var(--color-brand)]" : "text-gray-500 dark:text-gray-400"}`}>
                             Draft
@@ -117,74 +168,99 @@ export default function CategoryProfilePage() {
                                 className="sr-only peer"
                                 checked={status === "published"}
                                 onChange={(e) => handleStatusChange(e.target.checked)}
-                                disabled={isSaving}
+                                disabled={!isAdmin || isSaving}
                             />
-                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[color:var(--color-brand)]"></div>
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:bg-[color:var(--color-brand)] peer-checked:after:translate-x-full after:content-[''] after:absolute after:left-[2px] after:top-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600"></div>
                         </label>
                         <span className={`text-sm font-medium ${status === "published" ? "text-[color:var(--color-brand)]" : "text-gray-500 dark:text-gray-400"}`}>
                             Publish
                         </span>
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Toggle to choose whether your profile should be published or in a draft state.
-                    </p>
                 </div>
 
-                {/* Actions */}
-                <div className="pt-4">
-                    <Button
-                        onClick={handleSave}
-                        className="btn-brand"
-                        disabled={isSaving}
-                    >
-                        {isSaving ? "Saving..." : "Save"}
-                    </Button>
-                </div>
+                {/* Save */}
+                {isAdmin && (
+                    <div className="pt-4">
+                        <Button onClick={handleSave} className="btn-brand" disabled={isSaving}>
+                            {isSaving ? "Saving..." : "Save"}
+                        </Button>
+                    </div>
+                )}
             </div>
 
-            {/* Right panel - Video previews */}
-            <div className="right-panel">
-                <div className="space-y-6">
-                    {/* Current Video from DB */}
-                    {category?.introductionVideo && (
-                        <div className="space-y-2">
-                            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Current Video</h2>
-                            <video
-                                src={category.introductionVideo}
-                                controls
-                                className="w-full rounded-md border dark:border-gray-700 shadow-sm"
-                            />
-                        </div>
-                    )}
-
-                    {/* Selected New Video Preview */}
-                    {video && (
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">New Video Preview</h2>
-                                <button
-                                    onClick={() => setVideo(null)}
-                                    className="text-xs px-2 py-1 rounded bg-[color:var(--color-brand)] dark:text-white text-gray-100 hover:bg-[color:var(--color-brand-hover)] transition"
-                                >
-                                    Remove
-                                </button>
-                            </div>
-                            <video
-                                src={URL.createObjectURL(video)}
-                                controls
-                                className="w-full rounded-md border dark:border-gray-700 shadow-sm"
-                            />
-                        </div>
-                    )}
-
-                    {!category?.introductionVideo && !video && (
-                        <div className="flex justify-between items-center mb-6">
-                            <p className="text-gray-500 dark:text-gray-400">
-                                Video preview will appear here after selection
-                            </p>
-                        </div>
+            {/* Right panel - Nomination Questions */}
+            <div className="right-panel p-6 space-y-6 overflow-y-auto border-l border-gray-200 dark:border-gray-700">
+                <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-semibold text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
+                        Nomination Questions
+                    </h2>
+                    {isAdmin && (
+                        <Button onClick={handleAddQuestion} className="btn-brand">+ New Question</Button>
                     )}
                 </div>
+
+                {nominationQuestions
+                    .sort((a, b) => (a.questionOrder ?? 0) - (b.questionOrder ?? 0))
+                    .map((q) => (
+                        <div key={q.id || `new-${q.questionOrder}`} className="space-y-4 shadow-md p-4 rounded-md bg-white dark:bg-gray-800">
+                            <div>
+                                <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Question Text</label>
+                                <input
+                                    type="text"
+                                    value={q.questionText}
+                                    onChange={e => handleQuestionChange(q.id, "questionText", e.target.value)}
+                                    disabled={!isAdmin}
+                                    className="w-full rounded-md p-2 border text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Response Type</label>
+                                <select
+                                    value={q.responseType}
+                                    onChange={e => handleQuestionChange(q.id, "responseType", Number(e.target.value))}
+                                    disabled={!isAdmin}
+                                    className="w-full rounded-md p-2 border text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
+                                >
+                                    <option value={QuestionResponseType.Text}>Text</option>
+                                    <option value={QuestionResponseType.YesNo}>Yes/No</option>
+                                    <option value={QuestionResponseType.MultipleChoice}>Multiple Choice</option>
+                                </select>
+                            </div>
+                            {q.responseType === QuestionResponseType.MultipleChoice && (
+                                <div>
+                                    <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                                        Options (comma-separated)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={q.optionsInput ?? ""}
+                                        onChange={e => handleQuestionChange(q.id, "optionsInput", e.target.value)}
+                                        disabled={!isAdmin}
+                                        className="w-full rounded-md p-2 border text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
+                                        placeholder="e.g., Option A, Option B, Option C"
+                                    />
+                                </div>
+                            )}
+                            <div>
+                                <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Order</label>
+                                <input
+                                    type="number"
+                                    value={q.questionOrder ?? 0}
+                                    onChange={e => handleQuestionChange(q.id, "questionOrder", parseInt(e.target.value))}
+                                    disabled={!isAdmin}
+                                    className="w-full rounded-md p-2 border text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
+                                />
+                            </div>
+                        </div>
+                    ))}
+
+                {isAdmin && (
+                    <div className="pt-4">
+                        <Button onClick={saveNominationQuestions} className="btn-brand">
+                            Save Nomination Questions
+                        </Button>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -7,7 +7,17 @@ import {
     RsvpFormQuestionCreatePayload,
     RsvpFormQuestionResponseDto,
     RsvpFormQuestionUpdatePayload
-} from "@/types/RsvpTypes.ts";
+} from "@/types/Rsvp.ts";
+import {
+    NominationQuestionCreatePayload,
+    NominationQuestionResponseDto,
+    NominationQuestionUpdatePayload
+} from "@/types/NominationQuestion.ts";
+import {
+    FeedbackQuestionCreatePayload,
+    FeedbackQuestionsResponseDto,
+    FeedbackQuestionUpdatePayload
+} from "@/types/FeedbackQuestions.ts";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 console.log(BASE_URL);
@@ -156,6 +166,43 @@ const Api = {
         const { data } = await axios.put(url, payload);
         return data;
     },
+
+    getNominationQuestions: async (categoryId: number): Promise<NominationQuestionResponseDto[]> => {
+        const url = `${BASE_URL}/api/NominationQuestion/category/${categoryId}`;
+        const { data } = await axios.get(url);
+        return data;
+    },
+
+    createNominationQuestion: async (payload: NominationQuestionCreatePayload) => {
+        const url = `${BASE_URL}/api/NominationQuestion`;
+        const { data } = await axios.post(url, payload);
+        return data;
+    },
+
+    updateNominationQuestion: async (questionId: number, payload: NominationQuestionUpdatePayload) => {
+        const url = `${BASE_URL}/api/NominationQuestion/${questionId}`;
+        const { data } = await axios.put(url, payload);
+        return data;
+    },
+
+    getFeedbackFormQuestions: async (eventId: number): Promise<FeedbackQuestionsResponseDto[]> => {
+        const url = `${BASE_URL}/api/Feedback/${eventId}/questions`;
+        const { data } = await axios.get(url);
+        return data;
+    },
+
+    createFeedbackFormQuestion: async (payload: FeedbackQuestionCreatePayload) => {
+        const url = `${BASE_URL}/api/Feedback/question`;
+        const { data } = await axios.post(url, payload);
+        return data;
+    },
+
+    updateFeedbackFormQuestion: async (id: number, payload: FeedbackQuestionUpdatePayload) => {
+        const url = `${BASE_URL}/api/Feedback/question/${id}`;
+        const { data } = await axios.put(url, payload);
+        return data;
+    },
+
 
 };
 
