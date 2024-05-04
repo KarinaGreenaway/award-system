@@ -85,5 +85,12 @@
 }
 
 .right-panel {
-    @apply lg:w-1/2 xl:w-1/2 flex-1 p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded-md ml-4 relative;
+    @apply lg:w-1/2 xl:w-1/2 flex-1 p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900 shadow-xl rounded-md ml-4 relative;
 }
+
+/* Hide default calendar icon in Chrome/Safari */
+.hide-native-datetime-icon::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    display: none;
+}
+

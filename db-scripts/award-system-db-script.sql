@@ -94,8 +94,8 @@ CREATE TABLE "nominationQuestion" (
     "Id" SERIAL PRIMARY KEY,
     "CategoryId" INT NOT NULL REFERENCES "awardCategory"("Id"),
     "QuestionText" TEXT NOT NULL,
-    "ResponseType" VARCHAR(50) NOT NULL DEFAULT 'text',
-    "Options" TEXT
+    "ResponseType" int NOT NULL DEFAULT 'text',
+    "Options" jsonb
 );
 
 -- Create Nomination Answer Table with surrogate key.
@@ -144,7 +144,8 @@ CREATE TABLE "rsvpFormQuestion" (
     "Id" SERIAL PRIMARY KEY,
     "EventId" INT NOT NULL REFERENCES "awardEvent"("Id"),
     "QuestionText" TEXT NOT NULL,
-    "ResponseType" VARCHAR(50) NOT NULL,  -- 'text', 'yes/no', 'multiple choice'
+    "ResponseType" INT NOT NULL,  -- 'text', 'yes/no', 'multiple choice'
+    "Options" jsonb,
     "Tooltip" TEXT,
     "QuestionOrder" INT
 );

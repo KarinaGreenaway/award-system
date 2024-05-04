@@ -1,5 +1,8 @@
-﻿using AwardSystemAPI.Domain.Entities;
+﻿using System.Text.Json;
+using AwardSystemAPI.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
+
 
 namespace AwardSystemAPI.Infrastructure;
 
@@ -162,6 +165,23 @@ public class AppDbContext : DbContext
                 v => v.HasValue ? v.Value.ToUniversalTime() : v,
                 v => DateTime.SpecifyKind((DateTime)v, DateTimeKind.Utc)
             );
+
+        modelBuilder.Entity<RsvpFormQuestion>()
+            .Property(q => q.Options)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>()
+            )
+            .HasColumnType("jsonb");
+        
+        modelBuilder.Entity<NominationQuestion>()
+            .Property(q => q.Options)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>()
+            )
+            .HasColumnType("jsonb");
+
         
         base.OnModelCreating(modelBuilder);
     }

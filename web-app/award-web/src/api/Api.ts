@@ -2,7 +2,12 @@ import axios from "axios";
 import {AwardCategoryResponseDto, AwardCategoryUpdatePayload} from "@/types/AwardCategory";
 import {NomineeSummary, Nomination, NomineeSummaryUpdatePayload} from "@/types/Nominations";
 import {Announcement, CreateAnnouncementPayload, UpdateAnnouncementPayload} from "@/types/Announcements";
-import {AwardEvent, UpdateAwardEventPayload} from "@/types/AwardEvent.ts";
+import {AwardEvent, CreateAwardEventPayload, UpdateAwardEventPayload} from "@/types/AwardEvent.ts";
+import {
+    RsvpFormQuestionCreatePayload,
+    RsvpFormQuestionResponseDto,
+    RsvpFormQuestionUpdatePayload
+} from "@/types/RsvpTypes.ts";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 console.log(BASE_URL);
@@ -122,13 +127,35 @@ const Api = {
         return data;
     },
 
+    createAwardEvent: async (payload: CreateAwardEventPayload): Promise<AwardEvent> => {
+        const url = `${BASE_URL}/api/AwardEvent`;
+        const { data } = await axios.post(url, payload);
+        return data;
+    },
+
     updateAwardEvent: async (eventId: number, payload: UpdateAwardEventPayload): Promise<AwardEvent> => {
         const url = `${BASE_URL}/api/AwardEvent/${eventId}`;
         const { data } = await axios.put(url, payload);
         return data;
     },
 
+    getRsvpFormQuestions: async (eventId: number): Promise<RsvpFormQuestionResponseDto[]> => {
+        const url = `${BASE_URL}/api/Rsvp/${eventId}/questions`;
+        const { data } = await axios.get(url);
+        return data;
+    },
 
+    createRsvpFormQuestion: async (payload: RsvpFormQuestionCreatePayload) => {
+        const url = `${BASE_URL}/api/Rsvp/question`;
+        const { data } = await axios.post(url, payload);
+        return data;
+    },
+
+    updateRsvpFormQuestion: async (questionId: number, payload: RsvpFormQuestionUpdatePayload) => {
+        const url = `${BASE_URL}/api/Rsvp/question/${questionId}`;
+        const { data } = await axios.put(url, payload);
+        return data;
+    },
 
 };
 

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AwardSystemAPI.Domain.Enums;
 
 namespace AwardSystemAPI.Domain.Entities;
 
@@ -17,9 +18,7 @@ public class NominationQuestion
     public string QuestionText { get; set; } = null!;
 
     [Required]
-    [MaxLength(50)]
-    public string ResponseType { get; set; } = "text";  // "text", "yes_no", "multiple_choice"
+    public ResponseType ResponseType { get; set; }
 
-    // JSON-serialized list of options; only used when ResponseType == "multiple_choice"
-    public string? Options { get; set; }
+    public List<string>? Options { get; set; }
 }

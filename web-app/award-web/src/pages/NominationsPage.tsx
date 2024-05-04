@@ -255,13 +255,13 @@ export default function NominationsPage() {
                         {/* Team Members */}
                         {category?.type === CategoryType.Team && currentNomination.teamMembers && currentNomination.teamMembers.length > 0 && (
                             <div className="mt-6">
-                                <h3 className="text-lg font-semibold mb-2 dark:text-gray-300">Team Members</h3>
-                                <div className="p-2 rounded-lg shadow">
+                                <h3 className="text-lg mb-2 dark:text-gray-300">Team Members</h3>
+                                <div className="p-2 rounded-lg">
                                     <div className="flex flex-wrap gap-2">
                                         {currentNomination.teamMembers?.map(member => (
                                             <span
                                                 key={member.id}
-                                                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[color:var(--color-tabs-light)] dark:bg-[color:var(--color-tabs-dark)] text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)] shadow-sm"
+                                                className="inline-flex items-center px-3 py-1 rounded-full shadow-md text-sm font-medium bg-[color:var(--color-tabs-light)] dark:bg-[color:var(--color-tabs-dark)] text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)] shadow-sm"
                                             >
                                               {member.teamMemberName}
                                             </span>

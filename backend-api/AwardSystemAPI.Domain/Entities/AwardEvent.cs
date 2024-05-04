@@ -27,7 +27,7 @@ namespace AwardSystemAPI.Domain.Entities
         public string? Description { get; set; }
 
         [MaxLength(255)]
-        public required string Directions { get; set; }
+        public string? Directions { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

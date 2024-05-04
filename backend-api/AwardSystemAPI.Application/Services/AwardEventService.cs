@@ -82,6 +82,11 @@ namespace AwardSystemAPI.Application.Services
             }
             _mapper.Map(dto, entity);
             entity.UpdatedAt = DateTime.UtcNow;
+            
+            entity.EventDateTime = DateTime.SpecifyKind(entity.EventDateTime, DateTimeKind.Utc);
+            entity.CreatedAt = DateTime.SpecifyKind(entity.CreatedAt, DateTimeKind.Utc);
+            entity.UpdatedAt = DateTime.SpecifyKind(entity.UpdatedAt, DateTimeKind.Utc);
+            
             await _repository.UpdateAsync(entity);
             _logger.LogInformation("Updated AwardEvent with ID {Id}.", id);
             return true;
