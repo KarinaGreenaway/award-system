@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "tOaMm8XR53A=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Karin\\OneDrive - Bournemouth University\\Year 4\\Final Year Project\\award-system\\backend-api\\AwardSystemAPI\\AwardSystemAPI.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Karin\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.3\\microsoft.aspnetcore.openapi.9.0.3.nupkg.sha512",
+    "C:\\Users\\Karin\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}

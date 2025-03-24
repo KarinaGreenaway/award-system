@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\AwardSystemAPI.props" />
+</Project>
