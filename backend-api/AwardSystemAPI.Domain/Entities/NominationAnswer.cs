@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AwardSystemAPI.Domain.Entities;
 
-[Table("nomination_answer")]
+[Table("nominationAnswer")]
 [Index(nameof(NominationId), nameof(QuestionId), IsUnique = true)]
 public class NominationAnswer
 {

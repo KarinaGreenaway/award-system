@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AwardSystemAPI.Domain.Entities;
 
-[Table("nominee_summary")]
+[Table("nomineeSummary")]
 public class NomineeSummary
 {
     [Key]

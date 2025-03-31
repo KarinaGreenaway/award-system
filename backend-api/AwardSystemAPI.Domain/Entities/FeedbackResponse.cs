@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AwardSystemAPI.Domain.Entities
 {
-    [Table("feedback_response")]
+    [Table("feedbackResponse")]
     [Index(nameof(FeedbackId), nameof(QuestionId), IsUnique = true)]
     public class FeedbackResponse
     {

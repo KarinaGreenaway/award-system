@@ -2,12 +2,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AwardSystemAPI.Domain\AwardSystemAPI.Domain.csproj" />
+    <ProjectReference Include="..\AwardSystemAPI.Infrastructure\AwardSystemAPI.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\" />
     <Folder Include="Interfaces\" />
-    <Folder Include="Services\" />
     <Folder Include="Validation\" />
   </ItemGroup>
 

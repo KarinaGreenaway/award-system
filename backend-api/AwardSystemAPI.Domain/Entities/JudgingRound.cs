@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AwardSystemAPI.Domain.Entities
 {
-    [Table("judging_round")]
+    [Table("judgingRound")]
     public class JudgingRound : IValidatableObject
     {
         [Key]

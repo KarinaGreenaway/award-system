@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AwardSystemAPI.Domain.Entities;
 
-[Table("nomination_question")]
+[Table("nominationQuestion")]
 public class NominationQuestion
 {
     [Key]

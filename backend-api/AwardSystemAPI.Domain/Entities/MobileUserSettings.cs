@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AwardSystemAPI.Domain.Entities;
 
-[Table("mobile_user_settings")]
+[Table("mobileUserSettings")]
 public class MobileUserSettings
 {
     [Key]

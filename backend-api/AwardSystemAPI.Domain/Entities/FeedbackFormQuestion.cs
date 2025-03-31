@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AwardSystemAPI.Domain.Entities;
 
-[Table("feedback_form_question")]
+[Table("feedbackFormQuestion")]
 public class FeedbackFormQuestion
 {
     [Key]
