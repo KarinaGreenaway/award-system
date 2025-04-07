@@ -12,6 +12,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IAwardProcessService, AwardProcessService>();
+builder.Services.AddScoped<IAwardCategoryRepository, AwardCategoryRepository>();
+builder.Services.AddScoped<IAwardCategoryService, AwardCategoryService>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddAuthorization(); 
@@ -38,7 +41,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
-app.ConfigureExceptionHandler(logger);
+var env = app.Services.GetRequiredService<IWebHostEnvironment>();
+app.ConfigureExceptionHandler(logger, env);
 
 if (app.Environment.IsDevelopment())
 {

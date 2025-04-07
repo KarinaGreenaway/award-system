@@ -5,15 +5,15 @@ namespace AwardSystemAPI.Infrastructure.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly AppDbContext _context;
+        protected readonly AppDbContext Context;
         private readonly DbSet<T> _dbSet;
         private readonly ILogger<GenericRepository<T>> _logger;
 
         public GenericRepository(AppDbContext context, ILogger<GenericRepository<T>> logger)
         {
-            _context = context;
+            Context = context;
             _logger = logger;
-            _dbSet = _context.Set<T>();
+            _dbSet = Context.Set<T>();
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
@@ -100,7 +100,7 @@ namespace AwardSystemAPI.Infrastructure.Repositories
         {
             try
             {
-                await _context.SaveChangesAsync().ConfigureAwait(false);
+                await Context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
