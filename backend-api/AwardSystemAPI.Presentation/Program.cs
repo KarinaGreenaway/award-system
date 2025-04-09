@@ -1,8 +1,10 @@
+using AwardSystemAPI.Application.Mappings;
 using AwardSystemAPI.Application.Services;
 using AwardSystemAPI.Extensions;
 using Microsoft.EntityFrameworkCore;
 using AwardSystemAPI.Infrastructure;
 using AwardSystemAPI.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,9 +17,11 @@ builder.Services.AddScoped<IAwardProcessService, AwardProcessService>();
 builder.Services.AddScoped<IAwardCategoryRepository, AwardCategoryRepository>();
 builder.Services.AddScoped<IAwardCategoryService, AwardCategoryService>();
 
+builder.Services.AddAutoMapper(typeof(AwardProcessProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddAuthorization(); 
+builder.Services.AddProblemDetails();
 
 // Configure Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();

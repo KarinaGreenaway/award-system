@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace AwardSystemAPI.Domain.Entities
 {
     [Table("awardProcess")]
-    public class AwardProcess : IValidatableObject
+    public class AwardProcess
     {
         [Key]
         public int Id { get; set; }
@@ -25,13 +25,5 @@ namespace AwardSystemAPI.Domain.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (EndDate.HasValue && EndDate.Value < StartDate)
-            {
-                yield return new ValidationResult(
-                    "EndDate must be after StartDate.", [nameof(EndDate)]);
-            }
-        }
     }
 }

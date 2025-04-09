@@ -29,4 +29,38 @@ public class AppDbContext : DbContext
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<AwardProcess> AwardProcesses { get; set; }
     public DbSet<JudgingRound> JudgingRounds { get; set; }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<AwardProcess>()
+            .Property(a => a.StartDate)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
+    
+        modelBuilder.Entity<AwardProcess>()
+            .Property(a => a.EndDate)
+            .HasConversion(
+                v => v, 
+                v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : (DateTime?)null
+            );
+    
+        modelBuilder.Entity<AwardProcess>()
+            .Property(a => a.CreatedAt)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
+    
+        modelBuilder.Entity<AwardProcess>()
+            .Property(a => a.UpdatedAt)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
+    
+        base.OnModelCreating(modelBuilder);
+    }
+
 }

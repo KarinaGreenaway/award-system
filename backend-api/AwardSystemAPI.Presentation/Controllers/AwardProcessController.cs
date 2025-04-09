@@ -1,6 +1,7 @@
 using AwardSystemAPI.Application.DTOs;
 using AwardSystemAPI.Application.Services;
 using Microsoft.AspNetCore.Mvc;
+
 namespace AwardSystemAPI.Controllers;
 
 [ApiController]
@@ -16,62 +17,112 @@ public class AwardProcessController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet("get-all")]
-    public async Task<IActionResult> GetAll()
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<AwardProcessResponseDto>>> GetAll()
     {
-        var processes = await _awardProcessService.GetAllAwardProcessesAsync();
-        return Ok(processes);
+        var response = await _awardProcessService.GetAllAwardProcessesAsync();
+        return response.Match<ActionResult>(
+            onSuccess: result => Ok(result),
+            onError: error =>
+            {
+                _logger.LogError("Failed to retrieve AwardProcesses. Error: {Error}", error);
+                return BadRequest(new { Error = error });
+            }
+        );
     }
 
-    [HttpGet("get-{id}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<AwardProcessResponseDto>> GetById(int id)
     {
-        var process = await _awardProcessService.GetAwardProcessByIdAsync(id);
-        if (process == null)
+        if (id <= 0)
         {
-            _logger.LogWarning("AwardProcess with ID {Id} not found.", id);
-            return NotFound();
+            _logger.LogWarning("Invalid ID {Id} provided for GetById.", id);
+            return BadRequest(new { Error = "Invalid ID provided." });
         }
-        return Ok(process);
+
+        var response = await _awardProcessService.GetAwardProcessByIdAsync(id);
+        return response.Match<ActionResult>(
+            onSuccess: result => Ok(result),
+            onError: error =>
+            {
+                _logger.LogError("Failed to retrieve AwardProcess with ID {Id}. Error: {Error}", id, error);
+                return error.Contains("not found")
+                    ? NotFound(new { Error = error })
+                    : BadRequest(new { Error = error });
+            }
+        );
     }
 
-    [HttpPost("add")]
-    public async Task<IActionResult> Create([FromBody] AwardProcessCreateDto dto)
+    [HttpPost]
+    public async Task<ActionResult<AwardProcessResponseDto>> Create([FromBody] AwardProcessCreateDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var createdProcess = await _awardProcessService.CreateAwardProcessAsync(dto);
-        _logger.LogInformation("Created AwardProcess with ID {Id}.", createdProcess.Id);
-        return CreatedAtAction(nameof(GetById), new { id = createdProcess.Id }, createdProcess);
+        var response = await _awardProcessService.CreateAwardProcessAsync(dto);
+
+        return response.Match<ActionResult>(
+            onSuccess: created =>
+            {
+                _logger.LogInformation("Successfully created AwardProcess with ID {Id}.", created.Id);
+                return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            },
+            onError: error =>
+            {
+                _logger.LogError("Failed to create AwardProcess. Error: {Error}", error);
+                return BadRequest(new { Error = error });
+            }
+        );
     }
 
-    [HttpPut("update-{id}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] AwardProcessUpdateDto dto)
     {
+        if (id <= 0)
+            return BadRequest(new { Error = "Invalid ID provided." });
+
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var updated = await _awardProcessService.UpdateAwardProcessAsync(id, dto);
-        if (!updated)
-        {
-            _logger.LogWarning("AwardProcess with ID {Id} not found for update.", id);
-            return NotFound();
-        }
-        _logger.LogInformation("Updated AwardProcess with ID {Id}.", id);
-        return NoContent();
+        var response = await _awardProcessService.UpdateAwardProcessAsync(id, dto);
+
+        return response.Match<IActionResult>(
+            onSuccess: _ =>
+            {
+                _logger.LogInformation("Successfully updated AwardProcess with ID {Id}.", id);
+                return Ok();
+            },
+            onError: error =>
+            {
+                _logger.LogError("Failed to update AwardProcess with ID {Id}. Error: {Error}", id, error);
+                return error.Contains("not found")
+                    ? NotFound(new { Error = error })
+                    : BadRequest(new { Error = error });
+            }
+        );
     }
 
-    [HttpDelete("delete-{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var deleted = await _awardProcessService.DeleteAwardProcessAsync(id);
-        if (!deleted)
-        {
-            _logger.LogWarning("AwardProcess with ID {Id} not found for deletion.", id);
-            return NotFound();
-        }
-        _logger.LogInformation("Deleted AwardProcess with ID {Id}.", id);
-        return NoContent();
+        if (id <= 0)
+            return BadRequest(new { Error = "Invalid ID provided." });
+
+        var response = await _awardProcessService.DeleteAwardProcessAsync(id);
+
+        return response.Match<IActionResult>(
+            onSuccess: _ =>
+            {
+                _logger.LogInformation("Successfully deleted AwardProcess with ID {Id}.", id);
+                return Ok();
+            },
+            onError: error =>
+            {
+                _logger.LogError("Failed to delete AwardProcess with ID {Id}. Error: {Error}", id, error);
+                return error.Contains("not found")
+                    ? NotFound(new { Error = error })
+                    : BadRequest(new { Error = error });
+            }
+        );
     }
 }

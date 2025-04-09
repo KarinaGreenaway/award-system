@@ -1,105 +1,79 @@
 using AwardSystemAPI.Application.DTOs;
 using AwardSystemAPI.Domain.Entities;
 using AwardSystemAPI.Infrastructure.Repositories;
+using AwardSystemAPI.Common;
+using AutoMapper;
 using Microsoft.Extensions.Logging;
 
 namespace AwardSystemAPI.Application.Services
 {
     public interface IAwardProcessService
     {
-        Task<IEnumerable<AwardProcessResponseDto>> GetAllAwardProcessesAsync();
-        Task<AwardProcessResponseDto?> GetAwardProcessByIdAsync(int id);
-        Task<AwardProcessResponseDto> CreateAwardProcessAsync(AwardProcessCreateDto dto);
-        Task<bool> UpdateAwardProcessAsync(int id, AwardProcessUpdateDto dto);
-        Task<bool> DeleteAwardProcessAsync(int id);
+        Task<ApiResponse<IEnumerable<AwardProcessResponseDto>, string>> GetAllAwardProcessesAsync();
+        Task<ApiResponse<AwardProcessResponseDto?, string>> GetAwardProcessByIdAsync(int id);
+        Task<ApiResponse<AwardProcessResponseDto, string>> CreateAwardProcessAsync(AwardProcessCreateDto dto);
+        Task<ApiResponse<bool, string>> UpdateAwardProcessAsync(int id, AwardProcessUpdateDto dto);
+        Task<ApiResponse<bool, string>> DeleteAwardProcessAsync(int id);
     }
+    
     public class AwardProcessService : IAwardProcessService
     {
         private readonly IGenericRepository<AwardProcess> _repository;
         private readonly ILogger<AwardProcessService> _logger;
+        private readonly IMapper _mapper;
 
-        public AwardProcessService(IGenericRepository<AwardProcess> repository, ILogger<AwardProcessService> logger)
+        public AwardProcessService(
+            IGenericRepository<AwardProcess> repository, 
+            ILogger<AwardProcessService> logger,
+            IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<AwardProcessResponseDto>> GetAllAwardProcessesAsync()
+        public async Task<ApiResponse<IEnumerable<AwardProcessResponseDto>, string>> GetAllAwardProcessesAsync()
         {
             var processes = await _repository.GetAllAsync();
-            return processes.Select(process => new AwardProcessResponseDto
-            {
-                Id = process.Id,
-                AwardsName = process.AwardsName,
-                StartDate = process.StartDate,
-                EndDate = process.EndDate,
-                Status = process.Status,
-                CreatedAt = process.CreatedAt
-            });
+            var result = _mapper.Map<IEnumerable<AwardProcessResponseDto>>(processes);
+            return result.ToArray();
         }
 
-        public async Task<AwardProcessResponseDto?> GetAwardProcessByIdAsync(int id)
+        public async Task<ApiResponse<AwardProcessResponseDto?, string>> GetAwardProcessByIdAsync(int id)
         {
             var process = await _repository.GetByIdAsync(id);
             if (process == null)
             {
-                _logger.LogWarning("AwardProcess with ID {Id} not found.", id);
-                return null;
+                return $"AwardProcess with ID {id} not found.";
             }
-
-            return new AwardProcessResponseDto
-            {
-                Id = process.Id,
-                AwardsName = process.AwardsName,
-                StartDate = process.StartDate,
-                EndDate = process.EndDate,
-                Status = process.Status,
-                CreatedAt = process.CreatedAt
-            };
+            
+            var result = _mapper.Map<AwardProcessResponseDto>(process);
+            return result;
         }
 
-        public async Task<AwardProcessResponseDto> CreateAwardProcessAsync(AwardProcessCreateDto dto)
+        public async Task<ApiResponse<AwardProcessResponseDto, string>> CreateAwardProcessAsync(AwardProcessCreateDto dto)
         {
-            if (dto == null)
-                throw new ArgumentNullException(nameof(dto));
-
-            var process = new AwardProcess
-            {
-                AwardsName = dto.AwardsName,
-                StartDate = dto.StartDate,
-                EndDate = dto.EndDate,
-                Status = dto.Status,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
-
+            var process = _mapper.Map<AwardProcess>(dto);
+            process.CreatedAt = DateTime.UtcNow;
+            process.UpdatedAt = DateTime.UtcNow;
+            
             await _repository.AddAsync(process);
             _logger.LogInformation("Created AwardProcess with ID {Id}.", process.Id);
 
-            return new AwardProcessResponseDto
-            {
-                Id = process.Id,
-                AwardsName = process.AwardsName,
-                StartDate = process.StartDate,
-                EndDate = process.EndDate,
-                Status = process.Status,
-                CreatedAt = process.CreatedAt
-            };
+            var responseDto = _mapper.Map<AwardProcessResponseDto>(process);
+            return responseDto;
         }
 
-        public async Task<bool> UpdateAwardProcessAsync(int id, AwardProcessUpdateDto dto)
+        public async Task<ApiResponse<bool, string>> UpdateAwardProcessAsync(int id, AwardProcessUpdateDto dto)
         {
             var process = await _repository.GetByIdAsync(id);
             if (process == null)
             {
-                _logger.LogWarning("AwardProcess with ID {Id} not found for update.", id);
-                return false;
+                return $"AwardProcess with ID {id} not found for update.";
             }
-
-            process.AwardsName = dto.AwardsName;
-            process.StartDate = dto.StartDate;
-            process.EndDate = dto.EndDate;
-            process.Status = dto.Status;
+            
+            _mapper.Map(dto, process);
+            
             process.UpdatedAt = DateTime.UtcNow;
 
             await _repository.UpdateAsync(process);
@@ -107,15 +81,14 @@ namespace AwardSystemAPI.Application.Services
             return true;
         }
 
-        public async Task<bool> DeleteAwardProcessAsync(int id)
+        public async Task<ApiResponse<bool, string>> DeleteAwardProcessAsync(int id)
         {
             var process = await _repository.GetByIdAsync(id);
             if (process == null)
             {
-                _logger.LogWarning("AwardProcess with ID {Id} not found for deletion.", id);
-                return false;
+                return $"AwardProcess with ID {id} not found for deletion.";
             }
-
+            
             await _repository.DeleteAsync(process);
             _logger.LogInformation("Deleted AwardProcess with ID {Id}.", id);
             return true;

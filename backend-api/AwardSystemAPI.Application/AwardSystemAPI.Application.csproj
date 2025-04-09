@@ -3,11 +3,17 @@
   <ItemGroup>
     <ProjectReference Include="..\AwardSystemAPI.Domain\AwardSystemAPI.Domain.csproj" />
     <ProjectReference Include="..\AwardSystemAPI.Infrastructure\AwardSystemAPI.Infrastructure.csproj" />
+    <ProjectReference Include="..\AwardSystemAPI.Common\AwardSystemAPI.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Interfaces\" />
     <Folder Include="Validation\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
   </ItemGroup>
 
   <PropertyGroup>
