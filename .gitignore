@@ -1,0 +1,94 @@
+# =========================
+# Global Build Artifacts
+# =========================
+
+# Ignore build outputs for all projects
+**/bin/
+**/obj/
+
+# =========================
+# .NET / Visual Studio / Rider
+# =========================
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# MonoDevelop
+*.userprefs
+
+# Visual Studio directories
+.vs/
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+.Rider/
+
+# NuGet packages and related
+*.nupkg
+.nuget/
+packages/
+
+# Other Visual Studio files
+ClientBin/
+*.dbmdl
+*.vspscc
+
+# =========================
+# Node / React / React Native
+# =========================
+
+# Dependency directories
+node_modules/
+bower_components/
+
+# Build directories and caches
+build/
+dist/
+tmp/
+temp/
+
+# Log files for npm/yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# React Native Specific
+# =========================
+
+# iOS build artifacts
+ios/build/
+# Xcode user data (optional)
+**/*.xcuserdatad/
+**/*.xcuserdata/
+
+# Android build artifacts
+android/app/build/
+android/build/
+
+# =========================
+# OS Generated Files
+# =========================
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# =========================
+# Environment Files
+# =========================
+
+# Environment variables (if not intended to be committed)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
