@@ -15,10 +15,4 @@ public class MobileUserSettings
     public bool PushNotifications { get; set; } = true;
 
     public bool AiFunctionality { get; set; } = true;
-
-    [Required]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    [Required]
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -17,10 +17,12 @@ builder.Services.AddScoped<IAwardProcessService, AwardProcessService>();
 builder.Services.AddScoped<IAwardCategoryRepository, AwardCategoryRepository>();
 builder.Services.AddScoped<IAwardCategoryService, AwardCategoryService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IMobileUserSettingsService, MobileUserSettingsService>();
 
 builder.Services.AddAutoMapper(typeof(AwardProcessProfile));
 builder.Services.AddAutoMapper(typeof(AwardCategoryProfile));
 builder.Services.AddAutoMapper(typeof(NotificationProfile));
+builder.Services.AddAutoMapper(typeof(MobileUserSettingsProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddAuthorization(); 
