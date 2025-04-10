@@ -80,6 +80,31 @@ public class AppDbContext : DbContext
                 v => v, 
                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
             );
+        
+        modelBuilder.Entity<JudgingRound>()
+            .Property(a => a.StartDate)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
+        modelBuilder.Entity<JudgingRound>()
+            .Property(a => a.Deadline)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
+        modelBuilder.Entity<JudgingRound>()
+            .Property(a => a.CreatedAt)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
+        modelBuilder.Entity<JudgingRound>()
+            .Property(a => a.UpdatedAt)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
     
         base.OnModelCreating(modelBuilder);
     }
