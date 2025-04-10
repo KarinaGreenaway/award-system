@@ -17,6 +17,7 @@
         <ProjectReference Include="..\AwardSystemAPI.Domain\AwardSystemAPI.Domain.csproj" />
         <ProjectReference Include="..\AwardSystemAPI.Presentation\AwardSystemAPI.Presentation.csproj" />
         <PackageReference Include="FluentAssertions" Version="8.2.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.4" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
         <PackageReference Include="Moq" Version="4.20.72" />
         <PackageReference Include="xunit" Version="2.9.3" />

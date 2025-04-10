@@ -1,119 +1,80 @@
 using AwardSystemAPI.Application.DTOs;
 using AwardSystemAPI.Domain.Entities;
 using AwardSystemAPI.Infrastructure.Repositories;
+using AwardSystemAPI.Common;
+using AutoMapper;
 using Microsoft.Extensions.Logging;
 
 namespace AwardSystemAPI.Application.Services;
 
 public interface IAwardCategoryService
 {
-    Task<IEnumerable<AwardCategoryResponseDto>> GetAllAwardCategoriesAsync();
-    Task<AwardCategoryResponseDto?> GetAwardCategoryByIdAsync(int id);
-    Task<AwardCategoryResponseDto> CreateAwardCategoryAsync(AwardCategoryCreateDto dto);
-    Task<bool> UpdateAwardCategoryAsync(int id, AwardCategoryUpdateDto dto);
-    Task<bool> DeleteAwardCategoryAsync(int id);
-    Task<IEnumerable<AwardCategoryResponseDto>> GetAwardCategoriesBySponsorIdAsync(int sponsorId);
+    Task<ApiResponse<IEnumerable<AwardCategoryResponseDto>, string>> GetAllAwardCategoriesAsync();
+    Task<ApiResponse<AwardCategoryResponseDto?, string>> GetAwardCategoryByIdAsync(int id);
+    Task<ApiResponse<AwardCategoryResponseDto, string>> CreateAwardCategoryAsync(AwardCategoryCreateDto dto);
+    Task<ApiResponse<bool, string>> UpdateAwardCategoryAsync(int id, AwardCategoryUpdateDto dto);
+    Task<ApiResponse<bool, string>> DeleteAwardCategoryAsync(int id);
+    Task<ApiResponse<IEnumerable<AwardCategoryResponseDto>, string>> GetAwardCategoriesBySponsorIdAsync(int sponsorId);
 }
+
 public class AwardCategoryService : IAwardCategoryService
 {
     private readonly IAwardCategoryRepository _repository;
     private readonly ILogger<AwardCategoryService> _logger;
+    private readonly IMapper _mapper;
 
-    public AwardCategoryService(IAwardCategoryRepository repository, ILogger<AwardCategoryService> logger)
+    public AwardCategoryService(IAwardCategoryRepository repository, ILogger<AwardCategoryService> logger, IMapper mapper)
     {
         _repository = repository;
         _logger = logger;
+        _mapper = mapper;
     }
 
-    public async Task<IEnumerable<AwardCategoryResponseDto>> GetAllAwardCategoriesAsync()
+    public async Task<ApiResponse<IEnumerable<AwardCategoryResponseDto>, string>> GetAllAwardCategoriesAsync()
     {
         var categories = await _repository.GetAllAsync();
-        return categories.Select(category => new AwardCategoryResponseDto
-        {
-            Id = category.Id,
-            Name = category.Name,
-            Type = category.Type,
-            SponsorId = category.SponsorId,
-            IntroductionVideo = category.IntroductionVideo,
-            IntroductionParagraph = category.IntroductionParagraph,
-            ProfileStatus = category.ProfileStatus,
-            CreatedAt = category.CreatedAt,
-            UpdatedAt = category.UpdatedAt
-        });
+        var result = _mapper.Map<IEnumerable<AwardCategoryResponseDto>>(categories);
+        return result.ToArray();
     }
 
-    public async Task<AwardCategoryResponseDto?> GetAwardCategoryByIdAsync(int id)
+    public async Task<ApiResponse<AwardCategoryResponseDto?, string>> GetAwardCategoryByIdAsync(int id)
     {
         var category = await _repository.GetByIdAsync(id);
         if (category == null)
         {
             _logger.LogWarning("AwardCategory with ID {Id} not found.", id);
-            return null;
+            return $"AwardCategory with ID {id} not found.";
         }
-
-        return new AwardCategoryResponseDto
-        {
-            Id = category.Id,
-            Name = category.Name,
-            Type = category.Type,
-            SponsorId = category.SponsorId,
-            IntroductionVideo = category.IntroductionVideo,
-            IntroductionParagraph = category.IntroductionParagraph,
-            ProfileStatus = category.ProfileStatus,
-            CreatedAt = category.CreatedAt,
-            UpdatedAt = category.UpdatedAt
-        };
+        var result = _mapper.Map<AwardCategoryResponseDto>(category);
+        return result;
     }
 
-    public async Task<AwardCategoryResponseDto> CreateAwardCategoryAsync(AwardCategoryCreateDto dto)
+    public async Task<ApiResponse<AwardCategoryResponseDto, string>> CreateAwardCategoryAsync(AwardCategoryCreateDto dto)
     {
         if (dto == null)
             throw new ArgumentNullException(nameof(dto));
 
-        var category = new AwardCategory
-        {
-            Name = dto.Name,
-            Type = dto.Type,
-            SponsorId = dto.SponsorId,
-            IntroductionVideo = dto.IntroductionVideo,
-            IntroductionParagraph = dto.IntroductionParagraph,
-            ProfileStatus = dto.ProfileStatus,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
+        var category = _mapper.Map<AwardCategory>(dto);
+        category.CreatedAt = DateTime.UtcNow;
+        category.UpdatedAt = DateTime.UtcNow;
 
         await _repository.AddAsync(category);
         _logger.LogInformation("Created AwardCategory with ID {Id}.", category.Id);
 
-        return new AwardCategoryResponseDto
-        {
-            Id = category.Id,
-            Name = category.Name,
-            Type = category.Type,
-            SponsorId = category.SponsorId,
-            IntroductionVideo = category.IntroductionVideo,
-            IntroductionParagraph = category.IntroductionParagraph,
-            ProfileStatus = category.ProfileStatus,
-            CreatedAt = category.CreatedAt,
-            UpdatedAt = category.UpdatedAt
-        };
+        var responseDto = _mapper.Map<AwardCategoryResponseDto>(category);
+        return responseDto;
     }
 
-    public async Task<bool> UpdateAwardCategoryAsync(int id, AwardCategoryUpdateDto dto)
+    public async Task<ApiResponse<bool, string>> UpdateAwardCategoryAsync(int id, AwardCategoryUpdateDto dto)
     {
         var category = await _repository.GetByIdAsync(id);
         if (category == null)
         {
             _logger.LogWarning("AwardCategory with ID {Id} not found for update.", id);
-            return false;
+            return $"AwardCategory with ID {id} not found for update.";
         }
 
-        category.Name = dto.Name;
-        category.Type = dto.Type;
-        category.SponsorId = dto.SponsorId;
-        category.IntroductionVideo = dto.IntroductionVideo;
-        category.IntroductionParagraph = dto.IntroductionParagraph;
-        category.ProfileStatus = dto.ProfileStatus;
+        _mapper.Map(dto, category);
         category.UpdatedAt = DateTime.UtcNow;
 
         await _repository.UpdateAsync(category);
@@ -121,13 +82,13 @@ public class AwardCategoryService : IAwardCategoryService
         return true;
     }
 
-    public async Task<bool> DeleteAwardCategoryAsync(int id)
+    public async Task<ApiResponse<bool, string>> DeleteAwardCategoryAsync(int id)
     {
         var category = await _repository.GetByIdAsync(id);
         if (category == null)
         {
             _logger.LogWarning("AwardCategory with ID {Id} not found for deletion.", id);
-            return false;
+            return $"AwardCategory with ID {id} not found for deletion.";
         }
 
         await _repository.DeleteAsync(category);
@@ -135,20 +96,10 @@ public class AwardCategoryService : IAwardCategoryService
         return true;
     }
 
-    public async Task<IEnumerable<AwardCategoryResponseDto>> GetAwardCategoriesBySponsorIdAsync(int sponsorId)
+    public async Task<ApiResponse<IEnumerable<AwardCategoryResponseDto>, string>> GetAwardCategoriesBySponsorIdAsync(int sponsorId)
     {
         var categories = await _repository.GetBySponsorIdAsync(sponsorId);
-        return categories.Select(c => new AwardCategoryResponseDto
-        {
-            Id = c.Id,
-            Name = c.Name,
-            Type = c.Type,
-            SponsorId = c.SponsorId,
-            IntroductionVideo = c.IntroductionVideo,
-            IntroductionParagraph = c.IntroductionParagraph,
-            ProfileStatus = c.ProfileStatus,
-            CreatedAt = c.CreatedAt,
-            UpdatedAt = c.UpdatedAt
-        });
+        var result = _mapper.Map<IEnumerable<AwardCategoryResponseDto>>(categories);
+        return result.ToArray();
     }
 }

@@ -18,6 +18,7 @@ builder.Services.AddScoped<IAwardCategoryRepository, AwardCategoryRepository>();
 builder.Services.AddScoped<IAwardCategoryService, AwardCategoryService>();
 
 builder.Services.AddAutoMapper(typeof(AwardProcessProfile));
+builder.Services.AddAutoMapper(typeof(AwardCategoryProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddAuthorization(); 
@@ -27,6 +28,15 @@ builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApi();
+
+builder.Services.AddAuthentication("FakeScheme")
+    .AddScheme<AuthenticationSchemeOptions, FakeAuthenticationHandler>("FakeScheme", options => { });
+
+builder.Services.Configure<AuthenticationOptions>(options =>
+{
+    options.DefaultAuthenticateScheme = "FakeScheme";
+    options.DefaultChallengeScheme = "FakeScheme";
+});
 
 var app = builder.Build();
 
@@ -41,12 +51,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 var env = app.Services.GetRequiredService<IWebHostEnvironment>();
-app.ConfigureExceptionHandler(logger, env);
+//app.ConfigureExceptionHandler(logger, env);
 
 if (app.Environment.IsDevelopment())
 {
