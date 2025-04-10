@@ -1,8 +1,8 @@
-using AwardSystemAPI.Application.DTOs;
 using AwardSystemAPI.Domain.Entities;
 using AwardSystemAPI.Infrastructure.Repositories;
 using AwardSystemAPI.Common;
 using AutoMapper;
+using AwardSystemAPI.Application.DTOs.AwardProcessDtos;
 using Microsoft.Extensions.Logging;
 
 namespace AwardSystemAPI.Application.Services

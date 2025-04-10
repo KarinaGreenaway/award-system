@@ -1,6 +1,6 @@
 using AutoMapper;
 using AwardSystemAPI.Domain.Entities;
-using AwardSystemAPI.Application.DTOs;
+using AwardSystemAPI.Application.DTOs.AwardProcessDtos;
 
 namespace AwardSystemAPI.Application.Mappings
 {

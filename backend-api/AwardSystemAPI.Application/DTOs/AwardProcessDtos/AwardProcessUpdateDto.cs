@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AwardSystemAPI.Application.DTOs;
+namespace AwardSystemAPI.Application.DTOs.AwardProcessDtos;
 
 public class AwardProcessUpdateDto: IValidatableObject
 {

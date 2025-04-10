@@ -1,5 +1,5 @@
 using AutoMapper;
-using AwardSystemAPI.Application.DTOs;
+using AwardSystemAPI.Application.DTOs.AwardCategoryDtos;
 using AwardSystemAPI.Domain.Entities;
 
 namespace AwardSystemAPI.Application.Mappings;

@@ -1,4 +1,4 @@
-using AwardSystemAPI.Application.DTOs;
+using AwardSystemAPI.Application.DTOs.AwardProcessDtos;
 using AwardSystemAPI.Application.Services;
 using AwardSystemAPI.Common;
 using AwardSystemAPI.Controllers;

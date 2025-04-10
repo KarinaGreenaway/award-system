@@ -1,7 +1,6 @@
-using AwardSystemAPI.Application.DTOs;
+using AwardSystemAPI.Application.DTOs.AwardCategoryDtos;
 using AwardSystemAPI.Application.Services;
 using AwardSystemAPI.Extensions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AwardSystemAPI.Controllers;

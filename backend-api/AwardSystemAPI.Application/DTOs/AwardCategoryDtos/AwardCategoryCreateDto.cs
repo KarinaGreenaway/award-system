@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AwardSystemAPI.Application.DTOs;
+namespace AwardSystemAPI.Application.DTOs.AwardCategoryDtos;
 
-public class AwardCategoryUpdateDto
+public class AwardCategoryCreateDto
 {
     [Required]
     [MaxLength(255)]

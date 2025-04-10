@@ -73,6 +73,13 @@ public class AppDbContext : DbContext
                 v => v, 
                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
             );
+        
+        modelBuilder.Entity<Notification>()
+            .Property(a => a.CreatedAt)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
     
         base.OnModelCreating(modelBuilder);
     }

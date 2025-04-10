@@ -1,4 +1,4 @@
-namespace AwardSystemAPI.Application.DTOs;
+namespace AwardSystemAPI.Application.DTOs.AwardCategoryDtos;
 
 public class AwardCategoryResponseDto
 {
