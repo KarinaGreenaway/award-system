@@ -20,6 +20,7 @@ namespace AwardSystemAPI.Domain.Entities
         [Required]
         public DateTime EventDateTime { get; set; }
 
+        [MaxLength(1000)]
         public string? Description { get; set; }
 
         [Required]

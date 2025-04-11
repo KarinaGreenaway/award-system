@@ -105,6 +105,25 @@ public class AppDbContext : DbContext
                 v => v, 
                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
             );
+        
+        modelBuilder.Entity<AwardEvent>()
+            .Property(a => a.EventDateTime)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
+        modelBuilder.Entity<AwardEvent>()
+            .Property(a => a.CreatedAt)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
+        modelBuilder.Entity<AwardEvent>()
+            .Property(a => a.UpdatedAt)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
     
         base.OnModelCreating(modelBuilder);
     }

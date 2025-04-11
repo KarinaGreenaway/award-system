@@ -19,12 +19,14 @@ builder.Services.AddScoped<IAwardCategoryService, AwardCategoryService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IMobileUserSettingsService, MobileUserSettingsService>();
 builder.Services.AddScoped<IJudgingRoundService, JudgingRoundService>();
+builder.Services.AddScoped<IAwardEventService, AwardEventService>();
 
 builder.Services.AddAutoMapper(typeof(AwardProcessProfile));
 builder.Services.AddAutoMapper(typeof(AwardCategoryProfile));
 builder.Services.AddAutoMapper(typeof(NotificationProfile));
 builder.Services.AddAutoMapper(typeof(MobileUserSettingsProfile));
 builder.Services.AddAutoMapper(typeof(JudgingRoundProfile));
+builder.Services.AddAutoMapper(typeof(AwardEventProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddAuthorization(); 
