@@ -1,13 +1,13 @@
 using AwardSystemAPI.Application.DTOs.AwardCategoryDtos;
 using AwardSystemAPI.Application.Services;
 using AwardSystemAPI.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AwardSystemAPI.Controllers;
 
-//TODO: Add authorization policies and roles as needed
-
 [ApiController]
+[Authorize(Policy = "SponsorOrAdminPolicy")]
 [Route("api/[controller]")]
 public class AwardCategoryController : ControllerBase
 {
@@ -58,7 +58,6 @@ public class AwardCategoryController : ControllerBase
 
     // Returns categories for the currently authenticated user.
     [HttpGet("my")]
-    // [Authorize(Roles = "Sponsor,Admin")]
     public async Task<ActionResult<IEnumerable<AwardCategoryResponseDto>>> GetMyCategories()
     {
         int? userId = User.GetUserId();
@@ -80,7 +79,7 @@ public class AwardCategoryController : ControllerBase
     }
 
     [HttpPost]
-    // [Authorize(Roles = "Sponsor,Admin")]
+    [Authorize(Policy = "CategoryOwnerPolicy")]
     public async Task<ActionResult<AwardCategoryResponseDto>> Create([FromBody] AwardCategoryCreateDto dto)
     {
         if (!ModelState.IsValid)
@@ -111,7 +110,7 @@ public class AwardCategoryController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    // [Authorize(Policy = "OwnsAwardCategoryOrAdmin")]
+    [Authorize(Policy = "CategoryOwnerPolicy")]
     public async Task<IActionResult> Update(int id, [FromBody] AwardCategoryUpdateDto dto)
     {
         if (!ModelState.IsValid)
@@ -135,7 +134,7 @@ public class AwardCategoryController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    // [Authorize(Policy = "OwnsAwardCategoryOrAdmin")]
+    [Authorize(Policy = "CategoryOwnerPolicy")]
     public async Task<IActionResult> Delete(int id)
     {
         var response = await _awardCategoryService.DeleteAwardCategoryAsync(id);

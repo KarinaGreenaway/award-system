@@ -2,6 +2,7 @@ using AwardSystemAPI.Application.Services;
 using AwardSystemAPI.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using AwardSystemAPI.Application.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AwardSystemAPI.Controllers;
 
@@ -19,6 +20,7 @@ public class NominationQuestionController : ControllerBase
     }
 
     [HttpGet("category/{categoryId:int}")]
+    [Authorize(Policy = "CategoryOwnerPolicy")]
     public async Task<ActionResult<IEnumerable<NominationQuestionResponseDto>>> GetByCategory(int categoryId)
     {
         var response = await _questionService.GetQuestionsByCategoryAsync(categoryId);
@@ -32,6 +34,7 @@ public class NominationQuestionController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Policy = "CategoryOwnerPolicy")]
     public async Task<ActionResult<NominationQuestionResponseDto>> GetById(int id)
     {
         var response = await _questionService.GetQuestionByIdAsync(id);
@@ -45,6 +48,7 @@ public class NominationQuestionController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "CategoryOwnerPolicy")]
     public async Task<ActionResult<NominationQuestionResponseDto>> Create([FromBody] NominationQuestionCreateDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -64,6 +68,7 @@ public class NominationQuestionController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "CategoryOwnerPolicy")]
     public async Task<IActionResult> Update(int id, [FromBody] NominationQuestionUpdateDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -84,6 +89,7 @@ public class NominationQuestionController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "CategoryOwnerPolicy")]
     public async Task<IActionResult> Delete(int id)
     {
         var response = await _questionService.DeleteQuestionAsync(id);

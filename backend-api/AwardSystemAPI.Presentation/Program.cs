@@ -4,7 +4,9 @@ using AwardSystemAPI.Extensions;
 using Microsoft.EntityFrameworkCore;
 using AwardSystemAPI.Infrastructure;
 using AwardSystemAPI.Infrastructure.Repositories;
+using AwardSystemAPI.Security;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,7 @@ builder.Services.AddScoped<INomineeSummaryRepository, NomineeSummaryRepository>(
 builder.Services.AddScoped<IAiSummaryService, AiSummaryService>();
 builder.Services.AddScoped<INominationQuestionRepository, NominationQuestionRepository>();
 builder.Services.AddScoped<INominationQuestionService, NominationQuestionService>();
+builder.Services.AddScoped<IAuthorizationHandler, CategoryOwnerHandler>();
 
 
 builder.Services.AddAutoMapper(typeof(AwardProcessProfile));
@@ -41,7 +44,24 @@ builder.Services.AddAutoMapper(typeof(TeamMemberProfile));
 builder.Services.AddAutoMapper(typeof(NominationQuestionProfile));
 
 builder.Services.AddControllers();
-builder.Services.AddAuthorization(); 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(
+        "CategoryOwnerPolicy",
+        policy => policy
+            .RequireAuthenticatedUser()
+            .AddRequirements(new CategoryOwnerRequirement()));
+    
+    options.AddPolicy("SponsorOrAdminPolicy", policy =>
+        policy.RequireRole("sponsor", "admin"));
+    
+    options.AddPolicy("AdminOnlyPolicy", policy =>
+        policy.RequireRole("admin"));
+});
+builder.Services.AddHttpContextAccessor();
+
+
+
 builder.Services.AddProblemDetails();
 
 // Configure Swagger/OpenAPI

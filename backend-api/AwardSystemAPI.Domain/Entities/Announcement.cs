@@ -14,6 +14,7 @@ namespace AwardSystemAPI.Domain.Entities
         public string Title { get; set; } = null!;
 
         [Required]
+        [MaxLength(2000)]
         public string Description { get; set; } = null!;
 
         [MaxLength(255)]
@@ -25,11 +26,11 @@ namespace AwardSystemAPI.Domain.Entities
 
         [Required]
         [MaxLength(50)]
-        public string Status { get; set; } // "draft" or "published"
+        public required string Status { get; set; } // "draft" or "published"
 
         [Required]
         [MaxLength(50)]
-        public string Type { get; set; }    // "category", "sponsor"
+        public required string Type { get; set; }    // "category", "sponsor"
 
         public int? CreatedBy { get; set; }
 

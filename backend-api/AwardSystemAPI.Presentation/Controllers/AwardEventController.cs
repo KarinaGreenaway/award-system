@@ -1,10 +1,12 @@
 using AwardSystemAPI.Application.DTOs;
 using AwardSystemAPI.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AwardSystemAPI.Controllers;
 
 [ApiController]
+[Authorize(Policy = "AdminOnlyPolicy")]
 [Route("api/[controller]")]
 public class AwardEventController : ControllerBase
 {

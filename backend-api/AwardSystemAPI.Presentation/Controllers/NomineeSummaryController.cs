@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace AwardSystemAPI.Controllers;
 
 [ApiController]
+[Authorize(Policy = "SponsorOrAdminPolicy")]
 [Route("api/[controller]")]
-[Authorize]
 public class NomineeSummaryController: ControllerBase
 {
     private readonly INomineeSummaryService _nomineeSummaryService;
@@ -48,8 +48,8 @@ public class NomineeSummaryController: ControllerBase
         );
     }
     
-    // [Authorize(Roles = "Sponsor,Admin")]
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "CategoryOwnerPolicy")]
     public async Task<IActionResult> Update(int id, [FromBody] NomineeSummaryUpdateDto dto)
     {
         if (!ModelState.IsValid)
@@ -72,7 +72,6 @@ public class NomineeSummaryController: ControllerBase
         );
     }
     
-    // [Authorize(Roles = "Sponsor,Admin")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<NomineeSummaryResponseDto>>> GetAll()
     {
@@ -87,7 +86,6 @@ public class NomineeSummaryController: ControllerBase
         );
     }
     
-    // [Authorize(Roles = "Sponsor,Admin")]
     [HttpGet("category/{categoryId:int}")]
     public async Task<ActionResult<IEnumerable<NomineeSummaryResponseDto>>> GetByCategoryId(int categoryId)
     {
