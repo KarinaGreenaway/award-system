@@ -1,0 +1,141 @@
+using AutoMapper;
+using AwardSystemAPI.Common;
+using AwardSystemAPI.Domain.Entities;
+using AwardSystemAPI.Infrastructure.Repositories;
+using Microsoft.Extensions.Logging;
+using AwardSystemAPI.Application.DTOs;
+
+namespace AwardSystemAPI.Application.Services;
+
+public interface INominationService
+{
+    Task<ApiResponse<NominationResponseDto, string>> CreateNominationAsync(NominationCreateDto dto, int userId);
+    Task<ApiResponse<NominationResponseDto?, string>> GetNominationByIdAsync(int id);
+    Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetNominationsByCreatorIdAsync(int creatorId);
+    Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetNominationsForNomineeIdAsync(int nomineeId);
+    Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetTeamNominationsForMemberAsync(int userId);
+}
+
+public class NominationService : INominationService
+{
+    private readonly INominationRepository _repository;
+    private readonly IMapper _mapper;
+    private readonly ILogger<NominationService> _logger;
+    private readonly IAiSummaryService _aiSummaryService;
+    private readonly INomineeSummaryService _nomineeSummaryService;
+    
+    public NominationService(INominationRepository repository, IMapper mapper, ILogger<NominationService> logger, IAiSummaryService aiSummaryService, INomineeSummaryService nomineeSummaryService)
+    {
+        _repository = repository;
+        _aiSummaryService = aiSummaryService;
+        _nomineeSummaryService = nomineeSummaryService;
+        _mapper = mapper;
+        _logger = logger;
+    }
+
+    public async Task<ApiResponse<NominationResponseDto, string>> CreateNominationAsync(NominationCreateDto dto, int userId)
+    {
+        if (dto == null)
+            throw new ArgumentNullException(nameof(dto));
+
+        var nomination = _mapper.Map<Nomination>(dto);
+        var answers = _mapper.Map<IEnumerable<NominationAnswer>>(dto.Answers);
+        
+        var nominationAnswers = answers as NominationAnswer[] ?? answers.ToArray();
+        nomination.Answers = nominationAnswers;
+
+        if(dto.TeamMembers != null && dto.TeamMembers.Any())
+        {
+            var teamMembers = _mapper.Map<IEnumerable<TeamMember>>(dto.TeamMembers);
+            nomination.TeamMembers = teamMembers.ToList();
+        }
+        
+        
+        nomination.CreatedAt = DateTime.UtcNow;
+        nomination.UpdatedAt = DateTime.UtcNow;
+        nomination.CreatorId = userId;
+
+        nomination.AiSummary = await _aiSummaryService.GenerateNominationSummaryAsync(nomination, nominationAnswers);
+
+        await _repository.AddAsync(nomination);
+        _logger.LogInformation("Created Nomination with ID {Id}.", nomination.Id);
+
+        if (nomination.NomineeId != null)
+        {
+            await TriggerNomineeSummaryUpdate(nomination);
+        }
+
+        var responseDto = _mapper.Map<NominationResponseDto>(nomination);
+        return responseDto;
+    }
+
+    public async Task<ApiResponse<NominationResponseDto?, string>> GetNominationByIdAsync(int id)
+    {
+        var nomination = await _repository.GetNominationByIdAsync(id);
+        if (nomination == null)
+        {
+            _logger.LogWarning("Nomination with ID {Id} not found.", id);
+            return $"Nomination with ID {id} not found.";
+        }
+        var responseDto = _mapper.Map<NominationResponseDto>(nomination);
+        return responseDto;
+    }
+
+    public async Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetNominationsByCreatorIdAsync(int creatorId)
+    {
+        var nominations = await _repository.GetNominationsByCreatorIdAsync(creatorId);
+        var responseDtos = _mapper.Map<IEnumerable<NominationResponseDto>>(nominations);
+        return responseDtos.ToArray();
+    }
+
+    public async Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetNominationsForNomineeIdAsync(int nomineeId)
+    {
+        var nominations = await _repository.GetNominationsForNomineeIdAsync(nomineeId);
+        var responseDtos = _mapper.Map<IEnumerable<NominationResponseDto>>(nominations);
+        return responseDtos.ToArray();
+    }
+
+    public async Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetTeamNominationsForMemberAsync(int userId)
+    {
+        var nominations = await _repository.GetTeamNominationsForMemberAsync(userId);
+        if (!nominations.Any())
+        {
+            _logger.LogWarning("No nominations found for user ID {UserId}.", userId);
+            return $"No nominations found for user ID {userId}.";
+        }
+        var responseDtos = _mapper.Map<IEnumerable<NominationResponseDto>>(nominations);
+        
+        
+        return responseDtos.ToArray();
+    }
+
+    private async Task TriggerNomineeSummaryUpdate(Nomination nomination)
+    {
+        if (nomination.NomineeId == null)
+        {
+            _logger.LogWarning("Nominee ID is null for Nomination ID {NominationId}.", nomination.Id);
+            return;
+        }
+        
+        var nomineeSummaryAsync = await _nomineeSummaryService.GetNomineeSummaryAsync(nomination.NomineeId.Value, nomination.CategoryId);
+            
+        await nomineeSummaryAsync.Match(
+            onSuccess: async nomineeSummary =>
+            {
+                await _nomineeSummaryService.UpdateNomineeSummaryTotalNominationCountyAsync(nomineeSummary.NomineeId, nomineeSummary.CategoryId);
+                _logger.LogInformation("Updated NomineeSummary for Nominee ID {NomineeId}.", nomination.NomineeId.Value);
+            },
+            onError: async _ =>
+            {
+                var nomineeSummary = new NomineeSummaryCreateDto
+                {
+                    NomineeId = nomination.NomineeId.Value,
+                    CategoryId = nomination.CategoryId,
+                    TotalNominations = 1
+                };
+                await _nomineeSummaryService.CreateNomineeSummaryAsync(nomineeSummary);
+                _logger.LogInformation("Created NomineeSummary for Nominee ID {NomineeId}.", nomination.NomineeId.Value);
+            }
+        );
+    }
+}

@@ -16,13 +16,16 @@ public class NomineeSummary
     public int CategoryId { get; set; }
 
     [Range(0, int.MaxValue)]
-    public int TotalNominations { get; set; }
+    public int? TotalNominations { get; set; }
 
     public bool IsPinned { get; set; } = false;
 
     public bool IsShortlisted { get; set; } = false;
 
     public bool IsWinner { get; set; } = false;
+    
+    [Required]
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     [Required]
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

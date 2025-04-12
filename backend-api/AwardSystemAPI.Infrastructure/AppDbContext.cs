@@ -124,6 +124,32 @@ public class AppDbContext : DbContext
                 v => v, 
                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
             );
+        
+        modelBuilder.Entity<NomineeSummary>()
+            .Property(a => a.CreatedAt)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
+        modelBuilder.Entity<NomineeSummary>()
+            .Property(a => a.UpdatedAt)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
+        
+        modelBuilder.Entity<Nomination>()
+            .Property(a => a.CreatedAt)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
+        modelBuilder.Entity<Nomination>()
+            .Property(a => a.UpdatedAt)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
     
         base.OnModelCreating(modelBuilder);
     }

@@ -22,7 +22,7 @@ public class Nomination
     public string? TeamName { get; set; }
 
     // AI summary can be lengthy, so no max length is specified.
-    public string? AISummary { get; set; }
+    public string? AiSummary { get; set; }
 
     public int VoteCount { get; set; } = 0;
 
@@ -34,4 +34,7 @@ public class Nomination
 
     [Required]
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    
+    public ICollection<NominationAnswer> Answers { get; set; } = new List<NominationAnswer>();
+    public ICollection<TeamMember> TeamMembers { get; set; } = new List<TeamMember>();
 }

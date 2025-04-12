@@ -59,6 +59,7 @@ CREATE TABLE "nomineeSummary" (
     "IsPinned" BOOLEAN DEFAULT false,
     "IsShortlisted" BOOLEAN DEFAULT false,
     "IsWinner" BOOLEAN DEFAULT false,
+    "CreatedAt" TIMESTAMP DEFAULT now(),
     "UpdatedAt" TIMESTAMP DEFAULT now()
 );
 

@@ -1,34 +1,36 @@
 using AwardSystemAPI.Domain.Entities;
-using AwardSystemAPI.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace AwardSystemAPI.Infrastructure.Repositories
+namespace AwardSystemAPI.Infrastructure.Repositories;
+
+public interface IAwardCategoryRepository : IGenericRepository<AwardCategory>
 {
-    public class AwardCategoryRepository : GenericRepository<AwardCategory>, IAwardCategoryRepository
+    Task<IEnumerable<AwardCategory>> GetBySponsorIdAsync(int sponsorId);
+}
+public class AwardCategoryRepository : GenericRepository<AwardCategory>, IAwardCategoryRepository
+{
+    private readonly ILogger<AwardCategoryRepository> _logger;
+
+    public AwardCategoryRepository(AppDbContext context, ILogger<AwardCategoryRepository> logger)
+        : base(context, logger)
     {
-        private readonly ILogger<AwardCategoryRepository> _logger;
+        _logger = logger;
+    }
 
-        public AwardCategoryRepository(AppDbContext context, ILogger<AwardCategoryRepository> logger)
-            : base(context, logger)
+    public async Task<IEnumerable<AwardCategory>> GetBySponsorIdAsync(int sponsorId)
+    {
+        try
         {
-            _logger = logger;
+            return await Context.Set<AwardCategory>()
+                .Where(ac => ac.SponsorId == sponsorId)
+                .ToListAsync()
+                .ConfigureAwait(false);
         }
-
-        public async Task<IEnumerable<AwardCategory>> GetBySponsorIdAsync(int sponsorId)
+        catch (Exception ex)
         {
-            try
-            {
-                return await Context.Set<AwardCategory>()
-                    .Where(ac => ac.SponsorId == sponsorId)
-                    .ToListAsync()
-                    .ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while retrieving AwardCategory records for SponsorId {SponsorId}.", sponsorId);
-                throw new Exception("An error occurred while retrieving AwardCategory records by sponsor id.", ex);
-            }
+            _logger.LogError(ex, "An error occurred while retrieving AwardCategory records for SponsorId {SponsorId}.", sponsorId);
+            throw new Exception("An error occurred while retrieving AwardCategory records by sponsor id.", ex);
         }
     }
 }
