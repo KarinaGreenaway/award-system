@@ -89,7 +89,9 @@ CREATE TABLE "teamMember" (
 CREATE TABLE "nominationQuestion" (
     "Id" SERIAL PRIMARY KEY,
     "CategoryId" INT NOT NULL REFERENCES "awardCategory"("Id"),
-    "QuestionText" TEXT NOT NULL
+    "QuestionText" TEXT NOT NULL,
+    "ResponseType" VARCHAR(50) NOT NULL DEFAULT 'text',
+    "Options" TEXT
 );
 
 -- Create Nomination Answer Table with surrogate key.

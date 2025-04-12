@@ -15,4 +15,11 @@ public class NominationQuestion
     [Required]
     [MaxLength(500)]
     public string QuestionText { get; set; } = null!;
+
+    [Required]
+    [MaxLength(50)]
+    public string ResponseType { get; set; } = "text";  // "text", "yes_no", "multiple_choice"
+
+    // JSON-serialized list of options; only used when ResponseType == "multiple_choice"
+    public string? Options { get; set; }
 }
