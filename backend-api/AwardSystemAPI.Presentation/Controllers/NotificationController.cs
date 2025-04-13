@@ -56,7 +56,7 @@ public class NotificationController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to retrieve notification with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             }
@@ -82,7 +82,7 @@ public class NotificationController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to mark notification with ID {Id} as read. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             }

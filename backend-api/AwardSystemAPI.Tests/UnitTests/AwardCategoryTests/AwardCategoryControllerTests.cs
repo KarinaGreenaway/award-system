@@ -71,13 +71,10 @@ public class AwardCategoryControllerTests
     [Fact]
     public async Task GetById_WithInvalidId_ShouldReturnBadRequest()
     {
-        // Arrange
-        int invalidId = 0;
+        var invalidId = 0;
 
-        // Act
         ActionResult<AwardCategoryResponseDto> result = await _controller.GetById(invalidId);
 
-        // Assert
         result.Result.Should().BeOfType<BadRequestObjectResult>();
         var badResult = result.Result as BadRequestObjectResult;
         badResult?.Value.Should().BeEquivalentTo(new { Error = "Invalid ID provided." });
@@ -86,16 +83,13 @@ public class AwardCategoryControllerTests
     [Fact]
     public async Task GetById_WhenCategoryExists_ShouldReturnOkWithDto()
     {
-        // Arrange
-        int id = 1;
+        const int id = 1;
         var dto = new AwardCategoryResponseDto { Id = id, Name = "Category1", Type="individual", SponsorId = 1, ProfileStatus = "draft", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
         ApiResponse<AwardCategoryResponseDto?, string> apiResponse = dto;
         _serviceMock.Setup(s => s.GetAwardCategoryByIdAsync(id)).ReturnsAsync(apiResponse);
 
-        // Act
         ActionResult<AwardCategoryResponseDto> result = await _controller.GetById(id);
 
-        // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
         okResult?.Value.Should().BeEquivalentTo(dto);
@@ -104,16 +98,13 @@ public class AwardCategoryControllerTests
     [Fact]
     public async Task GetById_WhenCategoryDoesNotExist_ShouldReturnNotFound()
     {
-        // Arrange
-        int id = 1;
-        string errorMsg = $"AwardCategory with ID {id} not found.";
+        const int id = 1;
+        var errorMsg = $"AwardCategory with ID {id} not found.";
         ApiResponse<AwardCategoryResponseDto?, string> apiResponse = errorMsg;
         _serviceMock.Setup(s => s.GetAwardCategoryByIdAsync(id)).ReturnsAsync(apiResponse);
 
-        // Act
         ActionResult<AwardCategoryResponseDto> result = await _controller.GetById(id);
 
-        // Assert
         result.Result.Should().BeOfType<NotFoundObjectResult>();
         var notFound = result.Result as NotFoundObjectResult;
         notFound?.Value.Should().BeEquivalentTo(new { Error = errorMsg });
@@ -123,23 +114,21 @@ public class AwardCategoryControllerTests
     [Fact]
     public async Task GetMyCategories_WhenUserIdClaimMissing_ShouldReturnUnauthorized()
     {
-        // Arrange: make User return null for GetUserId.
+        // Make user return null for GetUserId.
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext() // no claims assigned
         };
 
-        // Act
         ActionResult<IEnumerable<AwardCategoryResponseDto>> result = await _controller.GetMyCategories();
 
-        // Assert
         result.Result.Should().BeOfType<UnauthorizedObjectResult>();
     }
 
     [Fact]
     public async Task GetMyCategories_WhenServiceReturnsSuccess_ShouldReturnOkWithDtos()
     {
-        // Arrange: simulate a user with userId = 1.
+        // simulate a user with userId = 1.
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { User = CreateUserWithId("1") }
@@ -152,10 +141,8 @@ public class AwardCategoryControllerTests
         ApiResponse<IEnumerable<AwardCategoryResponseDto>, string> apiResponse = dtos;
         _serviceMock.Setup(s => s.GetAwardCategoriesBySponsorIdAsync(1)).ReturnsAsync(apiResponse);
 
-        // Act
         ActionResult<IEnumerable<AwardCategoryResponseDto>> result = await _controller.GetMyCategories();
 
-        // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = result.Result as OkObjectResult;
         okResult?.Value.Should().BeEquivalentTo(dtos);
@@ -164,20 +151,17 @@ public class AwardCategoryControllerTests
     [Fact]
     public async Task GetMyCategories_WhenServiceReturnsError_ShouldReturnBadRequest()
     {
-        // Arrange: simulate a user with userId = 1.
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { User = CreateUserWithId("1") }
         };
 
-        string errorMsg = "Error retrieving categories";
+        const string errorMsg = "Error retrieving categories";
         ApiResponse<IEnumerable<AwardCategoryResponseDto>, string> apiResponse = errorMsg;
         _serviceMock.Setup(s => s.GetAwardCategoriesBySponsorIdAsync(1)).ReturnsAsync(apiResponse);
 
-        // Act
         ActionResult<IEnumerable<AwardCategoryResponseDto>> result = await _controller.GetMyCategories();
 
-        // Assert
         result.Result.Should().BeOfType<BadRequestObjectResult>();
         var badResult = result.Result as BadRequestObjectResult;
         badResult?.Value.Should().BeEquivalentTo(new { Error = errorMsg });
@@ -186,38 +170,32 @@ public class AwardCategoryControllerTests
     [Fact]
     public async Task Create_WhenModelStateIsInvalid_ShouldReturnBadRequest()
     {
-        // Arrange
         _controller.ModelState.AddModelError("Name", "Name is required");
         var dto = new AwardCategoryCreateDto();
 
-        // Act
         ActionResult<AwardCategoryResponseDto> result = await _controller.Create(dto);
 
-        // Assert
         result.Result.Should().BeOfType<BadRequestObjectResult>();
     }
 
     [Fact]
     public async Task Create_WhenUserIdClaimMissing_ShouldReturnUnauthorized()
     {
-        // Arrange: No user claim assigned.
+        // No user claim assigned.
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext()
         };
         var dto = new AwardCategoryCreateDto { Name = "New Cat" };
 
-        // Act
         ActionResult<AwardCategoryResponseDto> result = await _controller.Create(dto);
 
-        // Assert
         result.Result.Should().BeOfType<UnauthorizedObjectResult>();
     }
 
     [Fact]
     public async Task Create_WhenServiceReturnsSuccess_ShouldReturnCreatedAtAction()
     {
-        // Arrange: simulate a user with userId = 1.
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { User = CreateUserWithId("1") }
@@ -229,10 +207,8 @@ public class AwardCategoryControllerTests
         ApiResponse<AwardCategoryResponseDto, string> apiResponse = createdDto;
         _serviceMock.Setup(s => s.CreateAwardCategoryAsync(It.IsAny<AwardCategoryCreateDto>())).ReturnsAsync(apiResponse);
 
-        // Act
         ActionResult<AwardCategoryResponseDto> result = await _controller.Create(inputDto);
 
-        // Assert
         result.Result.Should().BeOfType<CreatedAtActionResult>();
         var createdAt = result.Result as CreatedAtActionResult;
         createdAt?.RouteValues?["id"].Should().Be(createdDto.Id);
@@ -242,21 +218,18 @@ public class AwardCategoryControllerTests
     [Fact]
     public async Task Create_WhenServiceReturnsError_ShouldReturnBadRequest()
     {
-        // Arrange: simulate a user with userId = 1.
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { User = CreateUserWithId("1") }
         };
 
         var dto = new AwardCategoryCreateDto { Name = "New Cat" };
-        string errorMsg = "Creation failed";
+        const string errorMsg = "Creation failed";
         ApiResponse<AwardCategoryResponseDto, string> apiResponse = errorMsg;
         _serviceMock.Setup(s => s.CreateAwardCategoryAsync(It.IsAny<AwardCategoryCreateDto>())).ReturnsAsync(apiResponse);
 
-        // Act
         ActionResult<AwardCategoryResponseDto> result = await _controller.Create(dto);
 
-        // Assert
         result.Result.Should().BeOfType<BadRequestObjectResult>();
         var badResult = result.Result as BadRequestObjectResult;
         badResult?.Value.Should().BeEquivalentTo(new { Error = errorMsg });

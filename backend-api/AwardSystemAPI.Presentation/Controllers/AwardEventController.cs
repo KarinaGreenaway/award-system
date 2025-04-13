@@ -48,7 +48,7 @@ public class AwardEventController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to retrieve AwardEvent with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             }
@@ -92,7 +92,7 @@ public class AwardEventController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to update AwardEvent with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             }
@@ -112,7 +112,7 @@ public class AwardEventController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to delete AwardEvent with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             }

@@ -34,7 +34,7 @@ public class JudgingRoundController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to retrieve JudgingRound with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             });
@@ -89,7 +89,7 @@ public class JudgingRoundController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to update JudgingRound with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             });
@@ -108,7 +108,7 @@ public class JudgingRoundController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to delete JudgingRound with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             });

@@ -48,7 +48,7 @@ public class AwardProcessController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to retrieve AwardProcess with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             }
@@ -97,7 +97,7 @@ public class AwardProcessController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to update AwardProcess with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             }
@@ -121,7 +121,7 @@ public class AwardProcessController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to delete AwardProcess with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             }

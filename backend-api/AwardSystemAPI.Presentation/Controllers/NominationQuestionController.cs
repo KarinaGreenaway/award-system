@@ -82,7 +82,7 @@ public class NominationQuestionController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to update NominationQuestion with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             });
@@ -98,7 +98,7 @@ public class NominationQuestionController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to delete NominationQuestion with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             });

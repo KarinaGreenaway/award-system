@@ -49,7 +49,7 @@ public class AwardCategoryController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to retrieve AwardCategory with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             }
@@ -126,7 +126,7 @@ public class AwardCategoryController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to update AwardCategory with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             }
@@ -147,7 +147,7 @@ public class AwardCategoryController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to delete AwardCategory with ID {Id}. Error: {Error}", id, error);
-                return error.Contains("not found")
+                return error.ToLower().Contains("not found")
                     ? NotFound(new { Error = error })
                     : BadRequest(new { Error = error });
             }
