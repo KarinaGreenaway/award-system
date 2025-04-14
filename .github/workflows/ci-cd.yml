@@ -1,0 +1,63 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Inject Firebase service account
+        run: |
+          mkdir -p backend-api/AwardSystemAPI.Presentation/Config
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > backend-api/AwardSystemAPI.Presentation/Config/firebase-service-account.json
+      
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Apply EF Core Migrations
+        run: dotnet ef database update \
+          --project AwardSystemAPI.Infrastructure \
+          --startup-project AwardSystemAPI.Presentation
+
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Publish App
+        run: dotnet publish AwardSystemAPI.Presentation \
+          --configuration Release \
+          --output ./publish
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./publish

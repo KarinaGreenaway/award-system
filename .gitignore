@@ -92,3 +92,5 @@ ehthumbs.db
 .env.development.local
 .env.test.local
 .env.production.local
+/backend-api/AwardSystemAPI.Presentation/Config/firebase-service-account.json
+
