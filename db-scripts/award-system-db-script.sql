@@ -179,7 +179,7 @@ CREATE TABLE "announcement" (
     "IsPushNotification" BOOLEAN DEFAULT false,
     "ScheduledTime" TIMESTAMP,
     "Status" VARCHAR(50) NOT NULL,  -- 'draft' or 'published'
-    "Type" VARCHAR(50) NOT NULL,    -- e.g., 'category', 'sponsor'
+    "Audience" VARCHAR(50) NOT NULL DEFAULT 'MobileUsers',  -- 'MobileUsers', 'Sponsors'
     "CreatedBy" INT REFERENCES "users"("Id"),
     "CreatedAt" TIMESTAMP DEFAULT now(),
     "UpdatedAt" TIMESTAMP DEFAULT now()

@@ -150,6 +150,9 @@ public class AppDbContext : DbContext
                 v => v, 
                 v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
             );
+        modelBuilder.Entity<Announcement>()
+            .Property(a => a.Audience)
+            .HasConversion<string>();
     
         base.OnModelCreating(modelBuilder);
     }

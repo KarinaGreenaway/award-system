@@ -1,3 +1,4 @@
+using AwardSystemAPI.Application.BackgroundServices;
 using AwardSystemAPI.Application.Mappings;
 using AwardSystemAPI.Application.Services;
 using AwardSystemAPI.Extensions;
@@ -30,6 +31,12 @@ builder.Services.AddScoped<IAiSummaryService, AiSummaryService>();
 builder.Services.AddScoped<INominationQuestionRepository, NominationQuestionRepository>();
 builder.Services.AddScoped<INominationQuestionService, NominationQuestionService>();
 builder.Services.AddScoped<IAuthorizationHandler, CategoryOwnerHandler>();
+builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
+builder.Services.AddSingleton<IFirebaseNotificationService, FirebaseNotificationService>();
+
+
+builder.Services.AddHostedService<AnnouncementPublisherService>();
+
 
 
 builder.Services.AddAutoMapper(typeof(AwardProcessProfile));
@@ -42,6 +49,7 @@ builder.Services.AddAutoMapper(typeof(NominationProfile));
 builder.Services.AddAutoMapper(typeof(NomineeSummaryProfile));
 builder.Services.AddAutoMapper(typeof(TeamMemberProfile));
 builder.Services.AddAutoMapper(typeof(NominationQuestionProfile));
+builder.Services.AddAutoMapper(typeof(AnnouncementProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddAuthorization(options =>
