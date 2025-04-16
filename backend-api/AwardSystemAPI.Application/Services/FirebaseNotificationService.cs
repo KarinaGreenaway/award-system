@@ -10,6 +10,8 @@ namespace AwardSystemAPI.Application.Services;
 public interface  IFirebaseNotificationService
 {
     Task SendPushAsync(string title, string body, TargetAudience audience);
+    Task SubscribeToTopicAsync(string token, string topic);
+    Task UnsubscribeFromTopicAsync(string token, string topic);
 }
 public class FirebaseNotificationService : IFirebaseNotificationService
 {
@@ -70,6 +72,34 @@ public class FirebaseNotificationService : IFirebaseNotificationService
         catch (FirebaseMessagingException ex)
         {
             _logger.LogError(ex, "Error sending FCM notification");
+            throw;
+        }
+    }
+    
+    public async Task SubscribeToTopicAsync(string token, string topic)
+    {
+        try
+        {
+            var response = await _messaging.SubscribeToTopicAsync(new[] { token }, topic);
+            _logger.LogInformation("Subscribed to topic: {Response}", response);
+        }
+        catch (FirebaseMessagingException ex)
+        {
+            _logger.LogError(ex, "Error subscribing to FCM topic");
+            throw;
+        }
+    }
+    
+    public async Task UnsubscribeFromTopicAsync(string token, string topic)
+    {
+        try
+        {
+            var response = await _messaging.UnsubscribeFromTopicAsync(new[] { token }, topic);
+            _logger.LogInformation("Unsubscribed from topic: {Response}", response);
+        }
+        catch (FirebaseMessagingException ex)
+        {
+            _logger.LogError(ex, "Error unsubscribing from FCM topic");
             throw;
         }
     }

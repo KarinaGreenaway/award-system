@@ -1,3 +1,4 @@
+using AwardSystemAPI.Application.Services;
 using AwardSystemAPI.Extensions;
 using AwardSystemAPI.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -10,12 +11,13 @@ namespace AwardSystemAPI.Controllers;
 public class DeviceTokenController : ControllerBase
 {
     private readonly IDeviceTokenRepository _deviceTokenRepo;
+    private readonly IFirebaseNotificationService _firebaseNotificationService;
 
-    public DeviceTokenController(IDeviceTokenRepository deviceTokenRepo)
+    public DeviceTokenController(IDeviceTokenRepository deviceTokenRepo, IFirebaseNotificationService firebaseNotificationService)
     {
         _deviceTokenRepo = deviceTokenRepo;
+        _firebaseNotificationService = firebaseNotificationService;
     }
-
 
     [Authorize]
     [HttpPost("api/push/register")]
@@ -28,6 +30,17 @@ public class DeviceTokenController : ControllerBase
         }
         
         await _deviceTokenRepo.AddOrUpdateTokenAsync(userId.Value, token);
+        
+        
+        var topics = new List<string> { "mobileUsers" };
+        if (User.IsInRole("Sponsor"))
+            topics.Add("sponsors");
+        
+        foreach (var t in topics)
+        {
+            await _firebaseNotificationService.SubscribeToTopicAsync(token, t);
+        }
+        
         return Ok();
     }
     
@@ -43,8 +56,15 @@ public class DeviceTokenController : ControllerBase
         
         var deviceToken = await _deviceTokenRepo.GetByUserIdAsync(userId.Value);
         if (deviceToken == null || deviceToken.Token != token)
-        {
             return NotFound(new { Error = "Device token not found." });
+
+        var topics = new List<string> { "mobileUsers" };
+        if (User.IsInRole("Sponsor"))
+            topics.Add("sponsors");
+
+        foreach (var t in topics)
+        {
+            await _firebaseNotificationService.UnsubscribeFromTopicAsync(token, t);
         }
 
         await _deviceTokenRepo.DeleteAsync(deviceToken);

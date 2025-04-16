@@ -32,7 +32,10 @@ builder.Services.AddScoped<INominationQuestionRepository, NominationQuestionRepo
 builder.Services.AddScoped<INominationQuestionService, NominationQuestionService>();
 builder.Services.AddScoped<IAuthorizationHandler, CategoryOwnerHandler>();
 builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
+builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
 builder.Services.AddSingleton<IFirebaseNotificationService, FirebaseNotificationService>();
+// builder.Services.AddSingleton<IFirebaseMessagingClient, FirebaseMessagingClient>();
+builder.Services.AddScoped<IFirebaseNotificationService, FirebaseNotificationService>();
 
 
 builder.Services.AddHostedService<AnnouncementPublisherService>();
