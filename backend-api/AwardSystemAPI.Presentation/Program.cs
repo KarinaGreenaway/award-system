@@ -31,11 +31,13 @@ builder.Services.AddScoped<IAiSummaryService, AiSummaryService>();
 builder.Services.AddScoped<INominationQuestionRepository, NominationQuestionRepository>();
 builder.Services.AddScoped<INominationQuestionService, NominationQuestionService>();
 builder.Services.AddScoped<IAuthorizationHandler, CategoryOwnerHandler>();
+builder.Services.AddScoped<IDeviceTokenRepository, DeviceTokenRepository>();
 builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
 builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
+builder.Services.AddScoped<IPushNotificationService, PushNotificationService>();
 builder.Services.AddSingleton<IFirebaseNotificationService, FirebaseNotificationService>();
 // builder.Services.AddSingleton<IFirebaseMessagingClient, FirebaseMessagingClient>();
-builder.Services.AddScoped<IFirebaseNotificationService, FirebaseNotificationService>();
+
 
 
 builder.Services.AddHostedService<AnnouncementPublisherService>();
@@ -64,10 +66,10 @@ builder.Services.AddAuthorization(options =>
             .AddRequirements(new CategoryOwnerRequirement()));
     
     options.AddPolicy("SponsorOrAdminPolicy", policy =>
-        policy.RequireRole("sponsor", "admin"));
+        policy.RequireRole("Sponsor", "Admin"));
     
     options.AddPolicy("AdminOnlyPolicy", policy =>
-        policy.RequireRole("admin"));
+        policy.RequireRole("Admin"));
 });
 builder.Services.AddHttpContextAccessor();
 

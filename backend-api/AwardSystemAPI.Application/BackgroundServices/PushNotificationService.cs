@@ -1,6 +1,5 @@
 using AwardSystemAPI.Application.Services;
 using AwardSystemAPI.Domain.Enums;
-using AwardSystemAPI.Infrastructure.Repositories;
 
 namespace AwardSystemAPI.Application.BackgroundServices;
 
@@ -13,7 +12,7 @@ public class PushNotificationService : IPushNotificationService
 {
     private readonly IFirebaseNotificationService _firebaseNotificationService;
 
-    public PushNotificationService(IDeviceTokenRepository deviceTokenRepository, IFirebaseNotificationService firebaseNotificationService)
+    public PushNotificationService(IFirebaseNotificationService firebaseNotificationService)
     {
         _firebaseNotificationService = firebaseNotificationService;
     }

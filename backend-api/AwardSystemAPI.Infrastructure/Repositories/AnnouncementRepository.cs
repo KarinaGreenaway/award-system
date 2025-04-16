@@ -27,11 +27,13 @@ public class AnnouncementRepository
     {
         try
         {
+            var statusLower = status.ToLowerInvariant();
+
             return await Context.Set<Announcement>()
-                .Where(a => a.Audience == audience && a.Status.Equals(status, StringComparison.OrdinalIgnoreCase))
+                .Where(a => a.Audience == audience
+                            && a.Status.ToLower() == statusLower)
                 .OrderByDescending(a => a.CreatedAt)
-                .ToListAsync()
-                .ConfigureAwait(false);
+                .ToListAsync();
         }
         catch (Exception ex)
         {
