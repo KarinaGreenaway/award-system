@@ -1,11 +1,22 @@
-import './App.css'
+import { Routes, Route } from "react-router-dom";
+import HomePage from "@/pages/HomePage.tsx";
+import AppLayoutWithTabs from "@/layouts/AppLayoutWithTabs.tsx"; // ← import layout
 
-function App() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <h1 className="text-4xl font-bold text-blue-600">Tailwind is working! 🎉</h1>
-    </div>
-  );
+export default function App() {
+    return (
+        <Routes>
+            {/* Sponsor and Admin Routes */}
+            <Route path="/login" element={
+                <div className="flex items-center justify-center min-h-screen">
+                    <h1 className="text-5xl font-bold text-blue-600">Login Page Works!</h1>
+                    <h1 className="text-4xl font-bold text-blue-500 dark:text-red-500">Test Heading</h1>
+                </div>
+            } />
+
+            {/* Dashboard Route */}
+            <Route path="/" element={<AppLayoutWithTabs />}>
+                <Route index element={<HomePage />} />
+            </Route>
+        </Routes>
+    );
 }
-
-export default App;
