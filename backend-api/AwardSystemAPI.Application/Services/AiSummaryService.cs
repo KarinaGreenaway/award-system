@@ -34,7 +34,7 @@ public class AiSummaryService : IAiSummaryService
         sb.AppendLine("Key Points:");
         foreach (var answer in answers.Take(3)) // Take first 3 answers for brevity
         {
-            sb.AppendLine($"- Q{answer.QuestionId}: {answer.Answer}");
+            sb.AppendLine($"- Q{answer.Question}: {answer.Answer}");
         }
 
         return Task.FromResult(sb.ToString());

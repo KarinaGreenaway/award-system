@@ -1,5 +1,9 @@
 import { Home, List, Mail, Megaphone, Menu, Settings, Trophy } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import ThemeToggle from "@/components/ui/themeToggle";
+import LogoDark from "@/assets/logo-white.png";
+import LogoLight from "@/assets/logo-black.png";
+
 
 interface SidebarProps {
     collapsed: boolean;
@@ -22,15 +26,30 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
         <aside
             className={`fixed top-0 left-0 h-screen flex flex-col bg-[color:var(--color-sidebar-light)] dark:bg-[color:var(--color-sidebar-dark)] ${
                 collapsed ? "w-20" : "w-64"
-            } transition-all duration-300 rounded-r-2xl shadow-lg p-4`}
+            } transition-all duration-300  shadow-lg p-4`}
         >
             {/* Sidebar content */}
             <div className="flex flex-col flex-1 overflow-y-auto no-scrollbar">
                 <div className="flex items-center justify-between mb-6">
                     {!collapsed && (
-                        <h2 className="text-2xl font-bold tracking-tight text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
-                            Awards
-                        </h2>
+                        <div className="flex items-center gap-2">
+                            {/* Dark mode logo */}
+                            <img
+                                src={LogoDark}
+                                alt="Logo Dark"
+                                className="h-8 w-auto object-contain hidden dark:block"
+                            />
+                            {/* Light mode logo */}
+                            <img
+                                src={LogoLight}
+                                alt="Logo Light"
+                                className="h-8 w-auto object-contain block dark:hidden"
+                            />
+
+                            <h2 className="text-2xl tracking-tight text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
+                                Awards
+                            </h2>
+                        </div>
                     )}
                     <button
                         onClick={() => setCollapsed(!collapsed)}
@@ -55,7 +74,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                             >
                                 <item.icon className="h-6 w-6" />
                                 {!collapsed && (
-                                    <span className="text-sm font-medium">{item.name}</span>
+                                    <span className="text-sm">{item.name}</span>
                                 )}
                             </Link>
                         );
@@ -64,14 +83,24 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
             </div>
 
             {/* Bottom profile */}
-            <div className="flex items-center gap-3 p-3 mt-4 flex-shrink-0">
-                <div className="bg-gray-300 dark:bg-gray-700 rounded-full h-8 w-8" />
-                {!collapsed && (
-                    <span className="text-sm font-medium text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
-            John Doe
-          </span>
-                )}
-            </div>
+            {collapsed ? (
+                // COLLAPSED MODE: icon below avatar
+                <div className="flex flex-col items-center gap-2 p-3">
+                    <div className="bg-gray-300 dark:bg-gray-700 rounded-full h-8 w-8" />
+                    <ThemeToggle collapsed />
+                </div>
+            ) : (
+                // EXPANDED MODE: inline row
+                <div className="flex items-center justify-between gap-3 p-3 mt-4 flex-shrink-0">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-gray-300 dark:bg-gray-700 rounded-full h-8 w-8" />
+                        <span className="text-sm text-text-light dark:text-text-dark">
+                            John
+                        </span>
+                    </div>
+                    <ThemeToggle />
+                </div>
+            )}
         </aside>
     );
 }

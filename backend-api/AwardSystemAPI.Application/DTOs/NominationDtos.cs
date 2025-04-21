@@ -49,7 +49,7 @@ public class NominationCreateDto : IValidatableObject
 public class NominationAnswerCreateDto
 {
     [Required]
-    public int QuestionId { get; set; }
+    public string Question { get; set; }
     
     [Required]
     [MaxLength(1000)]
@@ -77,7 +77,7 @@ public class NominationResponseDto
 
 public class NominationAnswerResponseDto
 {
-    public int QuestionId { get; set; }
+    public string Question { get; set; }
     public string Answer { get; set; } = string.Empty;
 }
 
@@ -119,7 +119,7 @@ public class NominationUpdateDto : IValidatableObject
 public class NominationAnswerUpdateDto
 {
     [Required]
-    public int QuestionId { get; set; }
+    public string Question { get; set; }
 
     [Required]
     public string Answer { get; set; } = string.Empty;

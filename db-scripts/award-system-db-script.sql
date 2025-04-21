@@ -98,9 +98,8 @@ CREATE TABLE "nominationQuestion" (
 CREATE TABLE "nominationAnswer" (
     "Id" SERIAL PRIMARY KEY,
     "NominationId" INT NOT NULL REFERENCES "nomination"("Id"),
-    "QuestionId" INT NOT NULL REFERENCES "nominationQuestion"("Id"),
-    "Answer" TEXT,
-    CONSTRAINT "uq_nominationAnswer" UNIQUE ("NominationId", "QuestionId")
+    "Question" TEXT NOT NULL,
+    "Answer" TEXT
 );
 
 -- Create Award Event Table

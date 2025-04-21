@@ -1,28 +1,35 @@
-import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export default function LoginPage() {
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+
+    const handleMockLogin = () => {
+        setLoading(true);
+
+        // Simulate login delay
+        setTimeout(() => {
+            // Mock login storing fake token in session/localStorage
+            localStorage.setItem("mock_token", "fake-jwt-token");
+            navigate("/");
+        }, 1000);
+    };
+
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-md space-y-6">
-                <h1 className="text-3xl font-bold text-center">Login</h1>
-                <form className="space-y-4">
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            Email
-                        </label>
-                        <Input id="email" type="email" placeholder="you@example.com" />
-                    </div>
-                    <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            Password
-                        </label>
-                        <Input id="password" type="password" placeholder="••••••••" />
-                    </div>
-                    <Button className="w-full" type="submit">
-                        Sign In
-                    </Button>
-                </form>
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
+                <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+                    Log in to Award System
+                </h1>
+                <Button
+                    onClick={handleMockLogin}
+                    className="w-full"
+                    disabled={loading}
+                >
+                    {loading ? "Logging in..." : "Login with Mock User"}
+                </Button>
             </div>
         </div>
     );

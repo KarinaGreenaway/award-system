@@ -14,6 +14,7 @@ public interface INominationService
     Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetNominationsByCreatorIdAsync(int creatorId);
     Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetNominationsForNomineeIdAsync(int nomineeId);
     Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetTeamNominationsForMemberAsync(int userId);
+    Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetNominationsByCategoryIdAsync(int categoryId);
 }
 
 public class NominationService : INominationService
@@ -109,6 +110,17 @@ public class NominationService : INominationService
         return responseDtos.ToArray();
     }
 
+    public async Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetNominationsByCategoryIdAsync(int categoryId)
+    {
+        var nominations = await _repository.GetNominationsByCategoryIdAsync(categoryId);
+        if (!nominations.Any())
+        {
+            _logger.LogWarning("No nominations found for category ID {CategoryId}.", categoryId);
+            return $"No nominations found for category ID {categoryId}.";
+        }
+        var responseDtos = _mapper.Map<IEnumerable<NominationResponseDto>>(nominations);
+        return responseDtos.ToArray();
+    }
     private async Task TriggerNomineeSummaryUpdate(Nomination nomination)
     {
         if (nomination.NomineeId == null)

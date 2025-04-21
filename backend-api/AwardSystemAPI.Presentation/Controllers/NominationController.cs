@@ -1,6 +1,7 @@
 using AwardSystemAPI.Application.DTOs;
 using AwardSystemAPI.Application.Services;
 using AwardSystemAPI.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AwardSystemAPI.Controllers;
@@ -131,4 +132,50 @@ public class NominationController : ControllerBase
             }
         );
     }
+    [Authorize(Policy = "SponsorOrAdminPolicy")]
+    [HttpGet("category/{categoryId:int}")]
+    public async Task<ActionResult<IEnumerable<NominationResponseDto>>> GetByCategory(int categoryId)
+    {
+        if (categoryId <= 0)
+        {
+            _logger.LogWarning("Invalid Category ID {CategoryId} provided.", categoryId);
+            return BadRequest(new { Error = "Invalid Category ID provided." });
+        }
+
+        var response = await _nominationService.GetNominationsByCategoryIdAsync(categoryId);
+        return response.Match<ActionResult>(
+            onSuccess: result => Ok(result),
+            onError: error =>
+            {
+                _logger.LogError("Failed to retrieve nominations for Category ID {CategoryId}. Error: {Error}", categoryId, error);
+                return error.ToLower().Contains("not found")
+                    ? NotFound(new { Error = error })
+                    : BadRequest(new { Error = error });
+            }
+        );
+    }
+    
+    [Authorize(Policy = "SponsorOrAdminPolicy")]
+    [HttpGet("nominee/{nomineeId:int}")]
+    public async Task<ActionResult<IEnumerable<NominationResponseDto>>> GetByNomineeId(int nomineeId)
+    {
+        if (nomineeId <= 0)
+        {
+            _logger.LogWarning("Invalid Nominee ID {NomineeId} provided.", nomineeId);
+            return BadRequest(new { Error = "Invalid Nominee ID provided." });
+        }
+
+        var response = await _nominationService.GetNominationsForNomineeIdAsync(nomineeId);
+        return response.Match<ActionResult>(
+            onSuccess: result => Ok(result),
+            onError: error =>
+            {
+                _logger.LogError("Failed to retrieve nominations for Nominee ID {NomineeId}. Error: {Error}", nomineeId, error);
+                return error.ToLower().Contains("not found")
+                    ? NotFound(new { Error = error })
+                    : BadRequest(new { Error = error });
+            }
+        );
+    }
+    
 }
