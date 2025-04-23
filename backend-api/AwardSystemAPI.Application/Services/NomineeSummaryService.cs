@@ -10,11 +10,12 @@ namespace AwardSystemAPI.Application.Services;
 public interface INomineeSummaryService
 {
     Task<ApiResponse<NomineeSummaryResponseDto, string>> GetNomineeSummaryAsync(int nomineeId, int categoryId);
+    Task<ApiResponse<NomineeSummaryResponseDto, string>> GetTeamNominationSummaryAsync(int teamNominationId, int categoryId);
     Task<ApiResponse<IEnumerable<NomineeSummaryResponseDto>, string>> GetAllNomineeSummariesAsync();
     Task<ApiResponse<IEnumerable<NomineeSummaryResponseDto>, string>> GetAllNomineeSummariesByCategoryIdAsync(int categoryId);
     Task<ApiResponse<NomineeSummaryResponseDto, string>> CreateNomineeSummaryAsync(NomineeSummaryCreateDto dto);
     Task<ApiResponse<bool, string>> UpdateNomineeSummaryAsync(int nomineeSummaryId, NomineeSummaryUpdateDto updateDto);
-    Task<ApiResponse<bool, string>> UpdateNomineeSummaryTotalNominationCountyAsync(int nomineeId, int categoryId);
+    Task<ApiResponse<bool, string>> UpdateNomineeSummaryTotalNominationCountAsync(int nomineeId, int categoryId);
     Task<ApiResponse<bool, string>> DeleteNomineeSummaryAsync(int nomineeId, int categoryId);
 
 }
@@ -61,7 +62,7 @@ public class NomineeSummaryService : INomineeSummaryService
         }
         
         updateDto.TotalNominations =
-            await _repository.CountIndividualNominationsForNomineeAsync(nomineeSummary.NomineeId,
+            await _repository.CountIndividualNominationsForNomineeAsync(nomineeSummary.NomineeId.Value,
                 nomineeSummary.CategoryId);
 
         _mapper.Map(updateDto, nomineeSummary);
@@ -73,7 +74,7 @@ public class NomineeSummaryService : INomineeSummaryService
         return true;
     }
 
-    public async Task<ApiResponse<bool, string>> UpdateNomineeSummaryTotalNominationCountyAsync(int nomineeId, int categoryId)
+    public async Task<ApiResponse<bool, string>> UpdateNomineeSummaryTotalNominationCountAsync(int nomineeId, int categoryId)
     {
         var nomineeSummary = await _repository.GetByNomineeIdAndCategoryIdAsync(nomineeId, categoryId);
         if (nomineeSummary == null)
@@ -102,6 +103,21 @@ public class NomineeSummaryService : INomineeSummaryService
             _logger.LogWarning("NomineeSummary for NomineeId {NomineeId} and CategoryId {CategoryId} not found.",
                 nomineeId, categoryId);
             return $"NomineeSummary for NomineeId {nomineeId} and CategoryId {categoryId} not found.";
+        }
+        
+        var responseDto = _mapper.Map<NomineeSummaryResponseDto>(summary);
+
+        return responseDto;
+    }
+    
+    public async Task<ApiResponse<NomineeSummaryResponseDto, string>> GetTeamNominationSummaryAsync(int teamNominationId, int categoryId)
+    {
+        var summary = await _repository.GetByTeamNominationIdAndCategoryIdAsync(teamNominationId, categoryId);
+        if (summary == null)
+        {
+            _logger.LogWarning("NomineeSummary for Team Nomination Id {TeamId} and CategoryId {CategoryId} not found.",
+                teamNominationId, categoryId);
+            return $"NomineeSummary for TeamId {teamNominationId} and CategoryId {categoryId} not found.";
         }
         
         var responseDto = _mapper.Map<NomineeSummaryResponseDto>(summary);

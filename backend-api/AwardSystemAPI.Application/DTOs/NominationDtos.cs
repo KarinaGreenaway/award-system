@@ -64,7 +64,6 @@ public class NominationResponseDto
     public int? NomineeId { get; set; }
     public string? TeamName { get; set; }
     public string? AiSummary { get; set; }
-    public int VoteCount { get; set; }
     public string? Location { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }

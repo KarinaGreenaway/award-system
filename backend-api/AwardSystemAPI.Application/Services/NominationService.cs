@@ -61,10 +61,7 @@ public class NominationService : INominationService
         await _repository.AddAsync(nomination);
         _logger.LogInformation("Created Nomination with ID {Id}.", nomination.Id);
 
-        if (nomination.NomineeId != null)
-        {
-            await TriggerNomineeSummaryUpdate(nomination);
-        }
+        await TriggerNomineeSummaryUpdate(nomination);
 
         var responseDto = _mapper.Map<NominationResponseDto>(nomination);
         return responseDto;
@@ -123,31 +120,53 @@ public class NominationService : INominationService
     }
     private async Task TriggerNomineeSummaryUpdate(Nomination nomination)
     {
-        if (nomination.NomineeId == null)
+        ApiResponse<NomineeSummaryResponseDto, string> nomineeSummaryAsync;
+        
+        if (nomination.NomineeId != null)
         {
-            _logger.LogWarning("Nominee ID is null for Nomination ID {NominationId}.", nomination.Id);
-            return;
+            nomineeSummaryAsync = await _nomineeSummaryService.GetNomineeSummaryAsync(nomination.NomineeId.Value, nomination.CategoryId);
+            
+            await nomineeSummaryAsync.Match(
+                onSuccess: async nomineeSummary =>
+                {
+                    await _nomineeSummaryService.UpdateNomineeSummaryTotalNominationCountAsync(nomination.NomineeId.Value, nomineeSummary.CategoryId);
+                    _logger.LogInformation("Updated NomineeSummary for Nominee ID {NomineeId}.", nomination.NomineeId.Value);
+                },
+                onError: async _ =>
+                {
+                    var nomineeSummary = new NomineeSummaryCreateDto
+                    {
+                        NomineeId = nomination.NomineeId.Value,
+                        CategoryId = nomination.CategoryId,
+                        TotalNominations = 1
+                    };
+                    await _nomineeSummaryService.CreateNomineeSummaryAsync(nomineeSummary);
+                    _logger.LogInformation("Created NomineeSummary for Nominee ID {NomineeId}.", nomination.NomineeId.Value);
+                }
+            );
+ 
+        }
+        else
+        {
+            nomineeSummaryAsync = await _nomineeSummaryService.GetTeamNominationSummaryAsync(nomination.Id, nomination.CategoryId);
+            
+            await nomineeSummaryAsync.Match(
+                onSuccess: _ => Task.CompletedTask,
+                onError: async _ =>
+                {
+                    var nomineeSummary = new NomineeSummaryCreateDto
+                    {
+                        NomineeId = null,
+                        TeamNominationId = nomination.Id,
+                        CategoryId = nomination.CategoryId,
+                        TotalNominations = 1
+                    };
+                    await _nomineeSummaryService.CreateNomineeSummaryAsync(nomineeSummary);
+                    _logger.LogInformation("Created NomineeSummary for Team Nomination ID {TeamNominationId}.", nomination.Id);
+                }
+            );
         }
         
-        var nomineeSummaryAsync = await _nomineeSummaryService.GetNomineeSummaryAsync(nomination.NomineeId.Value, nomination.CategoryId);
             
-        await nomineeSummaryAsync.Match(
-            onSuccess: async nomineeSummary =>
-            {
-                await _nomineeSummaryService.UpdateNomineeSummaryTotalNominationCountyAsync(nomineeSummary.NomineeId, nomineeSummary.CategoryId);
-                _logger.LogInformation("Updated NomineeSummary for Nominee ID {NomineeId}.", nomination.NomineeId.Value);
-            },
-            onError: async _ =>
-            {
-                var nomineeSummary = new NomineeSummaryCreateDto
-                {
-                    NomineeId = nomination.NomineeId.Value,
-                    CategoryId = nomination.CategoryId,
-                    TotalNominations = 1
-                };
-                await _nomineeSummaryService.CreateNomineeSummaryAsync(nomineeSummary);
-                _logger.LogInformation("Created NomineeSummary for Nominee ID {NomineeId}.", nomination.NomineeId.Value);
-            }
-        );
     }
 }

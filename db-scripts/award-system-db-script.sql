@@ -53,7 +53,8 @@ CREATE TABLE "awardCategory" (
 -- Create Nominee Summary Table
 CREATE TABLE "nomineeSummary" (
     "Id" SERIAL PRIMARY KEY,
-    "NomineeId" INT NOT NULL REFERENCES "users"("Id"),
+    "NomineeId" INT REFERENCES "users"("Id"),
+    "TeamNominationId" INT REFERENCES "nomination"("Id"),
     "CategoryId" INT NOT NULL REFERENCES "awardCategory"("Id"),
     "TotalNominations" INT DEFAULT 0,
     "IsPinned" BOOLEAN DEFAULT false,
@@ -71,7 +72,6 @@ CREATE TABLE "nomination" (
     "NomineeId" INT REFERENCES "users"("Id"),
     "TeamName" VARCHAR(255),
     "AiSummary" TEXT,
-    "VoteCount" INT DEFAULT 0,
     "Location" VARCHAR(50),
     "CreatedAt" TIMESTAMP DEFAULT now(),
     "UpdatedAt" TIMESTAMP DEFAULT now()

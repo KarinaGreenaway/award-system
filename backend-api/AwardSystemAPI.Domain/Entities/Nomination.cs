@@ -24,8 +24,6 @@ public class Nomination
     // AI summary can be lengthy, so no max length is specified.
     public string? AiSummary { get; set; }
 
-    public int VoteCount { get; set; } = 0;
-
     [MaxLength(50)]
     public string? Location { get; set; }
 

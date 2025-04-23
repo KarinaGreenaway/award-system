@@ -10,7 +10,8 @@ public class NomineeSummaryProfile: Profile
     {
         CreateMap<NomineeSummary, NomineeSummaryResponseDto>().ReverseMap();
         
-        CreateMap<NomineeSummary, NomineeSummaryCreateDto>().ReverseMap();
+        CreateMap<NomineeSummary, NomineeSummaryCreateDto>().ReverseMap()
+            .ForMember(dest => dest.Id, opt => opt.Ignore());;
         
         CreateMap<NomineeSummary, NomineeSummaryUpdateDto>().ReverseMap();
     }

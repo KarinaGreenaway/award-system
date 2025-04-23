@@ -4,8 +4,10 @@ namespace AwardSystemAPI.Application.DTOs;
 
 public class NomineeSummaryCreateDto
 {
-    [Required]
-    public int NomineeId { get; set; }
+    public int? NomineeId { get; set; }
+    
+    
+    public int? TeamNominationId { get; set; }
     
     [Required]
     public int CategoryId { get; set; }
@@ -31,8 +33,9 @@ public class NomineeSummaryCreateDto
 
 public class NomineeSummaryUpdateDto
 {
-    [Required]
-    public int NomineeId { get; set; }
+    public int? NomineeId { get; set; }
+    
+    public int? TeamNominationId { get; set; }
     
     [Required]
     public int CategoryId { get; set; }
@@ -54,7 +57,9 @@ public class NomineeSummaryResponseDto
 {
     public int Id { get; set; }
     
-    public int NomineeId { get; set; }
+    public int? NomineeId { get; set; }
+    
+    public int? TeamNominationId { get; set; }
     
     public int CategoryId { get; set; }
     

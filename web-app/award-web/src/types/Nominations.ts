@@ -17,7 +17,6 @@ export interface Nomination {
     nomineeId?: number;
     teamName?: string;
     aiSummary?: string;
-    voteCount: number;
     location?: string;
     createdAt: string;
     updatedAt: string;

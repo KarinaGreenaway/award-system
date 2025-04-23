@@ -7,6 +7,7 @@ namespace AwardSystemAPI.Infrastructure.Repositories;
 public interface INomineeSummaryRepository : IGenericRepository<NomineeSummary>
 {
     Task<NomineeSummary?> GetByNomineeIdAndCategoryIdAsync(int nomineeId, int categoryId);
+    Task<NomineeSummary?> GetByTeamNominationIdAndCategoryIdAsync(int nomineeId, int categoryId);
     Task<IEnumerable<NomineeSummary?>> GetByCategoryIdAsync(int categoryId);
     Task<int> CountIndividualNominationsForNomineeAsync(int nomineeId, int categoryId);
 }
@@ -34,6 +35,21 @@ public class NomineeSummaryRepository : GenericRepository<NomineeSummary>, INomi
             throw new Exception($"An error occurred while retrieving NomineeSummary for Nominee ID {nomineeId} and Category ID {categoryId}.", ex);
         }
     }
+    public async Task<NomineeSummary?> GetByTeamNominationIdAndCategoryIdAsync(int teamNominationId, int categoryId)
+    {
+        try
+        {
+            return await Context.Set<NomineeSummary>()
+            .FirstOrDefaultAsync(ns => ns.TeamNominationId == teamNominationId && ns.CategoryId == categoryId)
+            .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving NomineeSummary for Team Nomination ID {teamNominationId} and Category ID {CategoryId}.", teamNominationId, categoryId);
+            throw new Exception($"An error occurred while retrieving NomineeSummary for Team Nomination ID {teamNominationId} and Category ID {categoryId}.", ex);
+        }
+    }
+
     public async Task<IEnumerable<NomineeSummary?>> GetByCategoryIdAsync(int categoryId)
     {
         try

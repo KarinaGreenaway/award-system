@@ -9,8 +9,9 @@ public class NomineeSummary
     [Key]
     public int Id { get; set; }
 
-    [Required]
-    public int NomineeId { get; set; }
+    public int? NomineeId { get; set; }
+    
+    public int? TeamNominationId { get; set; }
 
     [Required]
     public int CategoryId { get; set; }
