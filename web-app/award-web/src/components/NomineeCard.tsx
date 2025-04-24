@@ -1,13 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, BarChart2, User } from "lucide-react";
+import {Star, BarChart2, User, Crown} from "lucide-react";
 import { cn } from "@/lib/utils.ts";
+import {NomineeSummary} from "@/types/Nominations.ts";
 
 interface NomineeCardProps {
-    nominee: {
-        nomineeId: number;
-        isShortlisted: boolean;
-        totalNominations: number;
-    };
+    nominee: NomineeSummary;
     isSelected: boolean;
     onClick: () => void;
 }
@@ -30,7 +27,7 @@ export default function NomineeCard({ nominee, isSelected, onClick }: NomineeCar
                     </div>
                     <div>
                         <div className="text-sm font-semibold">
-                            Nominee #{nominee.nomineeId}
+                            {nominee.nomineeName}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
                             Department or Role
@@ -40,12 +37,14 @@ export default function NomineeCard({ nominee, isSelected, onClick }: NomineeCar
 
                 {/* Right - stats */}
                 <div className="flex items-center gap-2">
-                    {nominee.isShortlisted && <Star className="h-5 w-5 text-[color:var(--color-brand)]" />}
+                    {nominee.isWinner && <Crown className="h-5 w-5 text-[color:var(--color-brand)]" />}
+                    {nominee.isShortlisted && <Star className="h-5 w-5 text-gray-400" />}
                     <span className="text-sm font-medium text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
-            {nominee.totalNominations}
-          </span>
+                        {nominee.totalNominations}
+                    </span>
                     <BarChart2 className="h-4 w-4 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]" />
                 </div>
+
             </CardContent>
         </Card>
     );

@@ -3,7 +3,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AwardSystemAPI.Domain.Entities;
 
-[Table("user")]
+// create table users
+// (
+//     "Id"          serial
+// primary key,
+// "ExternalId"  varchar(255) not null
+// unique,
+// "WorkEmail"   varchar(255) not null
+// unique,
+// "Role"        varchar(50)  not null,
+// "CreatedAt"   timestamp default now(),
+// "UpdatedAt"   timestamp default now(),
+// "DisplayName" varchar(255),
+// "FirstName"   varchar(100),
+// "LastName"    varchar(100)
+//     );
+
+[Table("users")]
 public class User
 {
     [Key]

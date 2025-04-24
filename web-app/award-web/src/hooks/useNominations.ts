@@ -19,13 +19,9 @@ export function useNominations(categoryId: number) {
                 const category = await Api.getAwardCategoryById(categoryId);
                 setCategory(category);
 
-                if (category.type === "individual") {
-                    const summaries = await Api.getNomineeSummaries(categoryId);
-                    setData(summaries);
-                } else {
-                    const teamNominations = await Api.getTeamNominations(categoryId);
-                    setData(teamNominations);
-                }
+                const summaries = await Api.getNomineeSummaries(categoryId);
+                setData(summaries);
+
             } catch (err: any) {
                 setError(err.message || "Something went wrong while fetching nominations.");
             } finally {

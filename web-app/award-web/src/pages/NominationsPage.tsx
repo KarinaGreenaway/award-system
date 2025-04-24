@@ -3,6 +3,7 @@ import { useSelectedCategory } from "@/context/CategoryProvider";
 import { useNominations } from "@/hooks/useNominations";
 import NomineeCard from "@/components/NomineeCard";
 import TeamCard from "@/components/TeamCard";
+import {CategoryType} from "@/types/enums/CategoryType.ts";
 
 export default function NominationsPage() {
     const { selectedCategoryId } = useSelectedCategory();
@@ -20,7 +21,7 @@ export default function NominationsPage() {
                 </h2>
 
                 <div className="flex flex-col gap-4">
-                {category?.type === "individual"
+                {category?.type === CategoryType.Individual
                         ? data.map((n: any) => (
                             <NomineeCard
                                 key={n.nomineeId}

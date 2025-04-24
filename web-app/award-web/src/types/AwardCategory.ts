@@ -1,7 +1,9 @@
+import {CategoryType} from "@/types/enums/CategoryType.ts";
+
 export interface AwardCategoryResponseDto {
   id: number;
   name: string;
-  type: "individual" | "team";
+  type: CategoryType;
   sponsorId: number;
   introductionVideo?: string;
   introductionParagraph?: string;
