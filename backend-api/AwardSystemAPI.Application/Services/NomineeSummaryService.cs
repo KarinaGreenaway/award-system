@@ -2,7 +2,9 @@ using AutoMapper;
 using AwardSystemAPI.Application.DTOs;
 using AwardSystemAPI.Common;
 using AwardSystemAPI.Domain.Entities;
+using AwardSystemAPI.Domain.Enums;
 using AwardSystemAPI.Infrastructure.Repositories;
+using LanguageExt;
 using Microsoft.Extensions.Logging;
 
 namespace AwardSystemAPI.Application.Services;
@@ -12,7 +14,9 @@ public interface INomineeSummaryService
     Task<ApiResponse<NomineeSummaryResponseDto, string>> GetNomineeSummaryAsync(int nomineeId, int categoryId);
     Task<ApiResponse<NomineeSummaryResponseDto, string>> GetTeamNominationSummaryAsync(int teamNominationId, int categoryId);
     Task<ApiResponse<IEnumerable<NomineeSummaryResponseDto>, string>> GetAllNomineeSummariesAsync();
-    Task<ApiResponse<IEnumerable<NomineeSummaryResponseDto>, string>> GetAllNomineeSummariesByCategoryIdAsync(int categoryId);
+    Task<ApiResponse<IEnumerable<NomineeSummaryWithUserDto>, string>> GetAllNomineeSummariesByCategoryIdAsync(
+        int categoryId);
+    Task<IEnumerable<NomineeSummaryWithUserDto>> GetWithUserByCategoryAsync(int categoryId);
     Task<ApiResponse<NomineeSummaryResponseDto, string>> CreateNomineeSummaryAsync(NomineeSummaryCreateDto dto);
     Task<ApiResponse<bool, string>> UpdateNomineeSummaryAsync(int nomineeSummaryId, NomineeSummaryUpdateDto updateDto);
     Task<ApiResponse<bool, string>> UpdateNomineeSummaryTotalNominationCountAsync(int nomineeId, int categoryId);
@@ -22,15 +26,18 @@ public interface INomineeSummaryService
 
 public class NomineeSummaryService : INomineeSummaryService
 {
+    private readonly IAwardCategoryService _awardCategoryService;
     private readonly INomineeSummaryRepository _repository;
     private readonly ILogger<NomineeSummaryService> _logger;
     private readonly IMapper _mapper;
 
     public NomineeSummaryService(
+        IAwardCategoryService awardCategoryService,
         INomineeSummaryRepository repository,
         ILogger<NomineeSummaryService> logger,
         IMapper mapper)
     {
+        _awardCategoryService = awardCategoryService;
         _repository = repository;
         _mapper = mapper;
         _logger = logger;
@@ -132,7 +139,7 @@ public class NomineeSummaryService : INomineeSummaryService
         return responseDtos.ToArray();
     }
 
-    public async Task<ApiResponse<IEnumerable<NomineeSummaryResponseDto>, string>> GetAllNomineeSummariesByCategoryIdAsync(int categoryId)
+    public async Task<ApiResponse<IEnumerable<NomineeSummaryWithUserDto>, string>> GetAllNomineeSummariesByCategoryIdAsync(int categoryId)
     {
         
         var nominations = await _repository.GetByCategoryIdAsync(categoryId);
@@ -141,7 +148,7 @@ public class NomineeSummaryService : INomineeSummaryService
             _logger.LogWarning("NomineeSummary for CategoryId {CategoryId} not found.", categoryId);
             return $"NomineeSummary for CategoryId {categoryId} not found.";
         }
-        var responseDtos = _mapper.Map<IEnumerable<NomineeSummaryResponseDto>>(nominations);
+        var responseDtos = _mapper.Map<IEnumerable<NomineeSummaryWithUserDto>>(nominations);
         return responseDtos.ToArray();
     }
 
@@ -160,4 +167,13 @@ public class NomineeSummaryService : INomineeSummaryService
         
         return true;
     }
+    
+    // In NomineeSummaryService.cs
+    public async Task<IEnumerable<NomineeSummaryWithUserDto>> GetWithUserByCategoryAsync(int categoryId)
+    {
+        var entities = await _repository.GetByCategoryIdAsync(categoryId);
+
+        return _mapper.Map<List<NomineeSummaryWithUserDto>>(entities);
+    }
+
 }

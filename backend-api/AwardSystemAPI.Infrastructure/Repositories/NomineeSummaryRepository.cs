@@ -55,6 +55,7 @@ public class NomineeSummaryRepository : GenericRepository<NomineeSummary>, INomi
         try
         {
             return await Context.Set<NomineeSummary>()
+            .Include(ns => ns.Nominee)
             .Where(ns => ns.CategoryId == categoryId)
             .ToListAsync()
             .ConfigureAwait(false);

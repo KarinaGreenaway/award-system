@@ -71,6 +71,18 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOnlyPolicy", policy =>
         policy.RequireRole("Admin"));
 });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5174", "http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 builder.Services.AddHttpContextAccessor();
 
 
@@ -103,6 +115,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

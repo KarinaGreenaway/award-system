@@ -1,6 +1,7 @@
 namespace AwardSystemAPI.Domain.Enums;
 
-public class CategoryType
+public enum CategoryType
 {
-    
+    Individual,
+    Team
 }

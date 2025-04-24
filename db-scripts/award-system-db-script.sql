@@ -23,6 +23,9 @@ DROP TABLE IF EXISTS "users";
 CREATE TABLE "users" (
     "Id" SERIAL PRIMARY KEY,
     "ExternalId" VARCHAR(255) NOT NULL UNIQUE,
+    "DisplayName" VARCHAR(255),
+    "FirstName"   VARCHAR(100),
+    "LastName"    VARCHAR(100),
     "WorkEmail" VARCHAR(255) NOT NULL UNIQUE,
     "Role" VARCHAR(50) NOT NULL,  -- e.g., 'employee', 'sponsor', 'admin'
     "CreatedAt" TIMESTAMP DEFAULT now(),

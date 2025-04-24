@@ -14,6 +14,10 @@ public class NomineeSummaryProfile: Profile
             .ForMember(dest => dest.Id, opt => opt.Ignore());;
         
         CreateMap<NomineeSummary, NomineeSummaryUpdateDto>().ReverseMap();
+        
+        CreateMap<NomineeSummary, NomineeSummaryWithUserDto>()
+            .ForMember(dest => dest.NomineeName, opt => opt.MapFrom(src => src.Nominee.DisplayName));
+
     }
     
 }

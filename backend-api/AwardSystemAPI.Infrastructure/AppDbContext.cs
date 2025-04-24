@@ -10,7 +10,7 @@ public class AppDbContext : DbContext
 
     }
     
-    public DbSet<User> Users { get; set; }
+    public DbSet<Users> Users { get; set; }
     public DbSet<MobileUserSettings> MobileUserSettings { get; set; }
     public DbSet<AwardCategory> AwardCategories { get; set; }
     public DbSet<NomineeSummary> NomineeSummaries { get; set; }

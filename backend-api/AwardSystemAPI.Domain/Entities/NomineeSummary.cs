@@ -11,6 +11,9 @@ public class NomineeSummary
 
     public int? NomineeId { get; set; }
     
+    [ForeignKey("NomineeId")]
+    public Users? Nominee { get; set; }
+    
     public int? TeamNominationId { get; set; }
 
     [Required]

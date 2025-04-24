@@ -1,10 +1,12 @@
+using AwardSystemAPI.Domain.Enums;
+
 namespace AwardSystemAPI.Application.DTOs.AwardCategoryDtos;
 
 public class AwardCategoryResponseDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public string Type { get; set; } = string.Empty; // "individual" or "team"
+    public CategoryType Type { get; set; } // "Individual" or "Team"
     public int SponsorId { get; set; }
     public string? IntroductionVideo { get; set; }
     public string? IntroductionParagraph { get; set; }
