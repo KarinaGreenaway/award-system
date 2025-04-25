@@ -13,6 +13,9 @@ public class NomineeSummaryCreateDto
     public int CategoryId { get; set; }
     
     [Required]
+    public string Location { get; set; } = string.Empty;
+    
+    [Required]
     public int? TotalNominations { get; set; }
     
     [Required]
@@ -41,6 +44,9 @@ public class NomineeSummaryUpdateDto
     public int CategoryId { get; set; }
     
     [Required]
+    public string Location { get; set; } = string.Empty;
+    
+    [Required]
     public int? TotalNominations { get; set; }
     
     [Required]
@@ -63,6 +69,8 @@ public class NomineeSummaryResponseDto
     
     public int CategoryId { get; set; }
     
+    public string Location { get; set; } = string.Empty;
+    
     public int? TotalNominations { get; set; }
     
     public bool IsPinned { get; set; }
@@ -81,7 +89,11 @@ public class NomineeSummaryWithUserDto
     public int Id { get; set; }
     public int? NomineeId { get; set; }
     public string? NomineeName { get; set; }
+    
     public int? TeamNominationId { get; set; }
+    public string? TeamName { get; set; }
+    public string Location { get; set; } = string.Empty;
+    
     public int CategoryId { get; set; }
     public int? TotalNominations { get; set; }
     public bool IsPinned { get; set; }

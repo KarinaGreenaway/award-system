@@ -25,7 +25,7 @@ public class Nomination
     public string? AiSummary { get; set; }
 
     [MaxLength(50)]
-    public string? Location { get; set; }
+    public string Location { get; set; }
 
     [Required]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

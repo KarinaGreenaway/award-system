@@ -59,6 +59,7 @@ CREATE TABLE "nomineeSummary" (
     "NomineeId" INT REFERENCES "users"("Id"),
     "TeamNominationId" INT REFERENCES "nomination"("Id"),
     "CategoryId" INT NOT NULL REFERENCES "awardCategory"("Id"),
+    "Location" VARCHAR(50),
     "TotalNominations" INT DEFAULT 0,
     "IsPinned" BOOLEAN DEFAULT false,
     "IsShortlisted" BOOLEAN DEFAULT false,

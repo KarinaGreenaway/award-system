@@ -138,6 +138,7 @@ public class NominationService : INominationService
                     {
                         NomineeId = nomination.NomineeId.Value,
                         CategoryId = nomination.CategoryId,
+                        Location = nomination.Location,
                         TotalNominations = 1
                     };
                     await _nomineeSummaryService.CreateNomineeSummaryAsync(nomineeSummary);
@@ -159,6 +160,7 @@ public class NominationService : INominationService
                         NomineeId = null,
                         TeamNominationId = nomination.Id,
                         CategoryId = nomination.CategoryId,
+                        Location = nomination.Location,
                         TotalNominations = 1
                     };
                     await _nomineeSummaryService.CreateNomineeSummaryAsync(nomineeSummary);
