@@ -67,7 +67,9 @@ public class NominationRepository : GenericRepository<Nomination>, INominationRe
         {
             return await Context.Set<Nomination>()
                 .Include(n => n.Answers)
+                .Include(n => n.NomineeUser)
                 .Include(n => n.TeamMembers)
+                .ThenInclude(tm => tm.User)
                 .Where(n => n.NomineeId == nomineeId || n.TeamMembers.Any(tm => tm.Id == nomineeId))
                 .ToListAsync()
                 .ConfigureAwait(false);
@@ -86,7 +88,9 @@ public class NominationRepository : GenericRepository<Nomination>, INominationRe
         {
             return await Context.Set<Nomination>()
                 .Include(n => n.Answers)
+                .Include(n => n.NomineeUser)
                 .Include(n => n.TeamMembers)
+                    .ThenInclude(tm => tm.User)
                 .FirstOrDefaultAsync(n => n.Id == id)
                 .ConfigureAwait(false);
         }

@@ -35,4 +35,7 @@ public class Nomination
     
     public ICollection<NominationAnswer> Answers { get; set; } = new List<NominationAnswer>();
     public ICollection<TeamMember> TeamMembers { get; set; } = new List<TeamMember>();
+    
+    [ForeignKey(nameof(NomineeId))]
+    public Users? NomineeUser { get; set; } = null!;
 }

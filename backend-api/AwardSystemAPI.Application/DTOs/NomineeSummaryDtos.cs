@@ -84,7 +84,7 @@ public class NomineeSummaryResponseDto
     public DateTime UpdatedAt { get; set; }
 }
 
-public class NomineeSummaryWithUserDto
+public class NomineeSummaryWithDetailedDto
 {
     public int Id { get; set; }
     public int? NomineeId { get; set; }

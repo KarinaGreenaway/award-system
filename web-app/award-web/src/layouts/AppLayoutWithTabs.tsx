@@ -39,7 +39,7 @@ export default function AppLayoutWithTabs() {
 
                     {/* Page Content */}
                     <main
-                        className="flex-1 flex flex-col min-h-screen p-8 pt-24 bg-[color:var(--color-content-light)] dark:bg-[color:var(--color-content-dark)] transition-all duration-300"
+                        className="relative flex-1 flex flex-col min-h-screen p-8 pt-24 bg-[color:var(--color-content-light)] dark:bg-[color:var(--color-content-dark)] transition-all duration-300"
                     >
                         <Outlet />
                     </main>

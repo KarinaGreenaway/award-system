@@ -11,6 +11,9 @@ public class TeamMemberProfile: Profile
         CreateMap<TeamMemberCreateDto, TeamMember>().
             ForMember(dest => dest.NominationId, opt => opt.Ignore());
         CreateMap<TeamMemberUpdateDto, TeamMember>();
-        CreateMap<TeamMember, TeamMemberResponseDto>().ReverseMap();
+        CreateMap<TeamMemberResponseDto, TeamMember>();
+        CreateMap<TeamMember, TeamMemberResponseDto>()
+            .ForMember(dest => dest.TeamMemberName,
+                opt => opt.MapFrom(src => src.User.DisplayName));
     }
 }

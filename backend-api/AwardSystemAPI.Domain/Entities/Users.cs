@@ -32,5 +32,6 @@ public class Users
     
     // Navigation
     public ICollection<NomineeSummary> NomineeSummaries { get; set; } = new List<NomineeSummary>();
+    public ICollection<Nomination> Nominations { get; set; } = new List<Nomination>();
     
 }

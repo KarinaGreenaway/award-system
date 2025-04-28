@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import {Star, BarChart2, User, Crown} from "lucide-react";
+import {Star, BarChart2, User, Crown, Pin} from "lucide-react";
 import { cn } from "@/lib/utils.ts";
 import {NomineeSummary} from "@/types/Nominations.ts";
 
@@ -7,12 +7,17 @@ interface NomineeCardProps {
     nominee: NomineeSummary;
     isSelected: boolean;
     onClick: () => void;
+    onRightClick?: (e: React.MouseEvent) => void;
 }
 
-export default function NomineeCard({ nominee, isSelected, onClick }: NomineeCardProps) {
+export default function NomineeCard({ nominee, isSelected, onClick, onRightClick }: NomineeCardProps) {
     return (
         <Card
             onClick={onClick}
+            onContextMenu={(e) => {
+                e.preventDefault();
+                onRightClick?.(e);
+            }}
             className={cn(
                 "cursor-pointer transition-all duration-200 ease-out hover:scale-[1.01] active:scale-[0.98] border border-transparent",
                 "hover:border-[color:var(--color-content-light)] dark:hover:border-[color:var(--color-content-dark)]",
@@ -30,7 +35,7 @@ export default function NomineeCard({ nominee, isSelected, onClick }: NomineeCar
                             {nominee.nomineeName}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
-                            Department or Role
+                            {nominee.location || "Location unknown"}
                         </div>
                     </div>
                 </div>
@@ -39,6 +44,7 @@ export default function NomineeCard({ nominee, isSelected, onClick }: NomineeCar
                 <div className="flex items-center gap-2">
                     {nominee.isWinner && <Crown className="h-5 w-5 text-[color:var(--color-brand)]" />}
                     {nominee.isShortlisted && <Star className="h-5 w-5 text-gray-400" />}
+                    {nominee.isPinned && <Pin className="h-5 w-5 text-gray-400" />}
                     <span className="text-sm font-medium text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
                         {nominee.totalNominations}
                     </span>

@@ -15,7 +15,7 @@ public class NomineeSummaryProfile: Profile
         
         CreateMap<NomineeSummary, NomineeSummaryUpdateDto>().ReverseMap();
 
-        CreateMap<NomineeSummary, NomineeSummaryWithUserDto>()
+        CreateMap<NomineeSummary, NomineeSummaryWithDetailedDto>()
             .ForMember(dest => dest.NomineeName,
                 opt => opt.MapFrom(src => src.Nominee != null ? src.Nominee.DisplayName : null))
             .ForMember(dest => dest.TeamName,

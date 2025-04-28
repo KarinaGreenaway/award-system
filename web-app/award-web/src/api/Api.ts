@@ -1,6 +1,6 @@
 import axios from "axios";
 import { AwardCategoryResponseDto } from "@/types/AwardCategory";
-import { NomineeSummary, Nomination } from "@/types/Nominations";
+import {NomineeSummary, Nomination, NomineeSummaryUpdatePayload} from "@/types/Nominations";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 console.log(BASE_URL);
@@ -18,7 +18,7 @@ const Api = {
         return data;
     },
 
-    getTeamNominations: async (categoryId: number): Promise<Nomination[]> => {
+    getTeamNominationsForCategory: async (categoryId: number): Promise<Nomination[]> => {
         const url = `${BASE_URL}/api/Nomination/category/${categoryId}`;
         const { data } = await axios.get(url);
         return data;
@@ -31,12 +31,21 @@ const Api = {
     },
     getCategories: async (): Promise<AwardCategoryResponseDto[]> => {
         const url = `${BASE_URL}/api/AwardCategory`;
-        const { data } = await axios.get(url, {
-            headers: {
-                Authorization: `Bearer fake-token`,
-            }});
+        const { data } = await axios.get(url);
         return data;
     },
+
+    updateNomineeSummary: async (id: number, updates: NomineeSummaryUpdatePayload) => {
+        const url = `${BASE_URL}/api/NomineeSummary/${id}`;
+        return axios.put(url, updates);
+    },
+
+    getTeamNomination: async (id: number): Promise<Nomination> => {
+        const url = `${BASE_URL}/api/Nomination/${id}`;
+        const { data } = await axios.get(url);
+        return data;
+    },
+
 };
 
 export default Api;

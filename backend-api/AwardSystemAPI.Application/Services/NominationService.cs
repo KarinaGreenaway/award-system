@@ -4,6 +4,7 @@ using AwardSystemAPI.Domain.Entities;
 using AwardSystemAPI.Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
 using AwardSystemAPI.Application.DTOs;
+using Newtonsoft.Json;
 
 namespace AwardSystemAPI.Application.Services;
 
@@ -75,6 +76,7 @@ public class NominationService : INominationService
             _logger.LogWarning("Nomination with ID {Id} not found.", id);
             return $"Nomination with ID {id} not found.";
         }
+
         var responseDto = _mapper.Map<NominationResponseDto>(nomination);
         return responseDto;
     }

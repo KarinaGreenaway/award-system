@@ -14,9 +14,9 @@ public interface INomineeSummaryService
     Task<ApiResponse<NomineeSummaryResponseDto, string>> GetNomineeSummaryAsync(int nomineeId, int categoryId);
     Task<ApiResponse<NomineeSummaryResponseDto, string>> GetTeamNominationSummaryAsync(int teamNominationId, int categoryId);
     Task<ApiResponse<IEnumerable<NomineeSummaryResponseDto>, string>> GetAllNomineeSummariesAsync();
-    Task<ApiResponse<IEnumerable<NomineeSummaryWithUserDto>, string>> GetAllNomineeSummariesByCategoryIdAsync(
+    Task<ApiResponse<IEnumerable<NomineeSummaryWithDetailedDto>, string>> GetAllNomineeSummariesByCategoryIdAsync(
         int categoryId);
-    Task<IEnumerable<NomineeSummaryWithUserDto>> GetWithUserByCategoryAsync(int categoryId);
+    Task<IEnumerable<NomineeSummaryWithDetailedDto>> GetWithUserByCategoryAsync(int categoryId);
     Task<ApiResponse<NomineeSummaryResponseDto, string>> CreateNomineeSummaryAsync(NomineeSummaryCreateDto dto);
     Task<ApiResponse<bool, string>> UpdateNomineeSummaryAsync(int nomineeSummaryId, NomineeSummaryUpdateDto updateDto);
     Task<ApiResponse<bool, string>> UpdateNomineeSummaryTotalNominationCountAsync(int nomineeId, int categoryId);
@@ -67,11 +67,14 @@ public class NomineeSummaryService : INomineeSummaryService
             _logger.LogWarning("NomineeSummary with ID {Id} not found.", nomineeSummaryId);
             return $"NomineeSummary with ID {nomineeSummaryId} not found.";
         }
-        
-        updateDto.TotalNominations =
-            await _repository.CountIndividualNominationsForNomineeAsync(nomineeSummary.NomineeId.Value,
-                nomineeSummary.CategoryId);
 
+        if (nomineeSummary.NomineeId != null)
+        {
+           updateDto.TotalNominations =
+                       await _repository.CountIndividualNominationsForNomineeAsync(nomineeSummary.NomineeId.Value,
+                           nomineeSummary.CategoryId); 
+        }
+        
         _mapper.Map(updateDto, nomineeSummary);
         nomineeSummary.UpdatedAt = DateTime.UtcNow;
 
@@ -139,7 +142,7 @@ public class NomineeSummaryService : INomineeSummaryService
         return responseDtos.ToArray();
     }
 
-    public async Task<ApiResponse<IEnumerable<NomineeSummaryWithUserDto>, string>> GetAllNomineeSummariesByCategoryIdAsync(int categoryId)
+    public async Task<ApiResponse<IEnumerable<NomineeSummaryWithDetailedDto>, string>> GetAllNomineeSummariesByCategoryIdAsync(int categoryId)
     {
         
         var nominations = await _repository.GetByCategoryIdAsync(categoryId);
@@ -148,7 +151,7 @@ public class NomineeSummaryService : INomineeSummaryService
             _logger.LogWarning("NomineeSummary for CategoryId {CategoryId} not found.", categoryId);
             return $"NomineeSummary for CategoryId {categoryId} not found.";
         }
-        var responseDtos = _mapper.Map<IEnumerable<NomineeSummaryWithUserDto>>(nominations);
+        var responseDtos = _mapper.Map<IEnumerable<NomineeSummaryWithDetailedDto>>(nominations);
         return responseDtos.ToArray();
     }
 
@@ -169,11 +172,11 @@ public class NomineeSummaryService : INomineeSummaryService
     }
     
     // In NomineeSummaryService.cs
-    public async Task<IEnumerable<NomineeSummaryWithUserDto>> GetWithUserByCategoryAsync(int categoryId)
+    public async Task<IEnumerable<NomineeSummaryWithDetailedDto>> GetWithUserByCategoryAsync(int categoryId)
     {
         var entities = await _repository.GetByCategoryIdAsync(categoryId);
 
-        return _mapper.Map<List<NomineeSummaryWithUserDto>>(entities);
+        return _mapper.Map<List<NomineeSummaryWithDetailedDto>>(entities);
     }
 
 }

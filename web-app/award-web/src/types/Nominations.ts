@@ -3,8 +3,8 @@ export interface NomineeSummary {
     nomineeId?: number;
     nomineeName?: string; // will be used for individuals
     teamNominationId?: number;
-    teamName?: string; // for teams
-    location?: string; // optional
+    teamName?: string;
+    location: string;
     categoryId: number;
     totalNominations?: number;
     isPinned: boolean;
@@ -13,12 +13,23 @@ export interface NomineeSummary {
     createdAt: string;
     updatedAt: string;
 }
+export interface NomineeSummaryUpdatePayload {
+    nomineeId: number | null;
+    teamNominationId: number | null;
+    location: string;
+    categoryId: number;
+    totalNominations: number;
+    isPinned: boolean;
+    isShortlisted: boolean;
+    isWinner: boolean;
+}
 
 export interface Nomination {
     id: number;
     creatorId: number;
     categoryId: number;
     nomineeId?: number;
+    nomineeName?: string; // will be used for individuals
     teamName?: string;
     aiSummary?: string;
     location?: string;
@@ -37,4 +48,6 @@ export interface TeamMember {
     id: number;
     nominationId: number;
     userId: number;
+    teamMemberName: string;
+
 }

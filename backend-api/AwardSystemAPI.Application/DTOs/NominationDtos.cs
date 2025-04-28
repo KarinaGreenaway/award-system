@@ -62,15 +62,15 @@ public class NominationResponseDto
     public int CreatorId { get; set; }
     public int CategoryId { get; set; }
     public int? NomineeId { get; set; }
+    public string? NomineeName { get; set; }
     public string? TeamName { get; set; }
     public string? AiSummary { get; set; }
     public string? Location { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     
-    // Answers can be mapped separately
     public List<NominationAnswerResponseDto> Answers { get; set; } = new();
-    public List<TeamMemberResponseDto>? TeamMembers { get; set; }
+    public List<TeamMemberResponseDto> TeamMembers { get; set; } = new();
     
 }
 
