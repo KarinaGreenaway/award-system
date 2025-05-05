@@ -7,6 +7,7 @@ import NominationsPage from "@/pages/NominationsPage.tsx";
 import CategoryProfilePage from "@/pages/CategoryProfilePage.tsx";
 import AnnouncementsPage from "@/pages/Announcements.tsx";
 import AwardEventPage from "@/pages/AwardEventPage.tsx";
+import AwardsFeedbackPage from "@/pages/Feedback.tsx";
 
 export default function App() {
     return (
@@ -23,6 +24,7 @@ export default function App() {
                     <Route path="category-profile" element={<CategoryProfilePage />} />
                     <Route path="announcements" element={<AnnouncementsPage />} />
                     <Route path="events" element={<AwardEventPage />} />
+                    <Route path="feedback" element={<AwardsFeedbackPage />} />
                 </Route>
             </Route>
         </Routes>

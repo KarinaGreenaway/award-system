@@ -226,12 +226,10 @@ export default function NominationsPage() {
                                 variant="ghost"
                                 size="icon"
                                 className="absolute bottom-6 right-6 z-20 bg-[color:var(--color-brand)] text-white hover:scale-105 shadow-lg dark:shadow-[0_4px_20px_rgba(255,255,255,0.1)] p-4 rounded-full transition-transform duration-200"
-                                onClick={() => setShowAISummary(true)}
+                                onClick={() => setShowAISummary(prev => !prev)} // toggle instead of just open
                             >
                                 <Bot className="h-8 w-8" />
                             </Button>
-
-
                         )}
 
                         {/* Nomination Details */}
@@ -283,12 +281,6 @@ export default function NominationsPage() {
                               AI Summary
                             </span>
                                     </div>
-                                    <button
-                                        onClick={() => setShowAISummary(false)}
-                                        className="text-gray-400 hover:text-[color:var(--color-brand)] text-sm"
-                                    >
-                                        ×
-                                    </button>
                                 </div>
                                 <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">
                                     {currentNomination.aiSummary}
