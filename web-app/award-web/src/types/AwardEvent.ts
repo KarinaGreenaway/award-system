@@ -6,7 +6,7 @@ export interface AwardEvent {
     eventDateTime: string;
     description?: string;
     directions: string;
-    status: "draft" | "published";
+    feedbackSummary?: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -18,7 +18,7 @@ export interface CreateAwardEventPayload {
     eventDateTime: string;
     description?: string;
     directions: string;
-    status: "draft" | "published";
+    feedbackSummary?: string;
 }
 
 export interface UpdateAwardEventPayload {
@@ -27,5 +27,4 @@ export interface UpdateAwardEventPayload {
     eventDateTime?: string;
     description?: string;
     directions?: string;
-    status?: "draft" | "published";
 }

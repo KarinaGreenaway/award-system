@@ -1,13 +1,8 @@
 import React from 'react';
-
-interface Review {
-    id: number;
-    submittedAt: string;
-    questions: { question: string; answer: string }[];
-}
+import {FeedbackResponseDto} from "@/types/Feedback.ts";
 
 interface ReviewCardProps {
-    review: Review;
+    review: FeedbackResponseDto;
     isSelected: boolean;
     onClick: (id: number) => void;
 }
@@ -30,7 +25,7 @@ const timeAgo = (dateString: string): string => {
 };
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ review, isSelected, onClick }) => {
-    const previewQs = review.questions.slice(0, 2);
+    const previewQs = review.answers.slice(0, 2);
 
     return (
         <div
@@ -44,7 +39,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, isSelected, onClick }) 
             </p>
 
             <div className="mt-2 space-y-2">
-                {(isSelected ? review.questions : previewQs).map((qa, index) => (
+                {(isSelected ? review.answers : previewQs).map((qa, index) => (
                     <div key={index} className="mb-1">
                         <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 line-clamp-2">
                             {qa.question}
@@ -54,7 +49,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, isSelected, onClick }) 
                         </p>
                     </div>
                 ))}
-                {!isSelected && review.questions.length > 2 && (
+                {!isSelected && review.answers.length > 2 && (
                     <p className="text-xs italic text-gray-400 dark:text-gray-500">...more</p>
                 )}
             </div>

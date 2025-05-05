@@ -7,6 +7,7 @@ namespace AwardSystemAPI.Application.Services;
 public interface IAiSummaryService
 {
     Task<string> GenerateNominationSummaryAsync(Nomination nomination, IEnumerable<NominationAnswer> answers);
+    Task<string> GenerateAiFeedbackSummaryAsync();
 }
 
 public class AiSummaryService : IAiSummaryService
@@ -39,4 +40,16 @@ public class AiSummaryService : IAiSummaryService
 
         return Task.FromResult(sb.ToString());
     }
+    
+     public Task<string> GenerateAiFeedbackSummaryAsync()
+     {
+         // TODO: Placeholder logic — later call a real AI API here.
+
+         var sb = new StringBuilder();
+         sb.AppendLine("AI Feedback Summary:");
+
+         // Add AI feedback generation logic here
+
+         return Task.FromResult(sb.ToString());
+     }
 }

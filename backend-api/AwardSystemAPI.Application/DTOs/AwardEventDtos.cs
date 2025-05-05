@@ -20,6 +20,8 @@ namespace AwardSystemAPI.Application.DTOs
         
         public string? Description { get; set; }
         
+        public string? FeedbackSummary { get; set; }
+        
         [MaxLength(500)]
         public string? Directions { get; set; } = string.Empty;
         
@@ -74,6 +76,8 @@ namespace AwardSystemAPI.Application.DTOs
         public DateTime EventDateTime { get; set; }
         public string? Description { get; set; }
         public string? Directions { get; set; } = string.Empty;
+        
+        public string? FeedbackSummary { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

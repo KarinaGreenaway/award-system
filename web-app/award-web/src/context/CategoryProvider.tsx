@@ -18,14 +18,16 @@ export const CategoryProvider = ({ children }: { children: React.ReactNode }) =>
     const { categories, loading } = useCategories();
     const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
-    // 🔧 Default to first category once loaded
+    // Default to first category once loaded
     useEffect(() => {
         if (!loading && categories.length > 0 && !selectedCategoryId) {
             setSelectedCategoryId(categories[0].id);
         }
     }, [loading, categories, selectedCategoryId]);
 
-    const selectedCategory = categories.find(cat => cat.id === selectedCategoryId) ?? null;
+    const selectedCategory = Array.isArray(categories)
+        ? categories.find(cat => cat.id === selectedCategoryId) ?? null
+        : null;
 
     return (
         <CategoryContext.Provider value={{ selectedCategoryId, setSelectedCategoryId, selectedCategory }}>

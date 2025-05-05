@@ -8,11 +8,15 @@ export default function CategoryTabs() {
     const { categories, loading } = useCategories();
     const { selectedCategoryId, setSelectedCategoryId } = useSelectedCategory();
 
-    if (loading || categories.length === 0) return null;
+    if (loading || !Array.isArray(categories) ||categories.length === 0) return null;
 
     return (
         <Tabs
-            value={selectedCategoryId?.toString() ?? categories[0]?.id.toString()}
+            value={
+                selectedCategoryId !== null
+                    ? selectedCategoryId.toString()
+                    : categories[0]?.id?.toString() ?? ""
+            }
             onValueChange={(val) => setSelectedCategoryId(parseInt(val))}
             className="w-full"
         >

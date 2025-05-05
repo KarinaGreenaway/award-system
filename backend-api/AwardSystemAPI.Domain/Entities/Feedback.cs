@@ -16,5 +16,7 @@ namespace AwardSystemAPI.Domain.Entities
         public int EventId { get; set; }
 
         public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
+        
+        public ICollection<FeedbackResponse> Answers { get; set; } = new List<FeedbackResponse>();
     }
 }

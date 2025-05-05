@@ -28,6 +28,8 @@ namespace AwardSystemAPI.Domain.Entities
 
         [MaxLength(255)]
         public string? Directions { get; set; }
+        
+        public string? FeedbackSummary { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

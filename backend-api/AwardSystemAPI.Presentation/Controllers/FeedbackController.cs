@@ -18,8 +18,68 @@ public class FeedbackController : ControllerBase
         _feedbackService = feedbackService;
         _logger = logger;
     }
+    
+    [HttpGet("{awardEventId:int}")]
+    public async Task<ActionResult<IEnumerable<FeedbackResponseDto>>> GetFeedback(int awardEventId)
+    {
+        if (awardEventId <= 0)
+        {
+            _logger.LogWarning("Invalid AwardEvent ID {Id} provided.", awardEventId);
+            return BadRequest(new { Error = "Invalid AwardEvent ID provided." });
+        }
 
-    [Authorize(Policy = "AdminOnlyPolicy")]
+        var response = await _feedbackService.GetFeedbackAsync(awardEventId);
+        return response.Match<ActionResult>(
+            onSuccess: result => Ok(result),
+            onError: error =>
+            {
+                _logger.LogError("Failed to retrieve Feedbacks for AwardEvent ID {Id}. Error: {Error}",
+                    awardEventId, error);
+                return error.ToLower().Contains("not found")
+                    ? NotFound(new { Error = error })
+                    : BadRequest(new { Error = error });
+            }
+        );
+    }
+    
+    [HttpPost]
+    public async Task<ActionResult<FeedbackResponseDto>> CreateFeedback([FromBody] FeedbackCreateDto dto)
+    {
+        var response = await _feedbackService.CreateFeedbackAsync(dto);
+        return response.Match<ActionResult>(
+            onSuccess: result => CreatedAtAction(nameof(GetFeedback), new { awardEventId = dto.EventId }, result),
+            onError: error =>
+            {
+                _logger.LogError("Failed to create Feedback. Error: {Error}", error);
+                return BadRequest(new { Error = error });
+            }
+        );
+    }
+    
+    // get feedback analytics
+    [HttpGet("analytics/{awardEventId:int}")]
+    public async Task<ActionResult<FeedbackAnalyticsResponseDto>> GetFeedbackAnalytics(int awardEventId)
+    {
+        if (awardEventId <= 0)
+        {
+            _logger.LogWarning("Invalid AwardEvent ID {Id} provided.", awardEventId);
+            return BadRequest(new { Error = "Invalid AwardEvent ID provided." });
+        }
+
+        var response = await _feedbackService.GetFeedbackAnalyticsAsync(awardEventId);
+        return response.Match<ActionResult>(
+            onSuccess: result => Ok(result),
+            onError: error =>
+            {
+                _logger.LogError("Failed to retrieve Feedback analytics for AwardEvent ID {Id}. Error: {Error}",
+                    awardEventId, error);
+                return error.ToLower().Contains("not found")
+                    ? NotFound(new { Error = error })
+                    : BadRequest(new { Error = error });
+            }
+        );
+    }
+
     [HttpGet("{awardEventId:int}/questions")]
     public async Task<ActionResult<IEnumerable<FeedbackFormQuestionResponseDto>>> GetFeedbackFormQuestions(
         int awardEventId)

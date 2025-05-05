@@ -18,6 +18,8 @@ import {
     FeedbackQuestionsResponseDto,
     FeedbackQuestionUpdatePayload
 } from "@/types/FeedbackQuestions.ts";
+import {FeedbackResponseDto} from "@/types/Feedback.ts";
+import {FeedbackAnalyticsResponseDto} from "@/types/FeedbackAnalytics.ts";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 console.log(BASE_URL);
@@ -203,7 +205,17 @@ const Api = {
         return data;
     },
 
+    getFeedbackReviews: async (eventId: number): Promise<FeedbackResponseDto[]> => {
+        const url = `${BASE_URL}/api/Feedback/${eventId}`;
+        const { data } = await axios.get(url);
+        return data;
+    },
 
+    getFeedbackAnalytics: async (eventId: number): Promise<FeedbackAnalyticsResponseDto> => {
+        const url = `${BASE_URL}/api/Feedback/analytics/${eventId}`;
+        const { data } = await axios.get(url);
+        return data;
+    },
 };
 
 export default Api;

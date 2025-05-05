@@ -127,6 +127,7 @@ CREATE TABLE "awardEvent" (
     "EventDateTime" TIMESTAMP NOT NULL,
     "Description" TEXT,
     "Directions" VARCHAR(500),
+    "FeedbackSummary" TEXT,
     "CreatedAt" TIMESTAMP DEFAULT now(),
     "UpdatedAt" TIMESTAMP DEFAULT now()
 );
@@ -183,9 +184,9 @@ CREATE TABLE "feedbackFormQuestion" (
 CREATE TABLE "feedbackResponse" (
     "Id" SERIAL PRIMARY KEY,
     "FeedbackId" INT NOT NULL REFERENCES "feedback"("Id"),
-    "QuestionId" INT NOT NULL REFERENCES "feedbackFormQuestion"("Id"),
+    "Question" TEXT NOT NULL,
     "Answer" TEXT,
-    CONSTRAINT "uq_feedbackResponse" UNIQUE ("FeedbackId", "QuestionId")
+    CONSTRAINT "uq_feedbackResponse" UNIQUE ("FeedbackId", "Question")
 );
 
 -- Create Announcement Table

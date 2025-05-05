@@ -16,12 +16,10 @@ const AwardsFeedbackPage: React.FC = () => {
 
             {/* Flex row Reviews and AI summary */}
             <div className="mt-10 flex flex-col lg:flex-row gap-6">
-                {/* Reviews */}
                 <div className="w-full lg:w-2/3">
                     <ReviewsSection />
                 </div>
 
-                {/* AI Summary */}
                 <div className="w-full lg:w-1/3">
                     <FeedbackAISummary />
                 </div>

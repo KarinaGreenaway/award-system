@@ -224,8 +224,8 @@ export default function NominationsPage() {
                         {features.enableAI && currentNomination.aiSummary && (
                             <Button
                                 variant="ghost"
-                                size="icon"
-                                className="absolute bottom-6 right-6 z-20 bg-[color:var(--color-brand)] text-white hover:scale-105 shadow-lg dark:shadow-[0_4px_20px_rgba(255,255,255,0.1)] p-4 rounded-full transition-transform duration-200"
+                                size="lg"
+                                className="absolute bottom-6 shadow-xl right-6 z-20 bg-[color:var(--color-brand)] text-white hover:scale-105 shadow-lg dark:shadow-[0_4px_20px_rgba(255,255,255,0.1)] p-4 rounded-full transition-transform duration-200"
                                 onClick={() => setShowAISummary(prev => !prev)} // toggle instead of just open
                             >
                                 <Bot className="h-8 w-8" />

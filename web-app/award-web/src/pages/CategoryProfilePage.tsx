@@ -114,7 +114,9 @@ export default function CategoryProfilePage() {
 
                 {/* Upload */}
                 <div className="mb-6">
-                    <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Upload Introduction Video</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Upload Introduction Video
+                    </label>
                     <input
                         type="file"
                         accept="video/*"
@@ -130,13 +132,30 @@ export default function CategoryProfilePage() {
                         className="file-input-brand"
                         disabled={!isAdmin}
                     />
-                    {video && (
-                        <video src={URL.createObjectURL(video)} controls className="mt-2 w-full rounded border shadow" />
-                    )}
-                    {!video && category?.introductionVideo && (
-                        <video src={category.introductionVideo} controls className="mt-2 w-full rounded border shadow" />
-                    )}
+
+                    {/* Fixed-height container to prevent jumping */}
+                    <div className="mt-2 w-full rounded border shadow overflow-hidden h-[300px] bg-black">
+                        {video ? (
+                            <video
+                                key={video.name}
+                                src={URL.createObjectURL(video)}
+                                controls
+                                className="w-full h-full object-contain"
+                            />
+                        ) : category?.introductionVideo ? (
+                            <video
+                                src={category.introductionVideo}
+                                controls
+                                className="w-full h-full object-contain"
+                            />
+                        ) : (
+                            <div className="flex items-center justify-center h-full text-sm text-gray-500 dark:text-gray-400">
+                                No video selected
+                            </div>
+                        )}
+                    </div>
                 </div>
+
 
                 {/* Paragraph */}
                 <div className="mb-6">
