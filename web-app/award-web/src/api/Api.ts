@@ -20,6 +20,7 @@ import {
 } from "@/types/FeedbackQuestions.ts";
 import {FeedbackResponseDto} from "@/types/Feedback.ts";
 import {FeedbackAnalyticsResponseDto} from "@/types/FeedbackAnalytics.ts";
+import {AwardProcess, CreateAwardProcessPayload, CreateJudgingRoundPayload, JudgingRound} from "@/types/AwardProcess";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 console.log(BASE_URL);
@@ -216,6 +217,51 @@ const Api = {
         const { data } = await axios.get(url);
         return data;
     },
+
+    getAwardProcesses: async (): Promise<AwardProcess[]> => {
+        const url = `${BASE_URL}/api/AwardProcess`;
+        const { data } = await axios.get(url);
+        return data;
+    },
+
+    createAwardProcess: async (payload: CreateAwardProcessPayload): Promise<AwardProcess> => {
+        const url = `${BASE_URL}/api/AwardProcess`;
+        const { data } = await axios.post(url, payload);
+        return data;
+    },
+
+    updateAwardProcess: async (id: number, payload: CreateAwardProcessPayload): Promise<void> => {
+        const url = `${BASE_URL}/api/AwardProcess/${id}`;
+        await axios.put(url, payload);
+    },
+
+    deleteAwardProcess: async (id: number): Promise<void> => {
+        const url = `${BASE_URL}/api/AwardProcess/${id}`;
+        await axios.delete(url);
+    },
+
+    getJudgingRoundsByAwardProcess: async (processId: number): Promise<JudgingRound[]> => {
+        const url = `${BASE_URL}/api/JudgingRound/awardprocess/${processId}`;
+        const { data } = await axios.get(url);
+        return data;
+    },
+
+    createJudgingRound: async (payload: CreateJudgingRoundPayload): Promise<JudgingRound> => {
+        const url = `${BASE_URL}/api/JudgingRound`;
+        const { data } = await axios.post(url, payload);
+        return data;
+    },
+
+    updateJudgingRound: async (id: number, payload: Omit<CreateJudgingRoundPayload, 'awardProcessId'>): Promise<void> => {
+        const url = `${BASE_URL}/api/JudgingRound/${id}`;
+        await axios.put(url, payload);
+    },
+
+    deleteJudgingRound: async (id: number): Promise<void> => {
+        const url = `${BASE_URL}/api/JudgingRound/${id}`;
+        await axios.delete(url);
+    },
+
 };
 
 export default Api;

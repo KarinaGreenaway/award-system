@@ -23,7 +23,7 @@ public class AwardProcessRepository : GenericRepository<AwardProcess>, IAwardPro
         try
         {
             return await Context.Set<AwardProcess>()
-                .FirstOrDefaultAsync(ac => ac.Status == "active")
+                .FirstOrDefaultAsync(ac => ac.StartDate <= DateTime.UtcNow && ac.EndDate >= DateTime.UtcNow)
                 .ConfigureAwait(false);
         }
         catch (Exception ex)

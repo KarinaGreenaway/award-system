@@ -70,6 +70,11 @@ namespace AwardSystemAPI.Application.Services
             process.CreatedAt = DateTime.UtcNow;
             process.UpdatedAt = DateTime.UtcNow;
             
+            process.UpdatedAt = DateTime.SpecifyKind(process.UpdatedAt, DateTimeKind.Utc);
+            process.CreatedAt = DateTime.SpecifyKind(process.CreatedAt, DateTimeKind.Utc);
+            process.StartDate = DateTime.SpecifyKind(process.StartDate, DateTimeKind.Utc);
+            process.EndDate = DateTime.SpecifyKind(process.EndDate, DateTimeKind.Utc);
+            
             await _repository.AddAsync(process);
             _logger.LogInformation("Created AwardProcess with ID {Id}.", process.Id);
 
@@ -88,6 +93,11 @@ namespace AwardSystemAPI.Application.Services
             _mapper.Map(dto, process);
             
             process.UpdatedAt = DateTime.UtcNow;
+            
+            process.UpdatedAt = DateTime.SpecifyKind(process.UpdatedAt, DateTimeKind.Utc);
+            process.CreatedAt = DateTime.SpecifyKind(process.CreatedAt, DateTimeKind.Utc);
+            process.StartDate = DateTime.SpecifyKind(process.StartDate, DateTimeKind.Utc);
+            process.EndDate = DateTime.SpecifyKind(process.EndDate, DateTimeKind.Utc);
 
             await _repository.UpdateAsync(process);
             _logger.LogInformation("Updated AwardProcess with ID {Id}.", id);

@@ -21,10 +21,6 @@ public class AnnouncementCreateDto
     public DateTime? ScheduledTime { get; set; }
 
     [Required]
-    [MaxLength(50)]
-    public string Status { get; set; } = "draft";    // "draft" or "published"
-
-    [Required]
     public TargetAudience Audience { get; set; }
 }
     
@@ -46,10 +42,6 @@ public class AnnouncementUpdateDto
     public DateTime? ScheduledTime { get; set; }
 
     [Required]
-    [MaxLength(50)]
-    public string Status { get; set; } = "draft";
-
-    [Required]
     public TargetAudience Audience { get; set; }
 }
 
@@ -66,8 +58,6 @@ public class AnnouncementResponseDto
     public bool IsPushNotification { get; set; }
 
     public DateTime? ScheduledTime { get; set; }
-
-    public string Status { get; set; } = string.Empty;
 
     public TargetAudience Audience { get; set; }
 

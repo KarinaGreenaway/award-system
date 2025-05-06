@@ -1,4 +1,4 @@
-import {Calendar, ClipboardEdit, Home, Megaphone, Menu, MessageCircle, Settings, Trophy} from "lucide-react";
+import {Calendar, ClipboardEdit, Home, Megaphone, Menu, MessageCircle, Trophy, Shield } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import ThemeToggle from "@/components/ui/themeToggle";
 import LogoDark from "@/assets/logo-white.png";
@@ -10,18 +10,21 @@ interface SidebarProps {
     setCollapsed: (value: boolean) => void;
 }
 
-const navItems = [
-    { name: "Home", icon: Home, to: "/" },
-    { name: "Nominations", icon: Trophy, to: "/nominations" },
-    { name: "Awards Event", icon: Calendar, to: "/events" },
-    { name: "Announcements", icon: Megaphone, to: "/announcements" },
-    { name: "Category Profile", icon: ClipboardEdit, to: "/category-profile" },
-    { name: "Feedback", icon: MessageCircle, to: "/feedback" },
-    { name: "Settings", icon: Settings, to: "/settings" },
-];
-
 export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
     const location = useLocation();
+    const userRole = localStorage.getItem("mock_role");
+    const isAdmin = userRole === "Admin";
+
+    const navItems = [
+        { name: "Home", icon: Home, to: "/" },
+        { name: "Nominations", icon: Trophy, to: "/nominations" },
+        { name: "Awards Event", icon: Calendar, to: "/events" },
+        { name: "Announcements", icon: Megaphone, to: "/announcements" },
+        { name: "Category Profile", icon: ClipboardEdit, to: "/category-profile" },
+        { name: "Feedback", icon: MessageCircle, to: "/feedback" },
+        ...(isAdmin ? [{ name: "Awards Management", icon: Shield, to: "/awards-management" }] : []),
+        // { name: "Settings", icon: Settings, to: "/settings" }
+    ];
 
     return (
         <aside

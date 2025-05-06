@@ -15,7 +15,6 @@ export default function AwardEventPage() {
     const [location, setLocation] = useState("");
     const [eventDateTime, setEventDateTime] = useState("");
     const [description, setDescription] = useState("");
-    const [status, setStatus] = useState<"draft" | "published">("draft");
     const [isSaving, setIsSaving] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
 
@@ -46,7 +45,6 @@ export default function AwardEventPage() {
             setLocation(event.location);
             setEventDateTime(formatDatetimeLocal(event.eventDateTime));
             setDescription(event.description ?? "");
-            setStatus(event.status ?? "draft");
         }
     }, [event]);
 
@@ -64,7 +62,6 @@ export default function AwardEventPage() {
                     location,
                     eventDateTime,
                     description,
-                    status
                 });
             } else {
                 await Api.createAwardEvent({
@@ -72,7 +69,6 @@ export default function AwardEventPage() {
                     location,
                     eventDateTime,
                     description,
-                    status,
                     awardProcessId: activeProcessId ?? 0,
                     directions: ""
                 });

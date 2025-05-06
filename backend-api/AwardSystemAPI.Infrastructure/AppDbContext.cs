@@ -46,7 +46,7 @@ public class AppDbContext : DbContext
             .Property(a => a.EndDate)
             .HasConversion(
                 v => v, 
-                v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : (DateTime?)null
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
             );
     
         modelBuilder.Entity<AwardProcess>()
@@ -189,6 +189,31 @@ public class AppDbContext : DbContext
                 v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>()
             )
             .HasColumnType("jsonb");
+        
+        modelBuilder.Entity<JudgingRound>()
+            .Property(j => j.StartDate)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
+        modelBuilder.Entity<JudgingRound>()
+            .Property(j => j.Deadline)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
+        modelBuilder.Entity<JudgingRound>()
+            .Property(j => j.CreatedAt)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
+        modelBuilder.Entity<JudgingRound>()
+            .Property(j => j.UpdatedAt)
+            .HasConversion(
+                v => v, 
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            );
 
         
         base.OnModelCreating(modelBuilder);
