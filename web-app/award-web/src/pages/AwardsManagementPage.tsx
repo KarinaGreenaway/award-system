@@ -3,9 +3,13 @@ import { Button } from "@/components/ui/button";
 import { AwardProcess, JudgingRound } from "@/types/AwardProcess";
 import { useAwardProcesses } from "@/hooks/useAwardProcesses";
 import { useJudgingRounds } from "@/hooks/useJudgingRounds";
+import { useCategories } from "@/hooks/useCategories";
 import AwardProcessForm from "@/components/AwardProcessForm";
 import JudgingRoundForm from "@/components/JudgingRoundForm";
+import CategoryForm from "@/components/CategoryForm";
+import { AwardCategoryResponseDto } from "@/types/AwardCategory";
 import {Card, CardContent} from "@/components/ui/card.tsx";
+import { CategoryType } from "@/types/enums/CategoryType";
 import {cn} from "@/lib/utils.ts";
 import {Trophy} from "lucide-react";
 
@@ -29,11 +33,26 @@ export default function AwardsManagementPage() {
         refetch: refetchRounds,
     } = useJudgingRounds(selectedProcessId);
 
+    const {
+        categories,
+        loading: loadingCategories,
+        createCategory,
+        updateCategory,
+        deleteCategory
+    } = useCategories();
+
+    const categoryTypeText = {
+        [CategoryType.Individual]: "Individual",
+        [CategoryType.Team]: "Team"
+    };
+
     const [showProcessForm, setShowProcessForm] = useState(false);
     const [editingProcess, setEditingProcess] = useState<AwardProcess | null>(null);
     const [showRoundForm, setShowRoundForm] = useState(false);
     const [editingRound, setEditingRound] = useState<JudgingRound | null>(null);
     const [showCategories, setShowCategories] = useState(false);
+    const [showCategoryForm, setShowCategoryForm] = useState(false);
+    const [editingCategory, setEditingCategory] = useState<AwardCategoryResponseDto | null>(null);
 
     const handleSelectProcess = (id: number) => {
         setSelectedProcessId(id);
@@ -44,8 +63,8 @@ export default function AwardsManagementPage() {
             {/* Left panel - Award Processes */}
             <div className="lg:w-1/2 p-6 overflow-y-auto border-r border-gray-200 dark:border-gray-700">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
-                        Award Processes
+                    <h2 className="text-2xl text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)] mb-6">
+                        The Award Processes
                     </h2>
                     <Button className="btn-brand" onClick={() => {
                         setEditingProcess(null);
@@ -73,8 +92,8 @@ export default function AwardsManagementPage() {
                                         <Trophy className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-semibold">{process.awardsName}</h3>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        <h3 className="font-medium font-light mb-1">{process.awardsName}</h3>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
                                             {new Date(process.startDate).toLocaleDateString()} → {new Date(process.endDate).toLocaleDateString()}
                                         </p>
                                         <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
@@ -92,7 +111,7 @@ export default function AwardsManagementPage() {
                                             setEditingProcess(process);
                                             setShowProcessForm(true);
                                         }}
-                                        className="btn-brand"
+                                        className="btn-brand mb-2 mt-1"
                                     >
                                         Edit
                                     </Button>
@@ -120,7 +139,7 @@ export default function AwardsManagementPage() {
             <div className="lg:w-1/2 p-6 overflow-y-auto">
                 <div className="flex justify-between items-center mb-6 h-10">
                     <div className="flex items-center gap-2">
-                        <h2 className="text-2xl font-bold text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
+                        <h2 className="text-2xl text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
                             {showCategories ? "Categories" : "Judging Rounds"}
                         </h2>
                         <div className="flex rounded-md overflow-hidden ml-4">
@@ -152,18 +171,14 @@ export default function AwardsManagementPage() {
                             <Button
                                 className="btn-brand h-10"
                                 onClick={() => {
-                                    if (showCategories) {
-                                        alert("Category creation not yet implemented.");
-                                    } else {
-                                        setEditingRound(null);
-                                        setShowRoundForm(true);
-                                    }
+                                    setEditingCategory(null);
+                                    setShowCategoryForm(true);
                                 }}
                             >
                                 {showCategories ? "+ Add Category" : "+ Add Round"}
                             </Button>
                         ) : (
-                            <div className="w-[140px] h-10" /> // matches button height
+                            <div className="w-[140px] h-10" /> // matches button height preventing jumping
                         )}
                     </div>
                 </div>
@@ -171,7 +186,56 @@ export default function AwardsManagementPage() {
                 {!selectedProcessId ? (
                     <p className="text-gray-500 dark:text-gray-400">Select an award process to view its details.</p>
                 ) : showCategories ? (
-                    <p className="text-gray-400 italic">Category functionality coming soon.</p>
+                    loadingCategories ? (
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Loading categories...</p>
+                    ) : categories.length === 0 ? (
+                        <p className="text-gray-400">No categories for this process.</p>
+                    ) : (
+                        categories.map((category) => (
+                            <div key={category.id} className="mb-4 p-4 shadow rounded-xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+                                <div className="flex justify-between">
+                                    <div>
+                                        <h4 className="block text-sm font-semibold mb-1 pl-1 pb-1 text-gray-700 dark:text-gray-200">{category.name}</h4>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 pl-1 pb-2 capitalize">
+                                            Type: {categoryTypeText[category.type as CategoryType] ?? "Unknown"}
+                                        </p><p className="text-sm text-gray-500 dark:text-gray-400 pl-1 pb-2 capitalize">
+                                            Sponsor: {category.sponsorName}
+                                        </p>
+                                        {category.introductionParagraph && (
+                                            <p className="text-sm pl-1 pb-1 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
+                                                {category.introductionParagraph}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        <Button
+                                            size="sm"
+                                            onClick={() => {
+                                                setEditingCategory(category);
+                                                setShowCategoryForm(true);
+                                            }}
+                                            className="btn-secondary mb-2 mt-1"
+                                        >
+                                            Edit
+                                        </Button>
+                                        <Button
+                                            variant="destructive"
+                                            size="sm"
+                                            onClick={() => {
+                                                if (confirm("Delete this category?")) {
+                                                    deleteCategory(category.id);
+                                                }
+                                            }}
+                                            className="btn-secondary"
+                                        >
+                                            Delete
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )
+
                 ) : loadingRounds ? (
                     <p className="text-sm text-gray-500 dark:text-gray-400">Loading...</p>
                 ) : judgingRounds.length === 0 ? (
@@ -181,7 +245,7 @@ export default function AwardsManagementPage() {
                         <div key={round.id} className="mb-4 p-4 shadow rounded-xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
                             <div className="flex justify-between">
                                 <div>
-                                    <h4 className="block text-sm font-medium mb-1 pl-1 pb-1 text-gray-700 dark:text-gray-200">{round.roundName}</h4>
+                                    <h4 className="block text-sm font-semibold mb-1 pl-1 pb-1 text-gray-700 dark:text-gray-200">{round.roundName}</h4>
                                     <p className="w-full rounded-md p-2 mb-3 border text-sm border-gray-300 dark:border-gray-600 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
                                         {new Date(round.startDate).toLocaleString()} → {new Date(round.deadline).toLocaleString()}
                                     </p>
@@ -269,7 +333,26 @@ export default function AwardsManagementPage() {
                     }}
                 />
             )}
-
+            {showCategoryForm && selectedProcessId && (
+                <CategoryForm
+                    awardProcessId={selectedProcessId}
+                    initialData={editingCategory ?? undefined}
+                    isEditing={!!editingCategory}
+                    onClose={() => {
+                        setShowCategoryForm(false);
+                        setEditingCategory(null);
+                    }}
+                    onSubmit={async (data) => {
+                        if (editingCategory) {
+                            await updateCategory(editingCategory.id, data);
+                        } else {
+                            await createCategory(data);
+                        }
+                        setShowCategoryForm(false);
+                        setEditingCategory(null);
+                    }}
+                />
+            )}
         </div>
     );
 }

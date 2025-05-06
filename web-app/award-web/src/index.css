@@ -57,6 +57,29 @@
     transform: none !important;
 }
 
+.btn-secondary {
+    @apply bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg transition-all duration-200 ease-in-out transform;
+}
+
+.btn-secondary:hover {
+    @apply bg-gray-300 dark:bg-gray-600;
+}
+
+.btn-secondary:active {
+    @apply scale-[0.98];
+}
+
+.btn-secondary:focus {
+    outline: 2px solid #d1d5db;
+    outline-offset: 2px;
+}
+
+.btn-secondary:disabled {
+    @apply opacity-70 cursor-not-allowed;
+    transform: none !important;
+}
+
+
 
 .file-input-brand {
     @apply w-full text-sm text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]

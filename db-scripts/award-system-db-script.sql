@@ -43,6 +43,7 @@ CREATE TABLE "mobileUserSettings" (
 -- Create Award Category Table
 CREATE TABLE "awardCategory" (
     "Id" SERIAL PRIMARY KEY,
+	"AwardProcessId" INT REFERENCES "awardProcess"("Id"),
     "Name" VARCHAR(255) NOT NULL,
     "Type" VARCHAR(50) NOT NULL,  -- 'individual' or 'team'
     "SponsorId" INT REFERENCES "users"("Id"),
@@ -50,7 +51,8 @@ CREATE TABLE "awardCategory" (
     "IntroductionParagraph" TEXT,
     "ProfileStatus" VARCHAR(50) DEFAULT 'draft',  -- 'draft' or 'published'
     "CreatedAt" TIMESTAMP DEFAULT now(),
-    "UpdatedAt" TIMESTAMP DEFAULT now()
+    "UpdatedAt" TIMESTAMP DEFAULT now(),
+	CONSTRAINT "uq_awardCategory" UNIQUE ("AwardProcessId", "SponsorId")
 );
 
 -- Create Nominee Summary Table

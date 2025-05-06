@@ -34,6 +34,26 @@ public class AwardCategoryController : ControllerBase
         );
     }
 
+    [HttpGet("award-process/{awardProcessId:int}")]
+    public async Task<ActionResult<IEnumerable<AwardCategoryResponseDto>>> GetByAwardProcessId(int awardProcessId)
+    {
+        if (awardProcessId <= 0)
+        {
+            _logger.LogWarning("Invalid AwardProcess ID {Id} provided.", awardProcessId);
+            return BadRequest(new { Error = "Invalid AwardProcess ID provided." });
+        }
+
+        var response = await _awardCategoryService.GetAwardCategoriesByAwardProcessIdAsync(awardProcessId);
+        return response.Match<ActionResult>(
+            onSuccess: result => Ok(result),
+            onError: error =>
+            {
+                _logger.LogError("Failed to retrieve AwardCategories for AwardProcess ID {Id}. Error: {Error}", awardProcessId, error);
+                return BadRequest(new { Error = error });
+            }
+        );
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<AwardCategoryResponseDto>> GetById(int id)
     {

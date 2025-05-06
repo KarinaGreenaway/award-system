@@ -44,6 +44,7 @@ export default function CategoryProfilePage() {
         try {
             await saveProfileWithVideo({
                 name: category.name,
+                awardProcessId: category.awardProcessId,
                 type: CategoryType[category.type],
                 sponsorId: category.sponsorId,
                 videoFile: video || undefined,

@@ -1,5 +1,5 @@
 import axios from "axios";
-import {AwardCategoryResponseDto, AwardCategoryUpdatePayload} from "@/types/AwardCategory";
+import {AwardCategoryCreatePayload, AwardCategoryResponseDto, AwardCategoryUpdatePayload} from "@/types/AwardCategory";
 import {NomineeSummary, Nomination, NomineeSummaryUpdatePayload} from "@/types/Nominations";
 import {Announcement, CreateAnnouncementPayload, UpdateAnnouncementPayload} from "@/types/Announcements";
 import {AwardEvent, CreateAwardEventPayload, UpdateAwardEventPayload} from "@/types/AwardEvent.ts";
@@ -55,6 +55,28 @@ const Api = {
         return data;
     },
 
+    getCategoriesByProcessId: async (processId: number): Promise<AwardCategoryResponseDto[]> => {
+        const url = `${BASE_URL}/api/AwardCategory/award-process/${processId}`;
+        const { data } = await axios.get(url);
+        return data;
+    },
+
+    createAwardCategory: async (payload: AwardCategoryCreatePayload): Promise<AwardCategoryResponseDto> => {
+        const url = `${BASE_URL}/api/AwardCategory`;
+        const { data } = await axios.post(url, payload);
+        return data;
+    },
+
+    updateAwardCategory: async (id: number, updates: AwardCategoryUpdatePayload) => {
+        const url = `${BASE_URL}/api/AwardCategory/${id}`;
+        return axios.put(url, updates);
+    },
+
+    deleteAwardCategory: async (id: number) => {
+        const url = `${BASE_URL}/api/AwardCategory/${id}`;
+        return axios.delete(url);
+    },
+
     updateNomineeSummary: async (id: number, updates: NomineeSummaryUpdatePayload) => {
         const url = `${BASE_URL}/api/NomineeSummary/${id}`;
         return axios.put(url, updates);
@@ -64,11 +86,6 @@ const Api = {
         const url = `${BASE_URL}/api/Nomination/${id}`;
         const { data } = await axios.get(url);
         return data;
-    },
-
-    updateAwardCategory: async (id: number, updates: AwardCategoryUpdatePayload) => {
-        const url = `${BASE_URL}/api/AwardCategory/${id}`;
-        return axios.put(url, updates);
     },
 
     async getAnnouncementsBySponsor(selectedCategorySponsorId: number) {

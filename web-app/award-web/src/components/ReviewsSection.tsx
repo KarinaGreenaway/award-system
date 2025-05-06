@@ -11,7 +11,7 @@ const ReviewsSection: React.FC = () => {
 
     return (
         <div className="w-full">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Reviews</h2>
+            <h2 className="text-2xl pl-1 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)] mb-6">The Reviews</h2>
 
             {loading && (
                 <p className="text-gray-500 dark:text-gray-400 mb-4">Loading reviews...</p>
