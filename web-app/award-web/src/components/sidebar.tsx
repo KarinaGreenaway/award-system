@@ -1,8 +1,20 @@
-import {Calendar, ClipboardEdit, Home, Megaphone, Menu, MessageCircle, Trophy, Shield } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import {
+    Calendar,
+    ClipboardEdit,
+    Home,
+    Megaphone,
+    Menu,
+    MessageCircle,
+    Trophy,
+    Shield,
+    User
+} from "lucide-react";
+import {Link, useNavigate, useLocation} from "react-router-dom";
 import ThemeToggle from "@/components/ui/themeToggle";
 import LogoDark from "@/assets/logo-white.png";
 import LogoLight from "@/assets/logo-black.png";
+import {useEffect, useRef, useState} from "react";
+import {createPortal} from "react-dom";
 
 
 interface SidebarProps {
@@ -12,19 +24,46 @@ interface SidebarProps {
 
 export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
     const location = useLocation();
+    const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+    const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
+    const profileMenuRef = useRef<HTMLDivElement | null>(null);
+    const navigate = useNavigate();
+
+
     const userRole = localStorage.getItem("mock_role");
     const isAdmin = userRole === "Admin";
 
     const navItems = [
         { name: "Home", icon: Home, to: "/" },
         { name: "Nominations", icon: Trophy, to: "/nominations" },
-        { name: "Awards Event", icon: Calendar, to: "/events" },
         { name: "Announcements", icon: Megaphone, to: "/announcements" },
         { name: "Category Profile", icon: ClipboardEdit, to: "/category-profile" },
+        { name: "Awards Event", icon: Calendar, to: "/events" },
         { name: "Feedback", icon: MessageCircle, to: "/feedback" },
-        ...(isAdmin ? [{ name: "Awards Management", icon: Shield, to: "/awards-management" }] : []),
-        // { name: "Settings", icon: Settings, to: "/settings" }
+        ...(isAdmin ? [{ name: "Awards Management", icon: Shield, to: "admin/awards-management" }] : []),
     ];
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                profileMenuRef.current &&
+                !profileMenuRef.current.contains(event.target as Node)
+            ) {
+                setProfileMenuOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleProfileRightClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setProfileMenuOpen(true);
+        setMenuPosition({ x: e.pageX, y: e.pageY });
+    };
+
+
 
     return (
         <aside
@@ -88,23 +127,48 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
 
             {/* Bottom profile */}
             {collapsed ? (
-                // COLLAPSED MODE: icon below avatar
-                <div className="flex flex-col items-center gap-2 p-3">
-                    <div className="bg-gray-300 dark:bg-gray-700 rounded-full h-8 w-8" />
+                <div className="flex flex-col items-center gap-2 p-3" onContextMenu={handleProfileRightClick}>
+                    <div className="card-icon-wrap">
+                        <User className="h-6 w-6 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]" />
+                    </div>
                     <ThemeToggle collapsed />
                 </div>
             ) : (
-                // EXPANDED MODE: inline row
-                <div className="flex items-center justify-between gap-3 p-3 mt-4 flex-shrink-0">
+                <div className="flex items-center justify-between gap-3 p-3 mt-4 flex-shrink-0" onContextMenu={handleProfileRightClick}>
                     <div className="flex items-center gap-3">
-                        <div className="bg-gray-300 dark:bg-gray-700 rounded-full h-8 w-8" />
-                        <span className="text-sm text-text-light dark:text-text-dark">
-                            John
-                        </span>
+                        <div className="card-icon-wrap">
+                            <User className="h-6 w-6 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]" />
+                        </div>
+                        <span className="text-sm text-text-light dark:text-text-dark">John</span>
+                        <div className="absolute right-7">
+                            <ThemeToggle />
+                        </div>
                     </div>
-                    <ThemeToggle />
                 </div>
             )}
+
+            {/* Context Menu — Always Rendered */}
+            {profileMenuOpen && menuPosition &&
+                createPortal(
+                    <div
+                        ref={profileMenuRef}
+                        className="fixed z-50 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-md rounded-md overflow-hidden"
+                        style={{ top: menuPosition.y, left: menuPosition.x }}
+                    >
+                        <button
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+                            onClick={() => {
+                                localStorage.removeItem("mock_role");
+                                setProfileMenuOpen(false);
+                                navigate("/login");
+                            }}
+                        >
+                            Log out
+                        </button>
+                    </div>,
+                    document.body
+                )
+            }
         </aside>
     );
 }

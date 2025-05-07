@@ -25,6 +25,14 @@ export default function CategoryProfilePage() {
     const userRole = localStorage.getItem("mock_role");
     const isAdmin = userRole === "Admin";
 
+    const userId = Number(localStorage.getItem("mock_user_id"));
+    const isSponsor = category?.sponsorId === userId;
+
+    const isEditable = isAdmin || isSponsor;
+
+
+
+
     useEffect(() => {
         if (category) {
             setParagraph(category.introductionParagraph || "");
@@ -104,35 +112,38 @@ export default function CategoryProfilePage() {
             {/* Left panel */}
             <div className="lg:w-1/2 xl:w-1/2 p-6 overflow-y-auto">
                 <h1 className="text-2xl text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)] mb-6">
-                    Hi {category?.name} Sponsor! Let's edit your profile
+                    The {category?.name} Profile
                 </h1>
 
-                {!isAdmin && (
+                {!isEditable && (
                     <div className="mb-4 p-3 rounded bg-[color:var(--color-brand-hover)] text-white rounded-xl">
-                        You are in read-only mode. Only admins can edit this page.
+                        You are in read-only mode. Only the category sponsor and admins can edit this page.
                     </div>
                 )}
 
                 {/* Upload */}
                 <div className="mb-6">
                     <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Upload Introduction Video
+                        Introduction Video
                     </label>
-                    <input
-                        type="file"
-                        accept="video/*"
-                        onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file && file.type.startsWith("video/")) {
-                                setVideo(file);
-                            } else {
-                                setVideo(null);
-                                alert("Please select a valid video file.");
-                            }
-                        }}
-                        className="file-input-brand"
-                        disabled={!isAdmin}
-                    />
+                    {isEditable && (
+                        <input
+                            type="file"
+                            accept="video/*"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file && file.type.startsWith("video/")) {
+                                    setVideo(file);
+                                } else {
+                                    setVideo(null);
+                                    alert("Please select a valid video file.");
+                                }
+                            }}
+                            className="file-input-brand"
+                            disabled={!isEditable}
+                        />
+                    )}
+
 
                     {/* Fixed-height container to prevent jumping */}
                     <div className="mt-2 w-full rounded border shadow overflow-hidden h-[300px] bg-black">
@@ -168,7 +179,7 @@ export default function CategoryProfilePage() {
                         value={paragraph}
                         onChange={(e) => setParagraph(e.target.value)}
                         maxLength={300 * 6}
-                        disabled={!isAdmin}
+                        disabled={!isEditable}
                         className="w-full rounded-md p-3 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
                     />
                 </div>
@@ -188,7 +199,7 @@ export default function CategoryProfilePage() {
                                 className="sr-only peer"
                                 checked={status === "published"}
                                 onChange={(e) => handleStatusChange(e.target.checked)}
-                                disabled={!isAdmin || isSaving}
+                                disabled={!isEditable || isSaving}
                             />
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:bg-[color:var(--color-brand)] peer-checked:after:translate-x-full after:content-[''] after:absolute after:left-[2px] after:top-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600"></div>
                         </label>
@@ -199,7 +210,7 @@ export default function CategoryProfilePage() {
                 </div>
 
                 {/* Save */}
-                {isAdmin && (
+                {isEditable && (
                     <div className="pt-4">
                         <Button onClick={handleSave} className="btn-brand" disabled={isSaving}>
                             {isSaving ? "Saving..." : "Save"}
@@ -214,7 +225,7 @@ export default function CategoryProfilePage() {
                     <h2 className="text-xl font-semibold text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
                         Nomination Questions
                     </h2>
-                    {isAdmin && (
+                    {isEditable && (
                         <Button onClick={handleAddQuestion} className="btn-brand">+ New Question</Button>
                     )}
                 </div>
@@ -229,7 +240,7 @@ export default function CategoryProfilePage() {
                                     type="text"
                                     value={q.questionText}
                                     onChange={e => handleQuestionChange(q.id, "questionText", e.target.value)}
-                                    disabled={!isAdmin}
+                                    disabled={!isEditable}
                                     className="w-full rounded-md p-2 border text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
                                 />
                             </div>
@@ -238,7 +249,7 @@ export default function CategoryProfilePage() {
                                 <select
                                     value={q.responseType}
                                     onChange={e => handleQuestionChange(q.id, "responseType", Number(e.target.value))}
-                                    disabled={!isAdmin}
+                                    disabled={!isEditable}
                                     className="w-full rounded-md p-2 border text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
                                 >
                                     <option value={QuestionResponseType.Text}>Text</option>
@@ -255,7 +266,7 @@ export default function CategoryProfilePage() {
                                         type="text"
                                         value={q.optionsInput ?? ""}
                                         onChange={e => handleQuestionChange(q.id, "optionsInput", e.target.value)}
-                                        disabled={!isAdmin}
+                                        disabled={!isEditable}
                                         className="w-full rounded-md p-2 border text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
                                         placeholder="e.g., Option A, Option B, Option C"
                                     />
@@ -267,14 +278,14 @@ export default function CategoryProfilePage() {
                                     type="number"
                                     value={q.questionOrder ?? 0}
                                     onChange={e => handleQuestionChange(q.id, "questionOrder", parseInt(e.target.value))}
-                                    disabled={!isAdmin}
+                                    disabled={!isEditable}
                                     className="w-full rounded-md p-2 border text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
                                 />
                             </div>
                         </div>
                     ))}
 
-                {isAdmin && (
+                {isEditable && (
                     <div className="pt-4">
                         <Button onClick={saveNominationQuestions} className="btn-brand">
                             Save Nomination Questions

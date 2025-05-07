@@ -21,6 +21,7 @@ import {
 import {FeedbackResponseDto} from "@/types/Feedback.ts";
 import {FeedbackAnalyticsResponseDto} from "@/types/FeedbackAnalytics.ts";
 import {AwardProcess, CreateAwardProcessPayload, CreateJudgingRoundPayload, JudgingRound} from "@/types/AwardProcess";
+import {UserResponseDto} from "@/types/User.ts";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 console.log(BASE_URL);
@@ -88,7 +89,7 @@ const Api = {
         return data;
     },
 
-    async getAnnouncementsBySponsor(selectedCategorySponsorId: number) {
+    async getAnnouncementsBySponsor(selectedCategorySponsorId: number): Promise<Announcement[]> {
         const url = `${BASE_URL}/api/Announcement/by-sponsor/${selectedCategorySponsorId}`;
         const { data } = await axios.get(url);
         return data;
@@ -278,6 +279,12 @@ const Api = {
         const url = `${BASE_URL}/api/JudgingRound/${id}`;
         await axios.delete(url);
     },
+
+    getUsers: async (): Promise<UserResponseDto[]> => {
+        const url = `${BASE_URL}/api/User`;
+        const { data } = await axios.get(url);
+        return data;
+    }
 
 };
 

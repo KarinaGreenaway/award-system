@@ -15,6 +15,7 @@ export default function LoginPage() {
             // Mock login storing fake token in session/localStorage
             localStorage.setItem("mock_token", "fake-jwt-token");
             localStorage.setItem("mock_role", role);
+            localStorage.setItem("mock_user_id", "2");
             navigate("/");
         }, 1000);
     };

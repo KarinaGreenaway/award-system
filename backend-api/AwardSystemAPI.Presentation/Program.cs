@@ -36,12 +36,14 @@ builder.Services.AddScoped<INominationRepository, NominationRepository>();
 builder.Services.AddScoped<INomineeSummaryService, NomineeSummaryService>();
 builder.Services.AddScoped<INomineeSummaryRepository, NomineeSummaryRepository>();
 builder.Services.AddScoped<IAiSummaryService, AiSummaryService>();
+builder.Services.AddScoped<IVertexAiService, VertexAiService>();
 builder.Services.AddScoped<INominationQuestionRepository, NominationQuestionRepository>();
 builder.Services.AddScoped<INominationQuestionService, NominationQuestionService>();
 builder.Services.AddScoped<IAuthorizationHandler, CategoryOwnerHandler>();
 builder.Services.AddScoped<IDeviceTokenRepository, DeviceTokenRepository>();
 builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
 builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBlobService, BlobService>();
 builder.Services.AddScoped<IPushNotificationService, PushNotificationService>();
 builder.Services.AddSingleton<IFirebaseNotificationService, FirebaseNotificationService>();
@@ -67,6 +69,7 @@ builder.Services.AddAutoMapper(typeof(AnnouncementProfile));
 builder.Services.AddAutoMapper(typeof(RsvpProfile));
 builder.Services.AddAutoMapper(typeof(FeedbackFormQuestionProfile));
 builder.Services.AddAutoMapper(typeof(FeedbackProfile));
+builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddAuthorization(options =>
@@ -88,7 +91,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5174", "http://localhost:5173")
+        policy.WithOrigins("http://localhost:5174", "http://localhost:5173", "http://localhost:5175")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();

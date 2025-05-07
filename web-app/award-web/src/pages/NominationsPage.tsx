@@ -49,6 +49,15 @@ export default function NominationsPage() {
         };
     }, [contextMenu]);
 
+    useEffect(() => {
+        // Reset nomination details when category changes
+        setSelectedId(null);
+        setNominations([]);
+        setCurrentNominationIndex(0);
+        setDetailsLoading(false);
+    }, [selectedCategoryId]);
+
+
     const handleRightClick = (e: React.MouseEvent, item: NomineeSummary) => {
         e.preventDefault();
         setContextMenu({ x: e.pageX, y: e.pageY, item });
@@ -56,7 +65,7 @@ export default function NominationsPage() {
 
     const closeContextMenu = () => setContextMenu(null);
 
-    const fetchNominationDetails = async (id: number) => {
+    const fetchNominationDetails = async (id: number, teamNominationId: number) => {
         setDetailsLoading(true);
         try {
             if (category?.type === CategoryType.Individual) {
@@ -64,7 +73,7 @@ export default function NominationsPage() {
                 setNominations(nominations);
                 setCurrentNominationIndex(0);
             } else {
-                const nomination = await Api.getTeamNomination(id);
+                const nomination = await Api.getTeamNomination(teamNominationId);
                 setNominations(nomination ? [nomination] : []);
                 setCurrentNominationIndex(0);
             }
@@ -75,9 +84,9 @@ export default function NominationsPage() {
         }
     };
 
-    const handleCardClick = async (id: number) => {
+    const handleCardClick = async (id: number, teamNominationId: number) => {
         setSelectedId(id);
-        await fetchNominationDetails(id);
+        await fetchNominationDetails(id, teamNominationId);
     };
 
     const handlePrevNomination = () => {
@@ -98,6 +107,13 @@ export default function NominationsPage() {
         return (
             <p className="p-8 text-gray-500 dark:text-gray-400">
                 Loading nominations...
+            </p>
+        );
+    }
+    if (data.length === 0 && !loading) {
+        return (
+            <p className="p-8 text-gray-500 dark:text-gray-400">
+                No nominations found for this category.
             </p>
         );
     }
@@ -156,7 +172,7 @@ export default function NominationsPage() {
                                     key={id}
                                     nominee={n}
                                     isSelected={selectedId === id}
-                                    onClick={() => handleCardClick(id)}
+                                    onClick={() => handleCardClick(id, n.teamNominationId)}
                                     onRightClick={(e) => handleRightClick(e, n)}
                                 />
                             ) : (
@@ -164,7 +180,7 @@ export default function NominationsPage() {
                                     key={id}
                                     nomination={n}
                                     isSelected={selectedId === id}
-                                    onClick={() => handleCardClick(id)}
+                                    onClick={() => handleCardClick(id, n.teamNominationId)}
                                     onRightClick={(e) => handleRightClick(e, n)}
                                 />
                             );
@@ -218,23 +234,42 @@ export default function NominationsPage() {
                                     </span>
                                 </div>
                             )}
-                        </div>
 
-                        {/* AI Summary Button (floating) */}
-                        {features.enableAI && currentNomination.aiSummary && (
-                            <Button
-                                variant="ghost"
-                                size="lg"
-                                className="absolute bottom-6 shadow-xl right-6 z-20 bg-[color:var(--color-brand)] text-white hover:scale-105 shadow-lg dark:shadow-[0_4px_20px_rgba(255,255,255,0.1)] p-4 rounded-full transition-transform duration-200"
-                                onClick={() => setShowAISummary(prev => !prev)} // toggle instead of just open
-                            >
-                                <Bot className="h-8 w-8" />
-                            </Button>
-                        )}
+                            {/* AI Summary Button (floating) */}
+                            {features.enableAI && currentNomination.aiSummary && (
+                                <Button
+                                    variant="ghost"
+                                    size="lg"
+                                    className="bottom-6 shadow-xl right-6 z-20 bg-[color:var(--color-brand)] text-white hover:scale-105 shadow-lg dark:shadow-[0_4px_20px_rgba(255,255,255,0.1)] p-4 rounded-full transition-transform duration-200"
+                                    onClick={() => setShowAISummary(prev => !prev)} // toggle instead of just open
+                                >
+                                    <Bot className="h-8 w-8" />
+                                </Button>
+                            )}
+
+                        </div>
 
                         {/* Nomination Details */}
                         <div className="space-y-4">
                             <h3 className="text-lg dark:text-gray-300">Nomination Details</h3>
+
+                            {/* AI Summary Section */}
+                            {features.enableAI && showAISummary && currentNomination.aiSummary && (
+                                <div className="relative card-interactive-selected bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <Bot className="h-5 w-5 text-[color:var(--color-brand)]" />
+                                            <span className="text-sm font-semibold text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
+                              AI Summary
+                            </span>
+                                        </div>
+                                    </div>
+                                    <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">
+                                        {currentNomination.aiSummary}
+                                    </p>
+                                </div>
+                            )}
+
                             {currentNomination.answers?.length > 0 ? (
                                 currentNomination.answers.map((answer) => (
                                     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
@@ -270,31 +305,14 @@ export default function NominationsPage() {
 
                             </div>
                         )}
-
-                        {/* AI Summary Section */}
-                        {features.enableAI && showAISummary && currentNomination.aiSummary && (
-                            <div className="relative bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-2">
-                                        <Bot className="h-5 w-5 text-[color:var(--color-brand)]" />
-                                        <span className="text-sm font-semibold text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
-                              AI Summary
-                            </span>
-                                    </div>
-                                </div>
-                                <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">
-                                    {currentNomination.aiSummary}
-                                </p>
-                            </div>
-                        )}
                     </div>
-                ) : selectedId ? (
-                    <p className="text-sm text-gray-400">
-                        Nomination details for ID {selectedId} (coming soon)
-                    </p>
-                ) : (
+                ) : selectedId === null ? (
                     <p className="text-gray-500 dark:text-gray-400">
                         Select a nominee or team to view details
+                    </p>
+                ) : (
+                    <p className="text-sm text-gray-400">
+                        Nomination details (coming soon)
                     </p>
                 )}
             </div>

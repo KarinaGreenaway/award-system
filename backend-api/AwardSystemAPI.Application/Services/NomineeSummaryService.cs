@@ -146,11 +146,6 @@ public class NomineeSummaryService : INomineeSummaryService
     {
         
         var nominations = await _repository.GetByCategoryIdAsync(categoryId);
-        if (!nominations.Any())
-        {
-            _logger.LogWarning("NomineeSummary for CategoryId {CategoryId} not found.", categoryId);
-            return $"NomineeSummary for CategoryId {categoryId} not found.";
-        }
         var responseDtos = _mapper.Map<IEnumerable<NomineeSummaryWithDetailedDto>>(nominations);
         return responseDtos.ToArray();
     }

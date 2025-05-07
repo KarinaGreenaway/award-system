@@ -9,6 +9,9 @@ import AnnouncementsPage from "@/pages/Announcements.tsx";
 import AwardEventPage from "@/pages/AwardEventPage.tsx";
 import AwardsFeedbackPage from "@/pages/Feedback.tsx";
 import AwardsManagementPage from "@/pages/AwardsManagementPage.tsx";
+import UnauthorisedPage from "@/pages/UnauthorisedPage.tsx";
+import AdminGuard from "@/components/guards/AdminGuard.tsx";
+import AppLayoutWithoutTabs from "@/layouts/AppLayoutWithoutTabs.tsx";
 
 export default function App() {
     return (
@@ -24,9 +27,17 @@ export default function App() {
                     <Route path="nominations" element={<NominationsPage />} />
                     <Route path="category-profile" element={<CategoryProfilePage />} />
                     <Route path="announcements" element={<AnnouncementsPage />} />
+                    <Route path="unauthorised" element={<UnauthorisedPage/>} />
+                </Route>
+                <Route path="/" element={<AppLayoutWithoutTabs />}>
                     <Route path="events" element={<AwardEventPage />} />
                     <Route path="feedback" element={<AwardsFeedbackPage />} />
-                    <Route path="awards-management" element={<AwardsManagementPage />} />
+                    <Route path="/admin/awards-management" element={
+                        <AdminGuard>
+                            <AwardsManagementPage />
+                        </AdminGuard>
+                    }
+                    />
                 </Route>
             </Route>
         </Routes>

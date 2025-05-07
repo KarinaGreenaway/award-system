@@ -161,41 +161,39 @@ export default function AwardEventPage() {
                         {showFeedback ? "Feedback Questions" : "RSVP Questions"}
                     </h2>
                     <div className="flex items-center gap-4">
+                        <div className="flex rounded-md overflow-hidden">
+                            <button
+                                onClick={() => setShowFeedback(false)}
+                                className={`px-4 py-1 text-sm font-medium border-r border-gray-300 dark:border-gray-700 ${
+                                    !showFeedback
+                                        ? "bg-[color:var(--color-brand)] text-white"
+                                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                                }`}
+                            >
+                                RSVP
+                            </button>
+                            <button
+                                onClick={() => setShowFeedback(true)}
+                                className={`px-4 py-1 text-sm font-medium ${
+                                    showFeedback
+                                        ? "bg-[color:var(--color-brand)] text-white"
+                                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                                }`}
+                            >
+                                Feedback
+                            </button>
+                        </div>
                         {isAdmin && (
-                            <>
-                                <div className="flex rounded-md overflow-hidden">
-                                    <button
-                                        onClick={() => setShowFeedback(false)}
-                                        className={`px-4 py-1 text-sm font-medium border-r border-gray-300 dark:border-gray-700 ${
-                                            !showFeedback
-                                                ? "bg-[color:var(--color-brand)] text-white"
-                                                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                                        }`}
-                                    >
-                                        RSVP
-                                    </button>
-                                    <button
-                                        onClick={() => setShowFeedback(true)}
-                                        className={`px-4 py-1 text-sm font-medium ${
-                                            showFeedback
-                                                ? "bg-[color:var(--color-brand)] text-white"
-                                                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                                        }`}
-                                    >
-                                        Feedback
-                                    </button>
-                                </div>
-                                <Button
-                                    onClick={() => (showFeedback ? addNewFeedbackQuestion() : addNewQuestion())}
-                                    className="btn-brand"
-                                >
-                                    + New Question
-                                </Button>
-                            </>
+                            <Button
+                                onClick={() => (showFeedback ? addNewFeedbackQuestion() : addNewQuestion())}
+                                className="btn-brand"
+                            >
+                                + New Question
+                            </Button>
                         )}
                     </div>
-
                 </div>
+
 
                 {(showFeedback ? feedbackQuestions : rsvpQuestions)
                     .sort((a, b) => (a.questionOrder ?? 0) - (b.questionOrder ?? 0))

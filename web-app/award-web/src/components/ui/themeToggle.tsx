@@ -21,7 +21,7 @@ export default function ThemeToggle({ collapsed = false }: ThemeToggleProps) {
                 aria-label="Toggle theme"
             >
                 {isDark ? (
-                    <Moon className="h-5 w-5 text-gray-700" />
+                    <Moon className="h-5 w-5 text-gray-500" />
                 ) : (
                     <Sun className="h-5 w-5 text-gray-400" />
                 )}

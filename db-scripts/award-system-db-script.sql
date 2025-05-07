@@ -1,6 +1,5 @@
 -- Drop tables in reverse dependency order (if needed)
 DROP TABLE IF EXISTS "judgingRound";
-DROP TABLE IF EXISTS "awardProcess";
 DROP TABLE IF EXISTS "notification";
 DROP TABLE IF EXISTS "announcement";
 DROP TABLE IF EXISTS "feedbackResponse";
@@ -17,6 +16,7 @@ DROP TABLE IF EXISTS "nomination";
 DROP TABLE IF EXISTS "nomineeSummary";
 DROP TABLE IF EXISTS "awardCategory";
 DROP TABLE IF EXISTS "mobileUserSettings";
+DROP TABLE IF EXISTS "awardProcess";
 DROP TABLE IF EXISTS "users";
 
 -- Create Users Table
@@ -40,6 +40,17 @@ CREATE TABLE "mobileUserSettings" (
     "AiFunctionality" BOOLEAN DEFAULT true
 );
 
+-- Create Award Process Table
+CREATE TABLE "awardProcess" (
+    "Id" SERIAL PRIMARY KEY,
+    "AwardsName" VARCHAR(255) NOT NULL,
+    "StartDate" TIMESTAMP NOT NULL,
+    "EndDate" TIMESTAMP,
+    "Status" VARCHAR(50) NOT NULL,  -- e.g., 'active', 'completed'
+    "CreatedAt" TIMESTAMP DEFAULT now(),
+    "UpdatedAt" TIMESTAMP DEFAULT now()
+);
+
 -- Create Award Category Table
 CREATE TABLE "awardCategory" (
     "Id" SERIAL PRIMARY KEY,
@@ -51,8 +62,7 @@ CREATE TABLE "awardCategory" (
     "IntroductionParagraph" TEXT,
     "ProfileStatus" VARCHAR(50) DEFAULT 'draft',  -- 'draft' or 'published'
     "CreatedAt" TIMESTAMP DEFAULT now(),
-    "UpdatedAt" TIMESTAMP DEFAULT now(),
-	CONSTRAINT "uq_awardCategory" UNIQUE ("AwardProcessId", "SponsorId")
+    "UpdatedAt" TIMESTAMP DEFAULT now()
 );
 
 -- Create Nominee Summary Table
@@ -96,7 +106,7 @@ CREATE TABLE "nominationQuestion" (
     "Id" SERIAL PRIMARY KEY,
     "CategoryId" INT NOT NULL REFERENCES "awardCategory"("Id"),
     "QuestionText" TEXT NOT NULL,
-    "ResponseType" int NOT NULL DEFAULT 'text',
+    "ResponseType" int NOT NULL DEFAULT 1,
     "Options" jsonb,
     "QuestionOrder" INT
 );
@@ -106,18 +116,8 @@ CREATE TABLE "nominationAnswer" (
     "Id" SERIAL PRIMARY KEY,
     "NominationId" INT NOT NULL REFERENCES "nomination"("Id"),
     "Question" TEXT NOT NULL,
-    "Answer" TEXT
-);
-
--- Create Award Process Table
-CREATE TABLE "awardProcess" (
-    "Id" SERIAL PRIMARY KEY,
-    "AwardsName" VARCHAR(255) NOT NULL,
-    "StartDate" TIMESTAMP NOT NULL,
-    "EndDate" TIMESTAMP,
-    "Status" VARCHAR(50) NOT NULL,  -- e.g., 'active', 'completed'
-    "CreatedAt" TIMESTAMP DEFAULT now(),
-    "UpdatedAt" TIMESTAMP DEFAULT now()
+    "Answer" TEXT,
+    CONSTRAINT "uq_nominationAnswer" UNIQUE ("NominationId", "Question")
 );
 
 -- Create Award Event Table

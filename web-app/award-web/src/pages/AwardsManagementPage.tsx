@@ -104,7 +104,6 @@ export default function AwardsManagementPage() {
 
                                 <div className="flex flex-col gap-1 items-end">
                                     <Button
-                                        variant="outline"
                                         size="sm"
                                         onClick={(e) => {
                                             e.stopPropagation();
@@ -169,14 +168,20 @@ export default function AwardsManagementPage() {
                     <div className="h-10 flex items-center">
                         {selectedProcessId ? (
                             <Button
-                                className="btn-brand h-10"
+                                className="btn-brand"
                                 onClick={() => {
-                                    setEditingCategory(null);
-                                    setShowCategoryForm(true);
+                                    if (showCategories) {
+                                        setEditingCategory(null);
+                                        setShowCategoryForm(true);
+                                    } else {
+                                        setEditingRound(null);
+                                        setShowRoundForm(true);
+                                    }
                                 }}
                             >
                                 {showCategories ? "+ Add Category" : "+ Add Round"}
                             </Button>
+
                         ) : (
                             <div className="w-[140px] h-10" /> // matches button height preventing jumping
                         )}

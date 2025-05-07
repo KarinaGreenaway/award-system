@@ -9,7 +9,7 @@ import {TargetAudience} from "@/types/enums/TargetAudience.ts";
 import {Announcement, CreateAnnouncementPayload} from "@/types/Announcements.ts";
 
 export default function AnnouncementsPage() {
-    const { selectedCategoryId } = useSelectedCategory();
+    const { selectedCategoryId, selectedCategory } = useSelectedCategory();
     const [announcements, setAnnouncements] = useState<any[]>([]);
     const [selectedAnnouncement, setSelectedAnnouncement] = useState<any | null>(null);
     const [isCreating, setIsCreating] = useState(false);
@@ -31,6 +31,15 @@ export default function AnnouncementsPage() {
     const [scheduledTime, setScheduledTime] = useState("");
     const [status, setStatus] = useState<"draft" | "published">("draft");
     const [isSaving, setIsSaving] = useState(false);
+
+
+    const userRole = localStorage.getItem("mock_role");
+    const isAdmin = userRole === "Admin";
+
+    const userId = Number(localStorage.getItem("mock_user_id"));
+    const isSponsor = selectedCategory?.sponsorId === userId;
+
+    const isEditable = isAdmin || isSponsor;
 
     useEffect(() => {
         const fetchAnnouncements = async () => {
@@ -60,6 +69,27 @@ export default function AnnouncementsPage() {
             setStatus(selectedAnnouncement.status || "draft");
         }
     }, [selectedAnnouncement, isCreating]);
+    useEffect(() => {
+
+        const fetchAnnouncements = async () => {
+            if (!selectedCategoryId) return;
+
+            setLoading(true);
+            try {
+                const data = await Api.getAnnouncementsBySponsor(selectedCategoryId);
+                setAnnouncements(data);
+            } catch (err) {
+                console.error("Failed to fetch announcements", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAnnouncements();
+        // Reset the selected announcement when category changes
+        setSelectedAnnouncement(null);
+    }, [selectedCategoryId]);
+
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -204,13 +234,19 @@ export default function AnnouncementsPage() {
                         The Announcements
                     </h2>
 
-                    <Button
-                        onClick={handleNewAnnouncement}
-                        className="btn-brand mb-3"
-                    >
-                        <Plus className="h-4 w-4 mr-2" />
-                        New Announcement
-                    </Button>
+                    {!isEditable && (
+                        <div className="mb-4 p-3 rounded bg-[color:var(--color-brand-hover)] text-white rounded-xl">
+                            You are in read-only mode. Only the category sponsor or an admin can edit these announcements.
+                        </div>
+                    )}
+
+                    {isEditable && (
+                        <Button onClick={handleNewAnnouncement} className="btn-brand mb-3">
+                            <Plus className="h-4 w-4 mr-2" />
+                            New Announcement
+                        </Button>
+                    )}
+
 
                     <input
                         type="text"
@@ -288,6 +324,7 @@ export default function AnnouncementsPage() {
                                 onChange={(e) => setTitle(e.target.value)}
                                 className="w-full rounded-md p-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
                                 placeholder="Enter announcement title"
+                                disabled={!isEditable}
                             />
                         </div>
 
@@ -302,31 +339,37 @@ export default function AnnouncementsPage() {
                                 onChange={(e) => setDescription(e.target.value)}
                                 className="w-full rounded-md p-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
                                 placeholder="Enter announcement description"
+                                disabled={!isEditable}
                             />
                         </div>
 
                         {/* Image Upload */}
                         <div>
-                            <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Image
-                            </label>
-                            <div className="flex items-center gap-4">
-                                <label className="cursor-pointer">
-                                    <span className="sr-only">Choose image</span>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => setImage(e.target.files?.[0] || null)}
-                                        className="file-input-brand"
-                                        id="announcement-image-upload"
-                                    />
-                                </label>
-                                {image && (
-                                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                                        {image.name}
-                                    </span>
-                                )}
-                            </div>
+                            {isEditable && (
+                                <>
+                                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Image
+                                    </label>
+                                    <div className="flex items-center gap-4">
+                                        <label className="cursor-pointer">
+                                            <span className="sr-only">Choose image</span>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => setImage(e.target.files?.[0] || null)}
+                                                className="file-input-brand"
+                                                id="announcement-image-upload"
+                                                disabled={!isEditable}
+                                            />
+                                        </label>
+                                        {image && (
+                                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                                {image.name}
+                                            </span>
+                                        )}
+                                    </div>
+                                </>
+                            )}
 
                             {/* Image Previews */}
                             <div className="mt-4 space-y-4">
@@ -340,16 +383,6 @@ export default function AnnouncementsPage() {
                                                 alt="Current announcement"
                                                 className="max-w-full h-auto max-h-48 rounded-md border dark:border-gray-700"
                                             />
-                                            <button
-                                                onClick={() => {
-                                                    // This would need API support to clear the image
-                                                    setImage(null);
-                                                    // You might want to add a API call to clear the image
-                                                }}
-                                                className="absolute top-2 right-2 p-1 bg-white/80 dark:bg-gray-800/80 rounded-full hover:bg-white dark:hover:bg-gray-700"
-                                                title="Remove image"
-                                            >
-                                            </button>
                                         </div>
                                     </div>
                                 )}
@@ -359,12 +392,14 @@ export default function AnnouncementsPage() {
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
                                             <p className="text-sm text-gray-500">Preview:</p>
-                                            <button
-                                                onClick={() => setImage(null)}
-                                                className="text-xs px-2 py-1 rounded btn-brand"
-                                            >
-                                                Remove
-                                            </button>
+                                            {isEditable && (
+                                                <button
+                                                    onClick={() => setImage(null)}
+                                                    className="text-xs px-2 py-1 rounded btn-brand"
+                                                >
+                                                    Remove
+                                                </button>
+                                            )}
                                         </div>
                                         <img
                                             src={URL.createObjectURL(image)}
@@ -376,6 +411,7 @@ export default function AnnouncementsPage() {
                             </div>
                         </div>
 
+
                         {/* Toggles */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-4">
@@ -385,6 +421,7 @@ export default function AnnouncementsPage() {
                                         checked={isPushNotification}
                                         onChange={(e) => setIsPushNotification(e.target.checked)}
                                         className="sr-only peer"
+                                        disabled={!isEditable}
                                     />
                                     <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[color:var(--color-brand)]"></div>
                                     <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -398,6 +435,7 @@ export default function AnnouncementsPage() {
                                         checked={isScheduled}
                                         onChange={(e) => setIsScheduled(e.target.checked)}
                                         className="sr-only peer"
+                                        disabled={!isEditable}
                                     />
                                     <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[color:var(--color-brand)]"></div>
                                     <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -417,6 +455,7 @@ export default function AnnouncementsPage() {
                                         value={scheduledTime}
                                         onChange={(e) => setScheduledTime(e.target.value)}
                                         className="w-full rounded-md p-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
+                                        disabled={!isEditable}
                                     />
                                 </div>
                             )}
@@ -439,6 +478,7 @@ export default function AnnouncementsPage() {
                                             className="sr-only peer"
                                             checked={status === "published"}
                                             onChange={(e) => handleStatusChange(e.target.checked)}
+                                            disabled={!isEditable}
                                         />
                                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[color:var(--color-brand)]"></div>
                                     </label>
@@ -450,6 +490,7 @@ export default function AnnouncementsPage() {
                         </div>
 
                         {/* Actions */}
+                        {isEditable && (
                         <div className="flex gap-4 pt-4">
                             <Button
                                 onClick={handleSave}
@@ -461,13 +502,19 @@ export default function AnnouncementsPage() {
                             {!isCreating && (
                                 <Button
                                     variant="destructive"
-                                    onClick={handleDeleteAnnouncement}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (confirm("Are you sure you want to delete this announcement?")) {
+                                            handleDeleteAnnouncement();
+                                        }
+                                    }}
                                     className="btn-brand"
                                 >
                                     Delete
                                 </Button>
                             )}
                         </div>
+                        )}
                     </div>
                 ) : (
                     <div className="flex justify-between items-center mb-6">
@@ -498,7 +545,13 @@ export default function AnnouncementsPage() {
                     </button>
                     <button
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        onClick={closeContextMenu}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            closeContextMenu();
+                            if (confirm("Are you sure you want to delete this announcement?")) {
+                                handleDeleteAnnouncement();
+                            }
+                        }}
                     >
                         Delete
                     </button>

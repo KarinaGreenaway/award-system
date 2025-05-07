@@ -21,14 +21,19 @@ public interface INominationService
 public class NominationService : INominationService
 {
     private readonly INominationRepository _repository;
+    private readonly IGenericRepository<NominationAnswer> _answerRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<NominationService> _logger;
     private readonly IAiSummaryService _aiSummaryService;
     private readonly INomineeSummaryService _nomineeSummaryService;
     
-    public NominationService(INominationRepository repository, IMapper mapper, ILogger<NominationService> logger, IAiSummaryService aiSummaryService, INomineeSummaryService nomineeSummaryService)
+    public NominationService(INominationRepository repository,
+        IGenericRepository<NominationAnswer> answerRepository, IMapper mapper,
+        ILogger<NominationService> logger, IAiSummaryService aiSummaryService,
+        INomineeSummaryService nomineeSummaryService)
     {
         _repository = repository;
+        _answerRepository = answerRepository;
         _aiSummaryService = aiSummaryService;
         _nomineeSummaryService = nomineeSummaryService;
         _mapper = mapper;
@@ -57,7 +62,12 @@ public class NominationService : INominationService
         nomination.UpdatedAt = DateTime.UtcNow;
         nomination.CreatorId = userId;
 
-        nomination.AiSummary = await _aiSummaryService.GenerateNominationSummaryAsync(nomination, nominationAnswers);
+        var promptData = JsonConvert.SerializeObject(new
+        {
+            Answers = JsonConvert.SerializeObject(nominationAnswers)
+        });
+        
+        nomination.AiSummary = await _aiSummaryService.GenerateNominationSummaryAsync(promptData);
 
         await _repository.AddAsync(nomination);
         _logger.LogInformation("Created Nomination with ID {Id}.", nomination.Id);
@@ -112,11 +122,6 @@ public class NominationService : INominationService
     public async Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetNominationsByCategoryIdAsync(int categoryId)
     {
         var nominations = await _repository.GetNominationsByCategoryIdAsync(categoryId);
-        if (!nominations.Any())
-        {
-            _logger.LogWarning("No nominations found for category ID {CategoryId}.", categoryId);
-            return $"No nominations found for category ID {categoryId}.";
-        }
         var responseDtos = _mapper.Map<IEnumerable<NominationResponseDto>>(nominations);
         return responseDtos.ToArray();
     }
