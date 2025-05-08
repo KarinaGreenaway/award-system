@@ -1,0 +1,1 @@
+INSERT INTO public."awardProcess" ("Id", "AwardsName", "StartDate", "EndDate", "CreatedAt", "UpdatedAt") VALUES (1, '2025 Annual Awards', '2025-04-01 01:00:00.000000', '2025-06-01 01:00:00.000000', '2025-04-13 21:31:16.408583', '2025-05-06 00:21:24.361122');

@@ -23,7 +23,8 @@ const ReviewsSection: React.FC = () => {
 
             {!loading && !error && (
                 <>
-                    <div className="space-y-4 max-h-[400px] overflow-y-auto no-scrollbar p-1">
+                    <div
+                        className={`space-y-4 p-1 transition-all ${expanded ? 'max-h-[700px]' : 'max-h-[400px]'} overflow-y-auto no-scrollbar`}>
                         {displayedReviews.map((review) => (
                             <ReviewCard
                                 key={review.id}

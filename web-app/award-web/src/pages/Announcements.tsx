@@ -67,6 +67,7 @@ export default function AnnouncementsPage() {
             setIsScheduled(!!selectedAnnouncement.scheduledTime);
             setScheduledTime(formatDatetimeLocal(selectedAnnouncement.scheduledTime));
             setStatus(selectedAnnouncement.status || "draft");
+            setImage(null);
         }
     }, [selectedAnnouncement, isCreating]);
     useEffect(() => {
@@ -174,10 +175,14 @@ export default function AnnouncementsPage() {
             if (isCreating) {
                 response = await Api.createAnnouncement(payload);
                 setAnnouncements(prev => [response!, ...prev]);
+
+                alert("Announcement created successfully");
             } else if (selectedAnnouncement) {
                 response = await Api.updateAnnouncement(selectedAnnouncement.id, payload);
 
                 const refreshed = await Api.getAnnouncementById(selectedAnnouncement.id);
+
+                alert("Announcement saved successfully");
                 setAnnouncements(prev =>
                     prev.map(a => a.id === response!.id ? refreshed : a)
                 );
@@ -247,7 +252,6 @@ export default function AnnouncementsPage() {
                         </Button>
                     )}
 
-
                     <input
                         type="text"
                         placeholder="Search announcements..."
@@ -255,6 +259,12 @@ export default function AnnouncementsPage() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="px-3 py-2 mb-4 border border-gray-300 dark:border-gray-700 rounded-md text-sm w-full bg-white dark:bg-gray-800 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
                     />
+
+                    {announcements.length === 0 && !loading && (
+                        <p className="p-8 text-gray-500 dark:text-gray-400">
+                            No announcements created yet.
+                        </p>
+                    )}
                 </div>
 
                 <div className="flex flex-col gap-4">

@@ -38,9 +38,9 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, isSelected, onClick }) 
                 {timeAgo(review.submittedAt)}
             </p>
 
-            <div className="mt-2 space-y-2">
+            <div className="mt-2 space-y-4">
                 {(isSelected ? review.answers : previewQs).map((qa, index) => (
-                    <div key={index} className="mb-1">
+                    <div key={index} className="mb-4">
                         <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 line-clamp-2">
                             {qa.question}
                         </p>

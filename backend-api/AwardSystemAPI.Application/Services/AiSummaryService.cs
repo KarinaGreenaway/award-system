@@ -8,7 +8,7 @@ namespace AwardSystemAPI.Application.Services;
 public interface IAiSummaryService
 {
     Task<string> GenerateNominationSummaryAsync(string promptData);
-    Task<string> GenerateAiFeedbackSummaryAsync();
+    Task<string> GenerateAiFeedbackSummaryAsync(string feedbackJson);
 }
 
 public class AiSummaryService : IAiSummaryService
@@ -28,9 +28,8 @@ public class AiSummaryService : IAiSummaryService
         return await _vertexAiService.GenerateNominationSummaryAsync(nominationJson);
     }
     
-    public async Task<string> GenerateAiFeedbackSummaryAsync()
+    public async Task<string> GenerateAiFeedbackSummaryAsync(string feedbackJson)
     {
-        var response = "";
-        return response;
+        return await _vertexAiService.GenerateFeedbackSummaryAsync(feedbackJson);
     }
 }

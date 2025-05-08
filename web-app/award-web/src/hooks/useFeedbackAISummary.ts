@@ -18,7 +18,10 @@ export function useFeedbackAISummary() {
             const event: AwardEvent = await Api.getAwardEventByProcessId(activeProcess.id);
             if (!event) throw new Error("No award event found for process");
 
-            setSummary(event.feedbackSummary ?? "Sorry! I don't currently have any feedback for you!");
+            const summary = await Api.getFeedbackSummary(event.id);
+
+            // setSummary(event.feedbackSummary ?? "Sorry! I don't currently have any feedback for you!");
+            setSummary(summary ?? "Sorry! I don't currently have any feedback for you!");
 
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred.";

@@ -27,11 +27,15 @@ export function useCategories() {
     const createCategory = async (category: AwardCategoryCreatePayload) => {
         await Api.createAwardCategory(category);
         await fetchCategories();
+
+        alert("Category saved successfully");
     };
 
     const updateCategory = async (id: number, data: AwardCategoryUpdatePayload) => {
         await Api.updateAwardCategory(id, data);
         await fetchCategories();
+
+        alert("Category saved successfully");
     };
 
     const deleteCategory = async (id: number) => {

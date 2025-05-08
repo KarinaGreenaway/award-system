@@ -4,12 +4,14 @@ using AwardSystemAPI.Common;
 using AwardSystemAPI.Domain.Entities;
 using AwardSystemAPI.Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace AwardSystemAPI.Application.Services;
 
 public interface IFeedbackService
 {
     Task<ApiResponse<IEnumerable<FeedbackResponseDto>, string>> GetFeedbackAsync(int eventId);
+    Task<string> GetFeedbackSummaryAsync(int eventId);
     Task<ApiResponse<FeedbackResponseDto, string>> CreateFeedbackAsync(FeedbackCreateDto dto);
     Task<ApiResponse<FeedbackAnalyticsResponseDto, string>> GetFeedbackAnalyticsAsync(int eventId);
     Task<ApiResponse<IEnumerable<FeedbackFormQuestionResponseDto>, string>> GetFeedbackFormQuestionsAsync(int eventId);
@@ -48,6 +50,21 @@ public class FeedbackService : IFeedbackService
         return dtos.ToArray();
     }
     
+    public async Task<string> GetFeedbackSummaryAsync(int eventId)
+    {
+        var allFeedbacks = await _feedbackRepository.GetByAwardEventId(eventId);
+        var feedbackJson = JsonConvert.SerializeObject(allFeedbacks);
+        var summary = await _aiSummaryService.GenerateAiFeedbackSummaryAsync(feedbackJson);
+        
+        if (string.IsNullOrEmpty(summary))
+        {
+            _logger.LogWarning("Failed to generate feedback summary for AwardEvent ID {Id}.", eventId);
+            return "Failed to generate feedback summary.";
+        }
+        _logger.LogInformation("Generated feedback summary for AwardEvent ID {Id}.", eventId);
+        return summary;
+    }
+    
     public async Task<ApiResponse<FeedbackResponseDto, string>> CreateFeedbackAsync(FeedbackCreateDto dto)
     {
         if (dto == null) throw new ArgumentNullException(nameof(dto));
@@ -60,8 +77,6 @@ public class FeedbackService : IFeedbackService
 
         await _feedbackRepository.AddAsync(entity);
         _logger.LogInformation("Created Feedback with ID {Id}.", entity.Id);
-
-        await _aiSummaryService.GenerateAiFeedbackSummaryAsync();
 
         var responseDto = _mapper.Map<FeedbackResponseDto>(entity);
         return responseDto;

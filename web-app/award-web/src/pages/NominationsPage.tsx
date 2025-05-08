@@ -24,6 +24,16 @@ export default function NominationsPage() {
     const [locationFilter, setLocationFilter] = useState<"All" | "UK" | "SA">("All");
 
 
+
+    const userRole = localStorage.getItem("mock_role");
+    const isAdmin = userRole === "Admin";
+
+    const userId = Number(localStorage.getItem("mock_user_id"));
+    const isSponsor = category?.sponsorId === userId;
+
+    const isEditable = isAdmin || isSponsor;
+
+
     const [contextMenu, setContextMenu] = useState<{
         x: number;
         y: number;
@@ -110,13 +120,6 @@ export default function NominationsPage() {
             </p>
         );
     }
-    if (data.length === 0 && !loading) {
-        return (
-            <p className="p-8 text-gray-500 dark:text-gray-400">
-                No nominations found for this category.
-            </p>
-        );
-    }
 
     return (
         <div className="flex flex-col lg:flex-row h-full relative">
@@ -124,8 +127,14 @@ export default function NominationsPage() {
             <div className="lg:w-1/2 xl:w-1/2 p-4 overflow-y-auto border-gray-200 dark:border-gray-700">
                 <div className="mb-4 space-y-2">
                     <h2 className="text-2xl text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
-                        {category?.name} Nominations
+                        The {category?.name} Nominations
                     </h2>
+
+                    {!isEditable && (
+                        <div className="mb-4 p-3 rounded bg-[color:var(--color-brand-hover)] text-white rounded-xl">
+                            You are in read-only mode. Only the category sponsor or an admin can manage these nominations.
+                        </div>
+                    )}
 
                     <div className="mb-2 flex flex-col sm:flex-row gap-4 mt-6">
                         <input
@@ -147,6 +156,13 @@ export default function NominationsPage() {
                         </select>
                     </div>
                 </div>
+
+
+                {data.length === 0 && (
+                    <div className="p-8 text-gray-500 dark:text-gray-400">
+                        No nominations found for this category.
+                    </div>
+                )}
 
                 <div className="flex flex-col gap-4">
                     {data
@@ -270,10 +286,30 @@ export default function NominationsPage() {
                                 </div>
                             )}
 
+                            {/* Team Members */}
+                            {category?.type === CategoryType.Team && currentNomination.teamMembers && currentNomination.teamMembers.length > 0 && (
+                                <div className="mt-6">
+                                    <h3 className="text-lg mb-2 dark:text-gray-300">Team Members</h3>
+                                    <div className="p-2 rounded-lg">
+                                        <div className="flex flex-wrap gap-2">
+                                            {currentNomination.teamMembers?.map(member => (
+                                                <span
+                                                    key={member.id}
+                                                    className="inline-flex items-center px-3 py-1 rounded-full shadow-md text-sm font-medium bg-[color:var(--color-tabs-light)] dark:bg-[color:var(--color-tabs-dark)] text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)] shadow-sm"
+                                                >
+                                              {member.teamMemberName}
+                                            </span>
+                                            ))}
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            )}
                             {currentNomination.answers?.length > 0 ? (
                                 currentNomination.answers.map((answer) => (
                                     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-                                        <h4 className="text-sm text-gray-800 dark:text-gray-100 mb-2">
+                                        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2">
                                             {answer.question}
                                         </h4>
                                         <p className="text-sm text-gray-700 dark:text-gray-300">{answer.answer}</p>
@@ -285,26 +321,7 @@ export default function NominationsPage() {
                             )}
                         </div>
 
-                        {/* Team Members */}
-                        {category?.type === CategoryType.Team && currentNomination.teamMembers && currentNomination.teamMembers.length > 0 && (
-                            <div className="mt-6">
-                                <h3 className="text-lg mb-2 dark:text-gray-300">Team Members</h3>
-                                <div className="p-2 rounded-lg">
-                                    <div className="flex flex-wrap gap-2">
-                                        {currentNomination.teamMembers?.map(member => (
-                                            <span
-                                                key={member.id}
-                                                className="inline-flex items-center px-3 py-1 rounded-full shadow-md text-sm font-medium bg-[color:var(--color-tabs-light)] dark:bg-[color:var(--color-tabs-dark)] text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)] shadow-sm"
-                                            >
-                                              {member.teamMemberName}
-                                            </span>
-                                        ))}
-                                    </div>
 
-                                </div>
-
-                            </div>
-                        )}
                     </div>
                 ) : selectedId === null ? (
                     <p className="text-gray-500 dark:text-gray-400">
@@ -319,7 +336,7 @@ export default function NominationsPage() {
 
 
             {/* Context Menu */}
-            {contextMenu && contextMenu.item && (
+            {contextMenu && contextMenu.item && isEditable && (
                 <NominationContextMenu
                     ref={menuRef}
                     nomination={contextMenu.item}

@@ -37,6 +37,7 @@ export default function CategoryProfilePage() {
         if (category) {
             setParagraph(category.introductionParagraph || "");
             setStatus(category.profileStatus);
+            setVideo(null);
         }
     }, [category]);
 

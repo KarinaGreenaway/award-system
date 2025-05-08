@@ -1,0 +1,2 @@
+INSERT INTO public.notification ("Id", "UserId", "Title", "Description", "Read", "CreatedAt") VALUES (1, 1, 'Reminder: Award Event Tomorrow', 'Don''t forget to RSVP for the upcoming award event.', false, '2025-04-13 19:31:16.385202');
+INSERT INTO public.notification ("Id", "UserId", "Title", "Description", "Read", "CreatedAt") VALUES (2, 1, 'Reminder: Award Event Tomorrow', 'Don''t forget to RSVP for the upcoming award event.', false, '2025-04-13 19:31:16.385202');

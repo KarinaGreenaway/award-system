@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import DashboardPage from "@/pages/DashboardPage.tsx";
+// import DashboardPage from "@/pages/DashboardPage.tsx";
 import AppLayoutWithTabs from "@/layouts/AppLayoutWithTabs.tsx";
 import LoginPage from "@/pages/Login.tsx";
 import ProtectedRoute from "@/routes/ProtectedRoutes.tsx";
@@ -23,7 +23,8 @@ export default function App() {
             {/* Protected Dashboard Routes */}
             <Route element={<ProtectedRoute />}>
                 <Route path="/" element={<AppLayoutWithTabs />}>
-                    <Route index element={<DashboardPage />} />
+                    {/*<Route index element={<DashboardPage />} />*/}
+                    <Route index element={<NominationsPage />} />
                     <Route path="nominations" element={<NominationsPage />} />
                     <Route path="category-profile" element={<CategoryProfilePage />} />
                     <Route path="announcements" element={<AnnouncementsPage />} />

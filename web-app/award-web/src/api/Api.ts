@@ -284,6 +284,12 @@ const Api = {
         const url = `${BASE_URL}/api/User`;
         const { data } = await axios.get(url);
         return data;
+    },
+
+    getFeedbackSummary: async (eventId: number): Promise<string> => {
+        const url = `${BASE_URL}/api/Feedback/summary/${eventId}`;
+        const { data } = await axios.get(url);
+        return data;
     }
 
 };

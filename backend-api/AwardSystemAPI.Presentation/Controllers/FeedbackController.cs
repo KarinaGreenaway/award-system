@@ -42,6 +42,19 @@ public class FeedbackController : ControllerBase
         );
     }
     
+    [HttpGet("summary/{awardEventId:int}")]
+    public async Task<ActionResult<string>> GetFeedbackSummary(int awardEventId)
+    {
+        if (awardEventId <= 0)
+        {
+            _logger.LogWarning("Invalid AwardEvent ID {Id} provided.", awardEventId);
+            return BadRequest(new { Error = "Invalid AwardEvent ID provided." });
+        }
+
+        var response = await _feedbackService.GetFeedbackSummaryAsync(awardEventId);
+        return response;
+    }
+    
     [HttpPost]
     public async Task<ActionResult<FeedbackResponseDto>> CreateFeedback([FromBody] FeedbackCreateDto dto)
     {

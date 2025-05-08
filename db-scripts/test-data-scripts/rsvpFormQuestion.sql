@@ -1,0 +1,3 @@
+INSERT INTO public."rsvpFormQuestion" ("Id", "EventId", "QuestionText", "ResponseType", "Tooltip", "QuestionOrder", "Options") VALUES (1, 1, 'Will you require special accommodations?', 1, 'Check if you need assistance. Test Edit.', 2, '[]');
+INSERT INTO public."rsvpFormQuestion" ("Id", "EventId", "QuestionText", "ResponseType", "Tooltip", "QuestionOrder", "Options") VALUES (2, 1, 'Test', 2, 'Test tooltip 22 Test Success', 1, '["option a", "option b", "option SUCCESS"]');
+INSERT INTO public."rsvpFormQuestion" ("Id", "EventId", "QuestionText", "ResponseType", "Tooltip", "QuestionOrder", "Options") VALUES (3, 1, 'My Addition Test?', 0, 'Test tooltip 24', 3, '[]');

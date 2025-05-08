@@ -1,7 +1,7 @@
 import {
     Calendar,
     ClipboardEdit,
-    Home,
+    // Home,
     Megaphone,
     Menu,
     MessageCircle,
@@ -34,7 +34,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
     const isAdmin = userRole === "Admin";
 
     const navItems = [
-        { name: "Home", icon: Home, to: "/" },
+        // { name: "Home", icon: Home, to: "/" },
         { name: "Nominations", icon: Trophy, to: "/nominations" },
         { name: "Announcements", icon: Megaphone, to: "/announcements" },
         { name: "Category Profile", icon: ClipboardEdit, to: "/category-profile" },

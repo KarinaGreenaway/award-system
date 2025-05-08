@@ -8,6 +8,10 @@ export default function CategoryTabs() {
     const { categories, loading } = useCategories();
     const { selectedCategoryId, setSelectedCategoryId } = useSelectedCategory();
 
+    const userId = Number(localStorage.getItem("mock_user_id"));
+    const defaultCategoryId =
+        categories.find((category) => category.sponsorId === userId)?.id?.toString() ?? categories[0]?.id?.toString();
+
     if (loading || !Array.isArray(categories) ||categories.length === 0) return null;
 
     return (
@@ -15,7 +19,7 @@ export default function CategoryTabs() {
             value={
                 selectedCategoryId !== null
                     ? selectedCategoryId.toString()
-                    : categories[0]?.id?.toString() ?? ""
+                    : defaultCategoryId
             }
             onValueChange={(val) => setSelectedCategoryId(parseInt(val))}
             className="w-full"
