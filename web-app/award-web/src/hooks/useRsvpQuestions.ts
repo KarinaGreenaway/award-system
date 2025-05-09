@@ -7,7 +7,7 @@ import {
 } from "@/types/Rsvp.ts";
 import { QuestionResponseType } from "@/types/enums/QuestionResponseType.ts";
 
-type EditableRsvpQuestion = RsvpFormQuestionResponseDto & { optionsInput?: string };
+type EditableRsvpQuestion = RsvpFormQuestionResponseDto & { optionsInput?: string, isNew?: boolean };
 
 export function useRsvpQuestions(eventId: number | null) {
     const [rsvpQuestions, setRsvpQuestions] = useState<EditableRsvpQuestion[]>([]);
@@ -83,7 +83,7 @@ export function useRsvpQuestions(eventId: number | null) {
                     return;
                 }
 
-                if (question.id === 0) {
+                if (question.isNew) {
                     await Api.createRsvpFormQuestion({
                         ...payload,
                         eventId
@@ -113,14 +113,15 @@ export function useRsvpQuestions(eventId: number | null) {
         setRsvpQuestions(prev => [
             ...prev,
             {
-                id: 0,
+                id: Date.now(),
                 eventId,
                 questionText: "",
                 responseType: QuestionResponseType.Text,
                 tooltip: "",
                 questionOrder: prev.length + 1,
                 options: [],
-                optionsInput: ""
+                optionsInput: "",
+                isNew: true
             }
         ]);
     };

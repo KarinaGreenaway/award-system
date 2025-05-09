@@ -111,25 +111,7 @@ export default function AwardEventPage() {
             q.questionOrder = idx + 1;
         });
 
-        setQuestions(newQuestions);
-    };
-
-    // Function to add a new question
-    const addNewQuestionWithOrder = (isFeedback: boolean) => {
-        const setQuestions = isFeedback ? setFeedbackQuestions : setRsvpQuestions;
-        const questions = isFeedback ? feedbackQuestions : rsvpQuestions;
-
-        setQuestions(prev => [
-            ...prev,
-            {
-                id: 0, // Placeholder ID for new question
-                questionText: "",
-                responseType: QuestionResponseType.Text,
-                options: [],
-                optionsInput: "",
-                questionOrder: prev.length + 1,
-            }
-        ]);
+        setQuestions(newQuestions as any);
     };
 
     if (loading) return <p className="p-6 text-gray-400">Loading event...</p>;
@@ -148,18 +130,21 @@ export default function AwardEventPage() {
                         You are in read-only mode. Only admins can edit this page.
                     </div>
                 )}
-                {([["Event Name *", name, setName], ["Location *", location, setLocation]]).map(([label, value, setter]) => (
-                    <div key={label} className="mb-6">
-                        <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
-                        <input
-                            type="text"
-                            value={value}
-                            onChange={(e) => setter(e.target.value)}
-                            disabled={!isAdmin}
-                            className="w-full rounded-md p-2 text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                        />
-                    </div>
-                ))}
+
+                {[{ label: "Event Name *", value: name, setter: setName }, { label: "Location *", value: location, setter: setLocation }].map(
+                    ({ label, value, setter }, index) => (
+                        <div key={index} className="mb-6">
+                            <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+                            <input
+                                type="text"
+                                value={value}
+                                onChange={(e) => setter(e.target.value)}
+                                disabled={!isAdmin}
+                                className="w-full rounded-md p-2 text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+                            />
+                        </div>
+                    )
+                )}
 
                 <div className="mb-6">
                     <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Date & Time *</label>
@@ -192,20 +177,20 @@ export default function AwardEventPage() {
                 )}
             </div>
 
-            {/* Right: RSVP Questions */}
+            {/* Right: RSVP Questions / Feedback Questions */}
             <div className="right-panel p-6 space-y-6 overflow-y-auto border-l border-gray-200 dark:border-gray-700">
                 <div className="flex justify-between items-center">
                     <h2 className="text-xl font-semibold text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
                         {showFeedback ? "Feedback Questions" : "RSVP Questions"}
                     </h2>
                     <div className="flex items-center gap-4">
-                        <div className="flex rounded-md overflow-hidden">
+                        <div className="flex rounded-md overflow-hidden shadow-md">
                             <button
                                 onClick={() => setShowFeedback(false)}
                                 className={`px-4 py-1 text-sm font-medium border-r border-gray-300 dark:border-gray-700 ${
                                     !showFeedback
                                         ? "bg-[color:var(--color-brand)] text-white"
-                                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                                        : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                                 }`}
                             >
                                 RSVP
@@ -215,7 +200,7 @@ export default function AwardEventPage() {
                                 className={`px-4 py-1 text-sm font-medium ${
                                     showFeedback
                                         ? "bg-[color:var(--color-brand)] text-white"
-                                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                                        : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                                 }`}
                             >
                                 Feedback

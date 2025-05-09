@@ -95,13 +95,14 @@ export default function CategoryProfilePage() {
         setNominationQuestions(prev => [
             ...prev,
             {
-                id: 0,
+                id: Date.now(), // unique identifier for new questions
                 categoryId: category.id,
                 questionText: "",
                 responseType: QuestionResponseType.Text,
                 options: [],
                 optionsInput: "",
                 questionOrder: prev.length + 1,
+                isNew: true, //flag to identify questions as new
             }
         ]);
     };

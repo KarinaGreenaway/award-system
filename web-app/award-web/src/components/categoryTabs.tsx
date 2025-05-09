@@ -1,11 +1,9 @@
-"use client";
-
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCategories } from "@/hooks/useCategories";
 import {useSelectedCategory} from "@/context/CategoryProvider.tsx";
 
 export default function CategoryTabs() {
-    const { categories, loading } = useCategories();
+    const { categories, loading } = useCategories(null);
     const { selectedCategoryId, setSelectedCategoryId } = useSelectedCategory();
 
     const userId = Number(localStorage.getItem("mock_user_id"));
@@ -24,8 +22,8 @@ export default function CategoryTabs() {
             onValueChange={(val) => setSelectedCategoryId(parseInt(val))}
             className="w-full"
         >
-        <div className="overflow-x-auto no-scrollbar">
-                <TabsList className="flex flex-nowrap gap-2 px-2 py-5 whitespace-nowrap">
+            <div className="overflow-x-auto w-full no-scrollbar">
+                <TabsList className="flex gap-2 px-2 py-5 whitespace-nowrap flex-nowrap">
                     {categories.map((category) => (
                         <TabsTrigger
                             key={category.id}

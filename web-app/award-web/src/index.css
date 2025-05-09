@@ -60,7 +60,7 @@
 }
 
 .btn-brand {
-    @apply bg-[color:var(--color-brand)] text-white rounded-lg transition-all duration-200 ease-in-out transform;
+    @apply cursor-pointer bg-[color:var(--color-brand)] text-white rounded-lg transition-all duration-200 ease-in-out transform;
 }
 
 .btn-brand:hover {
@@ -82,7 +82,7 @@
 }
 
 .btn-secondary {
-    @apply bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg transition-all duration-200 ease-in-out transform;
+    @apply cursor-pointer bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg transition-all duration-200 ease-in-out transform;
 }
 
 .btn-secondary:hover {

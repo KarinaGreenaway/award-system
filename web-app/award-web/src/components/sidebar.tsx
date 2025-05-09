@@ -35,7 +35,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
 
     const navItems = [
         // { name: "Home", icon: Home, to: "/" },
-        { name: "Nominations", icon: Trophy, to: "/nominations" },
+        { name: "Nominations", icon: Trophy, to: "/" },
         { name: "Announcements", icon: Megaphone, to: "/announcements" },
         { name: "Category Profile", icon: ClipboardEdit, to: "/category-profile" },
         { name: "Awards Event", icon: Calendar, to: "/events" },
@@ -76,22 +76,23 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                 <div className="flex items-center justify-between mb-6">
                     {!collapsed && (
                         <div className="flex items-center gap-2">
-                            {/* Dark mode logo */}
-                            <img
-                                src={LogoDark}
-                                alt="Logo Dark"
-                                className="h-8 w-auto object-contain hidden dark:block"
-                            />
-                            {/* Light mode logo */}
-                            <img
-                                src={LogoLight}
-                                alt="Logo Light"
-                                className="h-8 w-auto object-contain block dark:hidden"
-                            />
-
-                            <h2 className="text-2xl tracking-tight text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
-                                Awards
-                            </h2>
+                            <Link to="/" className="flex items-center gap-2">
+                                {/* Dark mode logo */}
+                                <img
+                                    src={LogoDark}
+                                    alt="Logo Dark"
+                                    className="h-8 w-auto object-contain hidden dark:block"
+                                />
+                                {/* Light mode logo */}
+                                <img
+                                    src={LogoLight}
+                                    alt="Logo Light"
+                                    className="h-8 w-auto object-contain block dark:hidden"
+                                />
+                                <h2 className="text-2xl tracking-tight text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
+                                    Awards
+                                </h2>
+                            </Link>
                         </div>
                     )}
                     <button

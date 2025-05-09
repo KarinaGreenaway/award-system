@@ -177,7 +177,16 @@ export default function NominationsPage() {
                                 (item.isWinner ? 4 : 0) +
                                 (item.isShortlisted ? 2 : 0) +
                                 (item.isPinned ? 1 : 0);
-                            return getScore(b) - getScore(a);
+
+                            const scoreComparison = getScore(b) - getScore(a);
+
+                            if (scoreComparison !== 0) {
+                                return scoreComparison;
+                            }
+
+                            const getTotalNominations = (item: any) => item.totalNominations || 0;
+
+                            return getTotalNominations(b) - getTotalNominations(a);
                         })
                         .map((n: any) => {
                             const id =
@@ -276,8 +285,8 @@ export default function NominationsPage() {
                                         <div className="flex items-center gap-2">
                                             <Bot className="h-5 w-5 text-[color:var(--color-brand)]" />
                                             <span className="text-sm font-semibold text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
-                              AI Summary
-                            </span>
+                                              AI Summary
+                                            </span>
                                         </div>
                                     </div>
                                     <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">

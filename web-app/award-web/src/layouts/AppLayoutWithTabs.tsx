@@ -32,7 +32,7 @@ export default function AppLayoutWithTabs() {
                         className="fixed top-0 right-0 z-40 flex items-center h-16 px-6 transition-all duration-300  bg-[color:var(--color-content-light)] dark:bg-[color:var(--color-content-dark)] rounded-lg"
                         style={{ left: collapsed ? "5rem" : "16rem" }}
                     >
-                        <div className="flex-1 z-50">
+                        <div className="flex-1 z-50 overflow-x-auto">
                             <CategoryTabs />
                         </div>
 

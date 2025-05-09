@@ -7,7 +7,7 @@ import {
 } from "@/types/FeedbackQuestions";
 import { QuestionResponseType } from "@/types/enums/QuestionResponseType.ts";
 
-type EditableFeedbackQuestion = FeedbackQuestionsResponseDto & { optionsInput?: string };
+type EditableFeedbackQuestion = FeedbackQuestionsResponseDto & { optionsInput?: string, isNew?: boolean };
 
 export function useFeedbackQuestions(eventId: number | null) {
     const [feedbackQuestions, setFeedbackQuestions] = useState<EditableFeedbackQuestion[]>([]);
@@ -83,7 +83,7 @@ export function useFeedbackQuestions(eventId: number | null) {
                     return;
                 }
 
-                if (question.id === 0) {
+                if (question.isNew) {
                     await Api.createFeedbackFormQuestion({
                         ...payload
                     } as FeedbackQuestionCreatePayload);
@@ -112,13 +112,14 @@ export function useFeedbackQuestions(eventId: number | null) {
         setFeedbackQuestions(prev => [
             ...prev,
             {
-                id: 0,
+                id: Date.now(),
                 eventId,
                 questionText: "",
                 responseType: QuestionResponseType.Text,
                 questionOrder: prev.length + 1,
                 options: [],
-                optionsInput: ""
+                optionsInput: "",
+                isNew: true,
             }
         ]);
     };

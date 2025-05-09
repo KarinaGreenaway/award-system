@@ -7,6 +7,7 @@ import {
 import { QuestionResponseType } from "@/types/enums/QuestionResponseType.ts";
 
 type EditableNominationQuestion = {
+    isNew: boolean;
     id: number;
     categoryId: number;
     questionText: string;
@@ -34,7 +35,7 @@ export function useCategoryProfile(categoryId: number | null) {
             setNominationQuestions(
                 questions.map((q: any) => ({
                     ...q,
-                    responseType: Number(q.responseType), // ✅ ensures number
+                    responseType: Number(q.responseType), // ensures number
                     options: q.options ?? [],
                     optionsInput: (q.options ?? []).join(", ")
                 }))
@@ -92,7 +93,7 @@ export function useCategoryProfile(categoryId: number | null) {
                 return;
             }
 
-            if (question.id === 0) {
+            if (question.isNew) {
                 await Api.createNominationQuestion({
                     ...payload,
                     categoryId: category.id,

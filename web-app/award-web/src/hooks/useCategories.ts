@@ -5,16 +5,25 @@ import {
     AwardCategoryResponseDto,
     AwardCategoryUpdatePayload
 } from "@/types/AwardCategory";
+import {AwardProcess} from "@/types/AwardProcess.ts";
 
-export function useCategories() {
+export function useCategories(selectedProcessId: number | null) {
     const [categories, setCategories] = useState<AwardCategoryResponseDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const fetchCategories = async () => {
         try {
-            const activeProcess = await Api.getActiveAwardProcess();
-            const data = await Api.getCategoriesByProcessId(activeProcess.id);
+            let process: AwardProcess | null = null;
+            let data: AwardCategoryResponseDto[] = [];
+            if (selectedProcessId === null || selectedProcessId === undefined) {
+                process = await Api.getActiveAwardProcess();
+                data = await Api.getCategoriesByProcessId(process?.id as number);
+            }
+            else {
+                data = await Api.getCategoriesByProcessId(selectedProcessId as number);
+            }
+
             setCategories(data);
         } catch (err: any) {
             console.error("Error loading categories", err);
@@ -43,9 +52,12 @@ export function useCategories() {
         await fetchCategories();
     };
 
+    // Refetching categories whenever the selectedProcessId changes
     useEffect(() => {
-        fetchCategories();
-    }, []);
+        if (selectedProcessId !== null) {
+            fetchCategories();
+        }
+    }, [selectedProcessId]);
 
     return {
         categories,

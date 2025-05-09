@@ -38,8 +38,8 @@ export default function AwardsManagementPage() {
         loading: loadingCategories,
         createCategory,
         updateCategory,
-        deleteCategory
-    } = useCategories();
+        deleteCategory,
+    } = useCategories(selectedProcessId);
 
     const categoryTypeText = {
         [CategoryType.Individual]: "Individual",
@@ -61,7 +61,7 @@ export default function AwardsManagementPage() {
     return (
         <div className="flex flex-col lg:flex-row h-full relative">
             {/* Left panel - Award Processes */}
-            <div className="lg:w-1/2 p-6 overflow-y-auto border-r border-gray-200 dark:border-gray-700">
+            <div className="lg:w-1/2 p-6 overflow-y-auto dark:border-gray-700">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)] mb-6">
                         The Award Processes
@@ -99,9 +99,9 @@ export default function AwardsManagementPage() {
                                                 {new Date(process.endDate) > new Date() &&
                                                 new Date() > new Date(process.startDate) ? (
                                                     <div className="flex items-center gap-2 pt-2">
-                                        <span className="px-2 py-1 text-xs font-medium rounded border-2 border-[color:var(--color-brand)] text-[color:var(--color-brand-hover)]">
-                                            ACTIVE
-                                        </span>
+                                                        <span className="px-2 py-1 text-xs font-medium rounded border-2 border-[color:var(--color-brand)] text-[color:var(--color-brand-hover)]">
+                                                            ACTIVE
+                                                        </span>
                                                     </div>
                                                 ) : null}
                                             </div>
@@ -155,7 +155,7 @@ export default function AwardsManagementPage() {
 
 
             {/* Right panel - Judging Rounds/ Categories */}
-            <div className="lg:w-1/2 p-6 overflow-y-auto">
+            <div className="right-panel lg:w-1/2 p-6 overflow-y-auto">
                 <div className="flex justify-between items-center mb-6 h-10">
                     <div className="flex items-center gap-2">
                         <h2 className="text-2xl text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
@@ -164,7 +164,7 @@ export default function AwardsManagementPage() {
                     </div>
 
                     {/* Rounds and Categories Switch */}
-                    <div className="flex rounded-md overflow-hidden ml-4 justify-end border border-white dark:border-gray-700">
+                    <div className="flex rounded-md overflow-hidden ml-4 justify-end dark:border-gray-700 shadow-md">
                         <button
                             onClick={() => setShowCategories(false)}
                             className={`px-4 py-1 text-sm font-medium border-gray-300 dark:border-gray-700 ${
@@ -200,49 +200,49 @@ export default function AwardsManagementPage() {
                         categories
                             .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
                             .map((category) => (
-                            <div key={category.id} className="mb-4 p-4 shadow rounded-xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
-                                <div className="flex justify-between">
-                                    <div>
-                                        <h4 className="block text-sm font-semibold mb-1 pl-1 pb-1 text-gray-700 dark:text-gray-200">{category.name}</h4>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 pl-1 pb-2 capitalize">
-                                            Type: {categoryTypeText[category.type as CategoryType] ?? "Unknown"}
-                                        </p>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 pl-1 pb-2 capitalize">
-                                            Sponsor: {category.sponsorName}
-                                        </p>
-                                        {category.introductionParagraph && (
-                                            <p className="text-sm pl-1 pb-1 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
-                                                {category.introductionParagraph}
+                                <div key={category.id} className="mb-4 p-4 space-y-4 shadow-md p-4 rounded-md bg-white dark:bg-gray-800">
+                                    <div className="flex justify-between">
+                                        <div>
+                                            <h4 className="block text-sm font-semibold mb-1 pl-1 pb-1 text-gray-700 dark:text-gray-200">{category.name}</h4>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400 pl-1 pb-2 capitalize">
+                                                Type: {categoryTypeText[category.type as CategoryType] ?? "Unknown"}
                                             </p>
-                                        )}
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <Button
-                                            size="sm"
-                                            onClick={() => {
-                                                setEditingCategory(category);
-                                                setShowCategoryForm(true);
-                                            }}
-                                            className="btn-brand mb-2 mt-1"
-                                        >
-                                            Edit
-                                        </Button>
-                                        <Button
-                                            variant="destructive"
-                                            size="sm"
-                                            onClick={() => {
-                                                if (confirm("Delete this category?")) {
-                                                    deleteCategory(category.id);
-                                                }
-                                            }}
-                                            className="btn-secondary"
-                                        >
-                                            Delete
-                                        </Button>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400 pl-1 pb-2 capitalize">
+                                                Sponsor: {category.sponsorName}
+                                            </p>
+                                            {category.introductionParagraph && (
+                                                <p className="text-sm pl-1 pb-1 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
+                                                    {category.introductionParagraph}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <Button
+                                                size="sm"
+                                                onClick={() => {
+                                                    setEditingCategory(category);
+                                                    setShowCategoryForm(true);
+                                                }}
+                                                className="btn-brand mb-2 mt-1"
+                                            >
+                                                Edit
+                                            </Button>
+                                            <Button
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={() => {
+                                                    if (confirm("Delete this category?")) {
+                                                        deleteCategory(category.id);
+                                                    }
+                                                }}
+                                                className="btn-secondary"
+                                            >
+                                                Delete
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
+                            ))
                     )
                 ) : loadingRounds ? (
                     <p className="text-sm text-gray-500 dark:text-gray-400">Loading...</p>
@@ -250,7 +250,7 @@ export default function AwardsManagementPage() {
                     <p className="text-gray-400">No judging rounds for this process.</p>
                 ) : (
                     judgingRounds.map((round) => (
-                        <div key={round.id} className="mb-4 p-4 shadow rounded-xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+                        <div key={round.id} className="mb-4 p-4 space-y-4 shadow-md p-4 rounded-md bg-white dark:bg-gray-800">
                             <div className="flex justify-between">
                                 <div>
                                     <h4 className="block text-sm font-semibold mb-1 pl-1 pb-1 text-gray-700 dark:text-gray-200">{round.roundName}</h4>
@@ -266,7 +266,7 @@ export default function AwardsManagementPage() {
                                             setEditingRound(round);
                                             setShowRoundForm(true);
                                         }}
-                                        className="btn-secondary mb-2 mt-1"
+                                        className="btn-brand mb-2 mt-1"
                                     >
                                         Edit
                                     </Button>
