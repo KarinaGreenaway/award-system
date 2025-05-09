@@ -134,16 +134,30 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                     <ThemeToggle collapsed />
                 </div>
             ) : (
-                <div className="flex items-center justify-between gap-3 p-3 mt-4 flex-shrink-0" onClick={handleProfileClick}>
-                    <div className="flex items-center gap-3">
-                        <div className="card-icon-wrap">
-                            <User className="h-6 w-6 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]" />
-                        </div>
-                        <span className="text-sm text-text-light dark:text-text-dark">John</span>
-                        <div className="absolute right-7">
-                            <ThemeToggle />
+                <div>
+                    <div className="flex items-center justify-between gap-3 p-1 mt-4 flex-shrink-0" onClick={handleProfileClick}>
+                        <div className="flex items-center gap-3">
+                            <div className="card-icon-wrap">
+                                <User className="h-6 w-6 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]" />
+                            </div>
+                            <span className="text-sm text-text-light dark:text-text-dark">John</span>
+                            <div className="absolute right-7">
+                                <ThemeToggle />
+                            </div>
                         </div>
                     </div>
+                    {/*<div className="flex p-1 text-xs">*/}
+                    {/*    <button*/}
+                    {/*        className="text-sx text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"*/}
+                    {/*        onClick={() => {*/}
+                    {/*            localStorage.removeItem("mock_role");*/}
+                    {/*            navigate("/login");*/}
+                    {/*        }}*/}
+                    {/*    >*/}
+                    {/*        Log out*/}
+                    {/*    </button>*/}
+                    {/*</div>*/}
+
                 </div>
             )}
 

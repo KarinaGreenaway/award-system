@@ -37,9 +37,14 @@
     scrollbar-width: none; /* Firefox */
 }
 
-/* Custom Button Style */
+
 .form-add-button {
-    @apply cursor-pointer bg-white w-full text-[color:var(--color-brand)] hover:scale-[1.01] hover:font-semibold hover:shadow-md;
+    @apply cursor-pointer
+    bg-white dark:bg-[color:var(--color-sidebar-dark)]
+        dark:border
+        dark:border-gray-500
+    w-full text-[color:var(--color-brand)] dark:text-white
+    hover:scale-[1.01] hover:font-semibold hover:shadow-md;
 }
 
 .form-add-button:disabled {
@@ -50,7 +55,8 @@
 .form-add-button-icon {
     @apply flex gap-4 p-1 px-2 rounded-lg
     transition-all duration-200 ease-out transform
-    hover:scale-[1.01] active:scale-[0.98] bg-[color:var(--color-brand)] text-white;
+    hover:scale-[1.01] active:scale-[0.98]
+    bg-[color:var(--color-brand)] text-white dark:text-white;
 }
 
 .btn-brand {

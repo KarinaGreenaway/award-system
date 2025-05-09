@@ -74,12 +74,12 @@ export default function CategoryProfilePage() {
         setStatus(newStatus ? "published" : "draft");
     };
 
-    const handleQuestionChange = (id: number, field: string, value: any) => {
+    const handleQuestionChange = (id: number, field: string, value: string | string[] | QuestionResponseType) => {
         setNominationQuestions(prev =>
             prev.map(q => {
                 if (q.id !== id) return q;
                 const updated = { ...q, [field]: value };
-                if (field === "optionsInput") {
+                if (field === "optionsInput" && typeof value === "string") {
                     updated.options = value
                         .split(",")
                         .map((o: string) => o.trim())
@@ -127,10 +127,6 @@ export default function CategoryProfilePage() {
 
             return newQuestions;
         });
-    };
-
-    const saveOrder = () => {
-        saveNominationQuestions(nominationQuestions);
     };
 
 
@@ -336,10 +332,8 @@ export default function CategoryProfilePage() {
                             className="form-add-button"
                             onClick={handleAddQuestion}
                         >
-                            <div className="form-add-button-icon">
-                                <Plus className="justify-center w-4 h-4" />
-                            </div>
-                            Add
+                            <Plus className="justify-center w-4 h-4 text-[color:var(--color-brand)] dark:text-white" />
+                            New Question
                         </Button>
                     )}
                 </div>
@@ -348,11 +342,9 @@ export default function CategoryProfilePage() {
                     {isEditable && (
                         <Button
                             className="btn-brand"
-                            onClick={() => {
-                                saveNominationQuestions
-                            }}
+                            onClick={saveNominationQuestions}
                         >
-                            Save
+                            Save Nomination Questions
                         </Button>
                     )}
                 </div>

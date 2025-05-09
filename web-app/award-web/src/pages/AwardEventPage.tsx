@@ -221,14 +221,6 @@ export default function AwardEventPage() {
                                 Feedback
                             </button>
                         </div>
-                        {isAdmin && (
-                            <Button
-                                onClick={() => (showFeedback ? addNewFeedbackQuestion() : addNewQuestion())}
-                                className="btn-brand"
-                            >
-                                <Plus className="h-4 w-4" /> New Question
-                            </Button>
-                        )}
                     </div>
                 </div>
 
@@ -286,6 +278,7 @@ export default function AwardEventPage() {
                             <div className="flex justify-end items-center">
                                 {/* Move question up/down */}
                                 <div className="flex gap-2">
+                                    <p className="p-2 dark:text-[color:var(--color-text-dark)]"> Q{q.questionOrder}</p>
                                     <Button
                                         onClick={() => moveQuestion(q.id, "up", showFeedback)}
                                         disabled={!isAdmin || q.questionOrder === 1}
@@ -305,8 +298,20 @@ export default function AwardEventPage() {
                         </div>
                     ))}
 
+                <div className="flex justify-center mt-2">
+                    {isAdmin && (
+                        <Button
+                            onClick={() => (showFeedback ? addNewFeedbackQuestion() : addNewQuestion())}
+                            className="form-add-button"
+                        >
+                            <Plus className="h-4 w-4" /> New Question
+                        </Button>
+                    )}
+                </div>
+
+
                 {isAdmin && (
-                    <div className="pt-4">
+                    <div className="flex justify-end mt-10">
                         <Button
                             onClick={showFeedback ? saveFeedbackQuestions : saveRsvpQuestions}
                             className="btn-brand"
