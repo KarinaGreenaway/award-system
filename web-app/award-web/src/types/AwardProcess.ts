@@ -3,7 +3,6 @@ export interface AwardProcess {
     awardsName: string;
     startDate: string;
     endDate: string;
-    status: string;
     createdAt: string;
 }
 
@@ -11,7 +10,6 @@ export interface CreateAwardProcessPayload {
     awardsName: string;
     startDate: string;
     endDate: string;
-    status: string;
 }
 
 export interface JudgingRound {

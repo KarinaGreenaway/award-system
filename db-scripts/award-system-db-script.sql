@@ -46,7 +46,6 @@ CREATE TABLE "awardProcess" (
     "AwardsName" VARCHAR(255) NOT NULL,
     "StartDate" TIMESTAMP NOT NULL,
     "EndDate" TIMESTAMP,
-    "Status" VARCHAR(50) NOT NULL,  -- e.g., 'active', 'completed'
     "CreatedAt" TIMESTAMP DEFAULT now(),
     "UpdatedAt" TIMESTAMP DEFAULT now()
 );

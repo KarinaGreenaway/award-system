@@ -12,10 +12,6 @@ public class AwardProcessUpdateDto: IValidatableObject
 
     public DateTime? EndDate { get; set; }
 
-    [Required]
-    [MaxLength(50)]
-    public string Status { get; set; } = string.Empty;
-     
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (EndDate.HasValue && EndDate.Value < StartDate)

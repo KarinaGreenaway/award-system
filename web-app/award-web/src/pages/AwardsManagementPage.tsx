@@ -11,7 +11,7 @@ import { AwardCategoryResponseDto } from "@/types/AwardCategory";
 import {Card, CardContent} from "@/components/ui/card.tsx";
 import { CategoryType } from "@/types/enums/CategoryType";
 import {cn} from "@/lib/utils.ts";
-import {Trophy} from "lucide-react";
+import {Plus, Trophy} from "lucide-react";
 
 export default function AwardsManagementPage() {
     const {
@@ -66,73 +66,93 @@ export default function AwardsManagementPage() {
                     <h2 className="text-2xl text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)] mb-6">
                         The Award Processes
                     </h2>
-                    <Button className="btn-brand" onClick={() => {
-                        setEditingProcess(null);
-                        setShowProcessForm(true);
-                    }}>
-                        + New Award Process
-                    </Button>
                 </div>
 
-                {loadingProcesses ? (
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Loading...</p>
-                ) : (
-                    awardProcesses.map((process) => (
-                        <Card
-                            key={process.id}
-                            onClick={() => handleSelectProcess(process.id)}
-                            className={cn(
-                                "card-interactive",
-                                selectedProcessId === process.id && "card-interactive-selected"
-                            )}
-                        >
-                            <CardContent className="card-content-row">
-                                <div className="flex items-center gap-4 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
-                                    <div className="card-icon-wrap text-[color:var(--color-brand)]">
-                                        <Trophy className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-medium font-light mb-1">{process.awardsName}</h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            {new Date(process.startDate).toLocaleDateString()} → {new Date(process.endDate).toLocaleDateString()}
-                                        </p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                                            {process.status}
-                                        </p>
-                                    </div>
-                                </div>
+                <div className="flex flex-col gap-4">
+                    {loadingProcesses ? (
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Loading...</p>
+                    ) : (
+                        awardProcesses
+                            .sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime())
+                            .map((process) => (
+                                <Card
+                                    key={process.id}
+                                    onClick={() => handleSelectProcess(process.id)}
+                                    className={cn(
+                                        "card-interactive",
+                                        selectedProcessId === process.id && "card-interactive-selected"
+                                    )}
+                                >
+                                    <CardContent className="card-content-row">
+                                        {/* Left - Icon and Info */}
+                                        <div className="flex items-center gap-4 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
+                                            <div className="card-icon-wrap text-[color:var(--color-brand)]">
+                                                <Trophy className="h-6 w-6 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]" />
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-semibold">{process.awardsName}</div>
+                                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                    {new Date(process.startDate).toLocaleDateString()} → {new Date(process.endDate).toLocaleDateString()}
+                                                </div>
 
-                                <div className="flex flex-col gap-1 items-end">
-                                    <Button
-                                        size="sm"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setEditingProcess(process);
-                                            setShowProcessForm(true);
-                                        }}
-                                        className="btn-brand mb-2 mt-1"
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        variant="destructive"
-                                        size="sm"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (confirm("Are you sure you want to delete this award process?")) {
-                                                deleteAwardProcess(process.id);
-                                            }
-                                        }}
-                                        className="btn-brand"
-                                    >
-                                        Delete
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))
-                )}
+                                                {/* ACTIVE state signifier */}
+                                                {new Date(process.endDate) > new Date() &&
+                                                new Date() > new Date(process.startDate) ? (
+                                                    <div className="flex items-center gap-2 pt-2">
+                                        <span className="px-2 py-1 text-xs font-medium rounded border-2 border-[color:var(--color-brand)] text-[color:var(--color-brand-hover)]">
+                                            ACTIVE
+                                        </span>
+                                                    </div>
+                                                ) : null}
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <Button
+                                                size="sm"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setEditingProcess(process);
+                                                    setShowProcessForm(true);
+                                                }}
+                                                className="btn-brand mb-2 mt-1"
+                                            >
+                                                Edit
+                                            </Button>
+                                            <Button
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (confirm("Are you sure you want to delete this award process?")) {
+                                                        deleteAwardProcess(process.id);
+                                                    }
+                                                }}
+                                                className="btn-secondary"
+                                            >
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))
+                    )}
+                </div>
+
+                {/* New Award Process button below the Award Process cards */}
+                <div className="flex justify-end mt-6">
+                    <Button
+                        className="btn-brand"
+                        onClick={() => {
+                            setEditingProcess(null);
+                            setShowProcessForm(true);
+                        }}
+                    >
+                        <Plus className="h-4 w-4" />New Award Process
+                    </Button>
+                </div>
             </div>
+
+
 
             {/* Right panel - Judging Rounds/ Categories */}
             <div className="lg:w-1/2 p-6 overflow-y-auto">
@@ -141,53 +161,34 @@ export default function AwardsManagementPage() {
                         <h2 className="text-2xl text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
                             {showCategories ? "Categories" : "Judging Rounds"}
                         </h2>
-                        <div className="flex rounded-md overflow-hidden ml-4">
-                            <button
-                                onClick={() => setShowCategories(false)}
-                                className={`px-4 py-1 text-sm font-medium border-r border-gray-300 dark:border-gray-700 ${
-                                    !showCategories
-                                        ? "bg-[color:var(--color-brand)] text-white"
-                                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                                }`}
-                            >
-                                Rounds
-                            </button>
-                            <button
-                                onClick={() => setShowCategories(true)}
-                                className={`px-4 py-1 text-sm font-medium ${
-                                    showCategories
-                                        ? "bg-[color:var(--color-brand)] text-white"
-                                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                                }`}
-                            >
-                                Categories
-                            </button>
-                        </div>
                     </div>
 
-                    <div className="h-10 flex items-center">
-                        {selectedProcessId ? (
-                            <Button
-                                className="btn-brand"
-                                onClick={() => {
-                                    if (showCategories) {
-                                        setEditingCategory(null);
-                                        setShowCategoryForm(true);
-                                    } else {
-                                        setEditingRound(null);
-                                        setShowRoundForm(true);
-                                    }
-                                }}
-                            >
-                                {showCategories ? "+ Add Category" : "+ Add Round"}
-                            </Button>
-
-                        ) : (
-                            <div className="w-[140px] h-10" /> // matches button height preventing jumping
-                        )}
+                    {/* Rounds and Categories Switch */}
+                    <div className="flex rounded-md overflow-hidden ml-4 justify-end border border-white dark:border-gray-700">
+                        <button
+                            onClick={() => setShowCategories(false)}
+                            className={`px-4 py-1 text-sm font-medium border-gray-300 dark:border-gray-700 ${
+                                !showCategories
+                                    ? "bg-[color:var(--color-brand)] text-white"
+                                    : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                            }`}
+                        >
+                            Rounds
+                        </button>
+                        <button
+                            onClick={() => setShowCategories(true)}
+                            className={`px-4 py-1 text-sm font-medium ${
+                                showCategories
+                                    ? "bg-[color:var(--color-brand)] text-white"
+                                    : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                            }`}
+                        >
+                            Categories
+                        </button>
                     </div>
                 </div>
 
+                {/* Render categories or rounds based on the state */}
                 {!selectedProcessId ? (
                     <p className="text-gray-500 dark:text-gray-400">Select an award process to view its details.</p>
                 ) : showCategories ? (
@@ -196,14 +197,17 @@ export default function AwardsManagementPage() {
                     ) : categories.length === 0 ? (
                         <p className="text-gray-400">No categories for this process.</p>
                     ) : (
-                        categories.map((category) => (
+                        categories
+                            .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+                            .map((category) => (
                             <div key={category.id} className="mb-4 p-4 shadow rounded-xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
                                 <div className="flex justify-between">
                                     <div>
                                         <h4 className="block text-sm font-semibold mb-1 pl-1 pb-1 text-gray-700 dark:text-gray-200">{category.name}</h4>
                                         <p className="text-sm text-gray-500 dark:text-gray-400 pl-1 pb-2 capitalize">
                                             Type: {categoryTypeText[category.type as CategoryType] ?? "Unknown"}
-                                        </p><p className="text-sm text-gray-500 dark:text-gray-400 pl-1 pb-2 capitalize">
+                                        </p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 pl-1 pb-2 capitalize">
                                             Sponsor: {category.sponsorName}
                                         </p>
                                         {category.introductionParagraph && (
@@ -219,7 +223,7 @@ export default function AwardsManagementPage() {
                                                 setEditingCategory(category);
                                                 setShowCategoryForm(true);
                                             }}
-                                            className="btn-secondary mb-2 mt-1"
+                                            className="btn-brand mb-2 mt-1"
                                         >
                                             Edit
                                         </Button>
@@ -240,7 +244,6 @@ export default function AwardsManagementPage() {
                             </div>
                         ))
                     )
-
                 ) : loadingRounds ? (
                     <p className="text-sm text-gray-500 dark:text-gray-400">Loading...</p>
                 ) : judgingRounds.length === 0 ? (
@@ -284,7 +287,29 @@ export default function AwardsManagementPage() {
                         </div>
                     ))
                 )}
+
+                <div className="h-10 flex justify-end">
+                    {selectedProcessId ? (
+                        <Button
+                            className="btn-brand"
+                            onClick={() => {
+                                if (showCategories) {
+                                    setEditingCategory(null);
+                                    setShowCategoryForm(true);
+                                } else {
+                                    setEditingRound(null);
+                                    setShowRoundForm(true);
+                                }
+                            }}
+                        >
+                            {showCategories ? "+ Add Category" : "+ Add Round"}
+                        </Button>
+                    ) : (
+                        <div className="w-[140px] h-10" /> // matches button height preventing jumping
+                    )}
+                </div>
             </div>
+
 
 
             {/* Modals */}
@@ -294,6 +319,10 @@ export default function AwardsManagementPage() {
                         <AwardProcessForm
                             initialData={editingProcess ?? undefined}
                             isEditing={!!editingProcess}
+                            onClose={() => {
+                                setShowProcessForm(false);
+                                setEditingProcess(null);
+                            }}
                             onSubmit={async (data) => {
                                 if (editingProcess) {
                                     await updateAwardProcess(editingProcess.id, data);
@@ -304,15 +333,6 @@ export default function AwardsManagementPage() {
                                 refetchProcesses();
                             }}
                         />
-                        <div className="mt-4 flex justify-end">
-                            <Button
-                                variant="outline"
-                                onClick={() => setShowProcessForm(false)}
-                                className="btn-brand px-4 py-2 rounded text-sm font-medium"
-                            >
-                                Cancel
-                            </Button>
-                        </div>
                     </div>
                 </div>
             )}

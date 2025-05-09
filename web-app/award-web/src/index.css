@@ -2,8 +2,9 @@
 
 /* Custom theme (brand colors, layout colors) */
 @theme {
-    --color-brand: #e84b67;
-    --color-brand-hover: #f26c85;
+    --color-brand: #f41c5e;
+    --color-brand-hover: #f64d81;
+    --color-brand-darker: #d30a48;
     --color-sidebar-light: #ffffff;
     --color-sidebar-lighter: #ffffff;
     --color-sidebar-dark: #111827;
@@ -34,6 +35,22 @@
 .no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+}
+
+/* Custom Button Style */
+.form-add-button {
+    @apply cursor-pointer bg-white w-full text-[color:var(--color-brand)] hover:scale-[1.01] hover:font-semibold hover:shadow-md;
+}
+
+.form-add-button:disabled {
+    @apply opacity-70 cursor-not-allowed;
+    transform: none !important;
+}
+
+.form-add-button-icon {
+    @apply flex gap-4 p-1 px-2 rounded-lg
+    transition-all duration-200 ease-out transform
+    hover:scale-[1.01] active:scale-[0.98] bg-[color:var(--color-brand)] text-white;
 }
 
 .btn-brand {
@@ -79,8 +96,6 @@
     @apply opacity-70 cursor-not-allowed;
     transform: none !important;
 }
-
-
 
 .file-input-brand {
     @apply w-full text-sm text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]

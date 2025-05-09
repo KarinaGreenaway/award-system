@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "@/components/sidebar.tsx";
 import CategoryTabs from "@/components/categoryTabs.tsx";
 import {CategoryProvider} from "@/context/CategoryProvider.tsx";
+import VitalityLogo from "@/assets/vitality-pink-logo.png";
 
 export default function AppLayoutWithTabs() {
     const [collapsed, setCollapsed] = useState(false);
@@ -31,9 +32,13 @@ export default function AppLayoutWithTabs() {
                         className="fixed top-0 right-0 z-40 flex items-center h-16 px-6 transition-all duration-300  bg-[color:var(--color-content-light)] dark:bg-[color:var(--color-content-dark)] rounded-lg"
                         style={{ left: collapsed ? "5rem" : "16rem" }}
                     >
-
-                    <div className="w-full max-w-7xl mx-auto ">
+                        <div className="flex-1 z-50">
                             <CategoryTabs />
+                        </div>
+
+                        {/* Image in Top Right Corner */}
+                        <div className="z-40">
+                            <img src={VitalityLogo} alt="logo" className="w-12 h-12" />
                         </div>
                     </div>
 

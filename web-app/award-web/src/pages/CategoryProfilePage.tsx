@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { CategoryType } from "@/types/enums/CategoryType";
 import { QuestionResponseType } from "@/types/enums/QuestionResponseType.ts";
+import {Plus} from "lucide-react";
 
 export default function CategoryProfilePage() {
     const { selectedCategoryId } = useSelectedCategory();
@@ -104,6 +105,34 @@ export default function CategoryProfilePage() {
             }
         ]);
     };
+
+    const moveQuestion = (id: number, direction: "up" | "down") => {
+        setNominationQuestions(prevQuestions => {
+            const newQuestions = [...prevQuestions];
+            const index = newQuestions.findIndex(q => q.id === id);
+
+            if (index === -1) return prevQuestions;
+
+            // Swapping question with the one above or below it
+            if (direction === "up" && index > 0) {
+                [newQuestions[index], newQuestions[index - 1]] = [newQuestions[index - 1], newQuestions[index]];
+            } else if (direction === "down" && index < newQuestions.length - 1) {
+                [newQuestions[index], newQuestions[index + 1]] = [newQuestions[index + 1], newQuestions[index]];
+            }
+
+            // Updating questionOrder after moving
+            newQuestions.forEach((q, idx) => {
+                q.questionOrder = idx + 1;
+            });
+
+            return newQuestions;
+        });
+    };
+
+    const saveOrder = () => {
+        saveNominationQuestions(nominationQuestions);
+    };
+
 
     if (loading) return <p className="p-6 text-gray-400">Loading category profile...</p>;
     if (error) return <p className="p-6 text-[color:var(--color-brand)]">{error}</p>;
@@ -226,15 +255,13 @@ export default function CategoryProfilePage() {
                     <h2 className="text-xl font-semibold text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
                         Nomination Questions
                     </h2>
-                    {isEditable && (
-                        <Button onClick={handleAddQuestion} className="btn-brand">+ New Question</Button>
-                    )}
                 </div>
 
                 {nominationQuestions
                     .sort((a, b) => (a.questionOrder ?? 0) - (b.questionOrder ?? 0))
                     .map((q) => (
                         <div key={q.id || `new-${q.questionOrder}`} className="space-y-4 shadow-md p-4 rounded-md bg-white dark:bg-gray-800">
+                            {/* Question content */}
                             <div>
                                 <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Question Text</label>
                                 <input
@@ -245,6 +272,8 @@ export default function CategoryProfilePage() {
                                     className="w-full rounded-md p-2 border text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
                                 />
                             </div>
+
+                            {/* Response Type */}
                             <div>
                                 <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Response Type</label>
                                 <select
@@ -258,6 +287,8 @@ export default function CategoryProfilePage() {
                                     <option value={QuestionResponseType.MultipleChoice}>Multiple Choice</option>
                                 </select>
                             </div>
+
+                            {/* Options Input */}
                             {q.responseType === QuestionResponseType.MultipleChoice && (
                                 <div>
                                     <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
@@ -273,26 +304,58 @@ export default function CategoryProfilePage() {
                                     />
                                 </div>
                             )}
-                            <div>
-                                <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Order</label>
-                                <input
-                                    type="number"
-                                    value={q.questionOrder ?? 0}
-                                    onChange={e => handleQuestionChange(q.id, "questionOrder", parseInt(e.target.value))}
-                                    disabled={!isEditable}
-                                    className="w-full rounded-md p-2 border text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
-                                />
+
+                            {/* Question Order */}
+                            <div className="flex justify-end items-center">
+
+                                {/* Up/Down Arrows */}
+                                <div className="flex gap-2">
+                                    <p className="p-2 dark:text-[color:var(--color-text-dark)]"> Q{q.questionOrder}</p>
+                                    <Button
+                                        onClick={() => moveQuestion(q.id, "up")}
+                                        disabled={!isEditable || q.questionOrder === 1} // Disable when it's the first question
+                                        className="btn-brand p-2"
+                                    >
+                                        ↑
+                                    </Button>
+                                    <Button
+                                        onClick={() => moveQuestion(q.id, "down")}
+                                        disabled={!isEditable || q.questionOrder === nominationQuestions.length} // Disable when it's the last question
+                                        className="btn-brand p-2"
+                                    >
+                                        ↓
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     ))}
 
-                {isEditable && (
-                    <div className="pt-4">
-                        <Button onClick={saveNominationQuestions} className="btn-brand">
-                            Save Nomination Questions
+                <div className="flex justify-center mt-2">
+                    {isEditable && (
+                        <Button
+                            className="form-add-button"
+                            onClick={handleAddQuestion}
+                        >
+                            <div className="form-add-button-icon">
+                                <Plus className="justify-center w-4 h-4" />
+                            </div>
+                            Add
                         </Button>
-                    </div>
-                )}
+                    )}
+                </div>
+
+                <div className="flex justify-end mt-10">
+                    {isEditable && (
+                        <Button
+                            className="btn-brand"
+                            onClick={() => {
+                                saveNominationQuestions
+                            }}
+                        >
+                            Save
+                        </Button>
+                    )}
+                </div>
             </div>
         </div>
     );

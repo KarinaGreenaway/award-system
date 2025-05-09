@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 import { useAwardEvent } from "@/hooks/useAwardEvent";
 import { Button } from "@/components/ui/button";
 import Api from "@/api/Api.ts";
-import "react-datepicker/dist/react-datepicker.css";
 import { useRsvpQuestions } from "@/hooks/useRsvpQuestions";
 import { useFeedbackQuestions } from "@/hooks/useFeedbackQuestions";
 import { QuestionResponseType } from "@/types/enums/QuestionResponseType.ts";
-
+import { Plus } from "lucide-react";
 
 export default function AwardEventPage() {
     const { event, activeProcessId, loading, error, refetch } = useAwardEvent();
@@ -18,13 +17,13 @@ export default function AwardEventPage() {
     const [isSaving, setIsSaving] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
 
-
     const {
         rsvpQuestions,
         handleQuestionChange,
         saveRsvpQuestions,
         addNewQuestion,
-        isSavingRsvp
+        isSavingRsvp,
+        setRsvpQuestions
     } = useRsvpQuestions(event?.id ?? null);
 
     const {
@@ -32,9 +31,9 @@ export default function AwardEventPage() {
         handleQuestionChange: handleFeedbackChange,
         saveFeedbackQuestions,
         addNewQuestion: addNewFeedbackQuestion,
-        isSavingFeedback
+        isSavingFeedback,
+        setFeedbackQuestions
     } = useFeedbackQuestions(event?.id ?? null);
-
 
     const userRole = localStorage.getItem("mock_role") as "Admin" | "User" | null;
     const isAdmin = userRole === "Admin";
@@ -91,6 +90,48 @@ export default function AwardEventPage() {
         return local.toISOString().slice(0, 16);
     }
 
+    // Function to move question up or down
+    const moveQuestion = (id: number, direction: "up" | "down", isFeedback: boolean) => {
+        const setQuestions = isFeedback ? setFeedbackQuestions : setRsvpQuestions;
+        const questions = isFeedback ? feedbackQuestions : rsvpQuestions;
+
+        const newQuestions = [...questions];
+        const index = newQuestions.findIndex(q => q.id === id);
+
+        if (index === -1) return;
+
+        if (direction === "up" && index > 0) {
+            [newQuestions[index], newQuestions[index - 1]] = [newQuestions[index - 1], newQuestions[index]];
+        } else if (direction === "down" && index < newQuestions.length - 1) {
+            [newQuestions[index], newQuestions[index + 1]] = [newQuestions[index + 1], newQuestions[index]];
+        }
+
+        // Update questionOrder after moving
+        newQuestions.forEach((q, idx) => {
+            q.questionOrder = idx + 1;
+        });
+
+        setQuestions(newQuestions);
+    };
+
+    // Function to add a new question
+    const addNewQuestionWithOrder = (isFeedback: boolean) => {
+        const setQuestions = isFeedback ? setFeedbackQuestions : setRsvpQuestions;
+        const questions = isFeedback ? feedbackQuestions : rsvpQuestions;
+
+        setQuestions(prev => [
+            ...prev,
+            {
+                id: 0, // Placeholder ID for new question
+                questionText: "",
+                responseType: QuestionResponseType.Text,
+                options: [],
+                optionsInput: "",
+                questionOrder: prev.length + 1,
+            }
+        ]);
+    };
+
     if (loading) return <p className="p-6 text-gray-400">Loading event...</p>;
     if (error) return <p className="p-6 text-[color:var(--color-brand)]">{error}</p>;
 
@@ -107,10 +148,7 @@ export default function AwardEventPage() {
                         You are in read-only mode. Only admins can edit this page.
                     </div>
                 )}
-                {([
-                    ["Event Name *", name, setName] as [string, string, (val: string) => void],
-                    ["Location *", location, setLocation] as [string, string, (val: string) => void]
-                ] as [string, string, (val: string) => void][]).map(([label, value, setter]) => (
+                {([["Event Name *", name, setName], ["Location *", location, setLocation]]).map(([label, value, setter]) => (
                     <div key={label} className="mb-6">
                         <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
                         <input
@@ -188,7 +226,7 @@ export default function AwardEventPage() {
                                 onClick={() => (showFeedback ? addNewFeedbackQuestion() : addNewQuestion())}
                                 className="btn-brand"
                             >
-                                + New Question
+                                <Plus className="h-4 w-4" /> New Question
                             </Button>
                         )}
                     </div>
@@ -199,6 +237,7 @@ export default function AwardEventPage() {
                     .sort((a, b) => (a.questionOrder ?? 0) - (b.questionOrder ?? 0))
                     .map((q) => (
                         <div key={q.id || `new-${q.questionOrder}`} className="space-y-4 shadow-md p-4 rounded-md bg-white dark:bg-gray-800">
+                            {/* Question content */}
                             <div>
                                 <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Question Text</label>
                                 <input
@@ -243,17 +282,25 @@ export default function AwardEventPage() {
                                     />
                                 </div>
                             )}
-                            <div>
-                                <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Order</label>
-                                <input
-                                    type="number"
-                                    value={q.questionOrder ?? 0}
-                                    onChange={e =>
-                                        (showFeedback ? handleFeedbackChange : handleQuestionChange)(q.id, "questionOrder", parseInt(e.target.value))
-                                    }
-                                    disabled={!isAdmin}
-                                    className="w-full rounded-md p-2 border text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]"
-                                />
+                            {/* Other question fields (response type, options, etc.) */}
+                            <div className="flex justify-end items-center">
+                                {/* Move question up/down */}
+                                <div className="flex gap-2">
+                                    <Button
+                                        onClick={() => moveQuestion(q.id, "up", showFeedback)}
+                                        disabled={!isAdmin || q.questionOrder === 1}
+                                        className="btn-brand p-2"
+                                    >
+                                        ↑
+                                    </Button>
+                                    <Button
+                                        onClick={() => moveQuestion(q.id, "down", showFeedback)}
+                                        disabled={!isAdmin || q.questionOrder === (showFeedback ? feedbackQuestions.length : rsvpQuestions.length)}
+                                        className="btn-brand p-2"
+                                    >
+                                        ↓
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     ))}

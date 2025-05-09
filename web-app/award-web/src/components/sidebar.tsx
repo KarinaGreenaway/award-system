@@ -57,7 +57,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const handleProfileRightClick = (e: React.MouseEvent) => {
+    const handleProfileClick = (e: React.MouseEvent) => {
         e.preventDefault();
         setProfileMenuOpen(true);
         setMenuPosition({ x: e.pageX, y: e.pageY });
@@ -127,14 +127,14 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
 
             {/* Bottom profile */}
             {collapsed ? (
-                <div className="flex flex-col items-center gap-2 p-3" onContextMenu={handleProfileRightClick}>
+                <div className="flex flex-col items-center gap-2 p-3" onClick={handleProfileClick}>
                     <div className="card-icon-wrap">
                         <User className="h-6 w-6 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]" />
                     </div>
                     <ThemeToggle collapsed />
                 </div>
             ) : (
-                <div className="flex items-center justify-between gap-3 p-3 mt-4 flex-shrink-0" onContextMenu={handleProfileRightClick}>
+                <div className="flex items-center justify-between gap-3 p-3 mt-4 flex-shrink-0" onClick={handleProfileClick}>
                     <div className="flex items-center gap-3">
                         <div className="card-icon-wrap">
                             <User className="h-6 w-6 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]" />

@@ -5,12 +5,14 @@ interface AwardProcessFormProps {
     onSubmit: (data: CreateAwardProcessPayload) => void;
     initialData?: AwardProcess;
     isEditing?: boolean;
+    onClose: () => void;
 }
 
 const AwardProcessForm: React.FC<AwardProcessFormProps> = ({
                                                                onSubmit,
-                                                               initialData = {},
-                                                               isEditing = false
+                                                               initialData = {} as Partial<AwardProcess>,
+                                                               isEditing = false,
+                                                               onClose
                                                            }) => {
     const [awardsName, setAwardsName] = useState(initialData.awardsName ?? '');
     const [startDate, setStartDate] = useState(initialData.startDate?.slice(0, 10) ?? '');
@@ -39,8 +41,7 @@ const AwardProcessForm: React.FC<AwardProcessFormProps> = ({
         onSubmit({
             awardsName,
             startDate,
-            endDate,
-            status: initialData.status ?? 'active'
+            endDate
         });
     };
 
@@ -86,6 +87,9 @@ const AwardProcessForm: React.FC<AwardProcessFormProps> = ({
             {error && <p className="text-sm text-red-600">{error}</p>}
 
             <div className="pt-4 flex justify-end gap-3">
+                <button type="button" onClick={onClose} className="btn-secondary px-4 py-2 rounded text-sm font-medium">
+                    Cancel
+                </button>
                 <button
                     type="submit"
                     className="btn-brand px-4 py-2 rounded text-sm font-medium"
