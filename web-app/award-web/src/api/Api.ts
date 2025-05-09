@@ -188,6 +188,11 @@ const Api = {
         return data;
     },
 
+    deleteRsvpFormQuestion: async (id: number) => {
+        const url = `${BASE_URL}/api/Rsvp/question/${id}`;
+        await axios.delete(url);
+    },
+
     getNominationQuestions: async (categoryId: number): Promise<NominationQuestionResponseDto[]> => {
         const url = `${BASE_URL}/api/NominationQuestion/category/${categoryId}`;
         const { data } = await axios.get(url);
@@ -206,6 +211,10 @@ const Api = {
         return data;
     },
 
+    deleteNominationQuestion: async (id: number) => {
+        await axios.delete(`${BASE_URL}/api/NominationQuestion/${id}`);
+    },
+
     getFeedbackFormQuestions: async (eventId: number): Promise<FeedbackQuestionsResponseDto[]> => {
         const url = `${BASE_URL}/api/Feedback/${eventId}/questions`;
         const { data } = await axios.get(url);
@@ -222,6 +231,11 @@ const Api = {
         const url = `${BASE_URL}/api/Feedback/question/${id}`;
         const { data } = await axios.put(url, payload);
         return data;
+    },
+
+    deleteFeedbackFormQuestion: async (id: number) => {
+        const url = `${BASE_URL}/api/Feedback/question/${id}`;
+        await axios.delete(url);
     },
 
     getFeedbackReviews: async (eventId: number): Promise<FeedbackResponseDto[]> => {

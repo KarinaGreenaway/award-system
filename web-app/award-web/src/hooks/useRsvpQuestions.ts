@@ -126,12 +126,27 @@ export function useRsvpQuestions(eventId: number | null) {
         ]);
     };
 
+    const deleteRsvpQuestion = async (id: number) => {
+        try {
+            await Api.deleteRsvpFormQuestion(id);
+
+            setRsvpQuestions(prevQuestions =>
+                prevQuestions.filter(q => q.id !== id)
+            );
+            alert("Question deleted successfully.");
+        } catch (error) {
+            alert("Error deleting question.");
+            console.error(error);
+        }
+    };
+
     return {
         rsvpQuestions,
         setRsvpQuestions,
         isSavingRsvp: isSaving,
         handleQuestionChange,
         saveRsvpQuestions,
+        deleteRsvpQuestion,
         addNewQuestion
     };
 }

@@ -124,12 +124,27 @@ export function useFeedbackQuestions(eventId: number | null) {
         ]);
     };
 
+    const deleteFeedbackQuestion = async (id: number) => {
+        try {
+            await Api.deleteFeedbackFormQuestion(id);
+
+            setFeedbackQuestions(prevQuestions =>
+                prevQuestions.filter(q => q.id !== id)
+            );
+            alert("Question deleted successfully.");
+        } catch (error) {
+            alert("Error deleting question.");
+            console.error(error);
+        }
+    };
+
     return {
         feedbackQuestions,
         setFeedbackQuestions,
         isSavingFeedback: isSaving,
         handleQuestionChange,
         saveFeedbackQuestions,
-        addNewQuestion
+        addNewQuestion,
+        deleteFeedbackQuestion,
     };
 }

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { CategoryType } from "@/types/enums/CategoryType";
 import { QuestionResponseType } from "@/types/enums/QuestionResponseType.ts";
-import {Plus} from "lucide-react";
+import {Plus, Trash2} from "lucide-react";
 
 export default function CategoryProfilePage() {
     const { selectedCategoryId } = useSelectedCategory();
@@ -16,6 +16,7 @@ export default function CategoryProfilePage() {
         nominationQuestions,
         setNominationQuestions,
         saveNominationQuestions,
+        deleteNominationQuestion,
     } = useCategoryProfile(selectedCategoryId ?? null);
 
     const [video, setVideo] = useState<File | null>(null);
@@ -130,6 +131,9 @@ export default function CategoryProfilePage() {
         });
     };
 
+    const handleDeleteQuestion = (id: number) => {
+        deleteNominationQuestion(id); // Call the function to delete the question from the backend and state
+    };
 
     if (loading) return <p className="p-6 text-gray-400">Loading category profile...</p>;
     if (error) return <p className="p-6 text-[color:var(--color-brand)]">{error}</p>;
@@ -257,9 +261,25 @@ export default function CategoryProfilePage() {
                 {nominationQuestions
                     .sort((a, b) => (a.questionOrder ?? 0) - (b.questionOrder ?? 0))
                     .map((q) => (
-                        <div key={q.id || `new-${q.questionOrder}`} className="space-y-4 shadow-md p-4 rounded-md bg-white dark:bg-gray-800">
+                        <div key={q.id || `new-${q.questionOrder}`} className="space-y-4 shadow-md p-4 rounded-md bg-white dark:bg-gray-800 relative">
+                            {/* Delete button positioned in the top right */}
+                            {q.id && (
+                                <Button
+                                    variant="destructive"
+                                    className="cursor-pointer absolute top-2 right-2 text-gray-400 hover:text-red-600"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (confirm("Are you sure you want to delete this question?")) {
+                                            handleDeleteQuestion(q.id);
+                                        }
+                                    }}
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            )}
+
                             {/* Question content */}
-                            <div>
+                            <div className="pt-8">
                                 <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Question Text</label>
                                 <input
                                     type="text"
@@ -271,7 +291,7 @@ export default function CategoryProfilePage() {
                             </div>
 
                             {/* Response Type */}
-                            <div>
+                            <div className="pt-2">
                                 <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Response Type</label>
                                 <select
                                     value={q.responseType}
@@ -287,7 +307,7 @@ export default function CategoryProfilePage() {
 
                             {/* Options Input */}
                             {q.responseType === QuestionResponseType.MultipleChoice && (
-                                <div>
+                                <div className="pt-2">
                                     <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
                                         Options (comma-separated)
                                     </label>
@@ -303,8 +323,7 @@ export default function CategoryProfilePage() {
                             )}
 
                             {/* Question Order */}
-                            <div className="flex justify-end items-center">
-
+                            <div className="flex justify-end items-center pt-2">
                                 {/* Up/Down Arrows */}
                                 <div className="flex gap-2">
                                     <p className="p-2 dark:text-[color:var(--color-text-dark)]"> Q{q.questionOrder}</p>

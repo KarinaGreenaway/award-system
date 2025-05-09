@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {AwardProcess, JudgingRound} from '@/types/AwardProcess';
 
 interface JudgingRoundFormProps {
@@ -7,6 +7,7 @@ interface JudgingRoundFormProps {
     initialData?: Partial<JudgingRound>;
     isEditing?: boolean;
     onClose: () => void;
+    previousRounds?: JudgingRound[];
 }
 
 const JudgingRoundForm: React.FC<JudgingRoundFormProps> = ({
@@ -14,13 +15,22 @@ const JudgingRoundForm: React.FC<JudgingRoundFormProps> = ({
                                                                onSubmit,
                                                                initialData = {},
                                                                isEditing = false,
-                                                               onClose
+                                                               onClose,
+                                                               previousRounds = []
                                                            }) => {
     const [roundName, setRoundName] = useState(initialData.roundName ?? '');
     const [startDate, setStartDate] = useState(initialData.startDate?.slice(0, 10) ?? '');
     const [deadline, setDeadline] = useState(initialData.deadline?.slice(0, 10) ?? '');
     const [candidateCount, setCandidateCount] = useState(initialData.candidateCount ?? 1);
     const [error, setError] = useState<string | null>(null);
+
+    // Automatically set the start date if this is a new round and there are previous rounds
+    useEffect(() => {
+        if (!isEditing && previousRounds.length > 0) {
+            const lastRound = previousRounds[previousRounds.length - 1];
+            setStartDate(new Date(new Date(lastRound.deadline).getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
+        }
+    }, [isEditing, previousRounds]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,6 +50,15 @@ const JudgingRoundForm: React.FC<JudgingRoundFormProps> = ({
             return;
         }
 
+        // Validate candidate count: must be less than or equal to the previous round
+        if (previousRounds.length > 0) {
+            const lastRound = previousRounds[previousRounds.length - 1];
+            if (candidateCount > lastRound.candidateCount) {
+                setError('Candidate count must be less than or equal to the previous round.');
+                return;
+            }
+        }
+
         setError(null);
         onSubmit({
             awardProcessId: awardProcess.id,
@@ -49,7 +68,6 @@ const JudgingRoundForm: React.FC<JudgingRoundFormProps> = ({
             candidateCount
         });
     };
-
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
@@ -101,7 +119,6 @@ const JudgingRoundForm: React.FC<JudgingRoundFormProps> = ({
                 </div>
 
                 {error && <p className="text-sm text-[color:var(--color-brand)]">{error}</p>}
-
 
                 <div className="flex justify-end gap-3 pt-4">
                     <button

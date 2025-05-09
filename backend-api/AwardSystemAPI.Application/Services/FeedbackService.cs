@@ -17,6 +17,7 @@ public interface IFeedbackService
     Task<ApiResponse<IEnumerable<FeedbackFormQuestionResponseDto>, string>> GetFeedbackFormQuestionsAsync(int eventId);
     Task<ApiResponse<FeedbackFormQuestionResponseDto, string>> CreateFeedbackFormQuestionAsync(FeedbackFormQuestionCreateDto dto);
     Task<ApiResponse<bool, string>> UpdateFeedbackFormQuestionAsync(int questionId, FeedbackFormQuestionUpdateDto dto);
+    Task<ApiResponse<bool, string>> DeleteFeedbackFormQuestionAsync(int questionId);
 }
 
 public class FeedbackService : IFeedbackService
@@ -136,6 +137,21 @@ public class FeedbackService : IFeedbackService
 
         await _feedbackFormQuestionRepository.UpdateAsync(question);
         _logger.LogInformation("Updated FeedbackFormQuestion with ID {Id}.", question.Id);
+
+        return true;
+    }
+     
+    public async Task<ApiResponse<bool, string>> DeleteFeedbackFormQuestionAsync(int questionId)
+    {
+        var question = await _feedbackFormQuestionRepository.GetByIdAsync(questionId);
+        if (question == null)
+        {
+            _logger.LogWarning("FeedbackFormQuestion with ID {Id} not found.", questionId);
+            return $"FeedbackFormQuestion with ID {questionId} not found.";
+        }
+
+        await _feedbackFormQuestionRepository.DeleteAsync(question);
+        _logger.LogInformation("Deleted FeedbackFormQuestion with ID {Id}.", question.Id);
 
         return true;
     }

@@ -5,7 +5,7 @@ import Api from "@/api/Api.ts";
 import { useRsvpQuestions } from "@/hooks/useRsvpQuestions";
 import { useFeedbackQuestions } from "@/hooks/useFeedbackQuestions";
 import { QuestionResponseType } from "@/types/enums/QuestionResponseType.ts";
-import { Plus } from "lucide-react";
+import {Plus, Trash2} from "lucide-react";
 
 export default function AwardEventPage() {
     const { event, activeProcessId, loading, error, refetch } = useAwardEvent();
@@ -23,7 +23,8 @@ export default function AwardEventPage() {
         saveRsvpQuestions,
         addNewQuestion,
         isSavingRsvp,
-        setRsvpQuestions
+        setRsvpQuestions,
+        deleteRsvpQuestion,
     } = useRsvpQuestions(event?.id ?? null);
 
     const {
@@ -32,7 +33,8 @@ export default function AwardEventPage() {
         saveFeedbackQuestions,
         addNewQuestion: addNewFeedbackQuestion,
         isSavingFeedback,
-        setFeedbackQuestions
+        setFeedbackQuestions,
+        deleteFeedbackQuestion,
     } = useFeedbackQuestions(event?.id ?? null);
 
     const userRole = localStorage.getItem("mock_role") as "Admin" | "User" | null;
@@ -112,6 +114,15 @@ export default function AwardEventPage() {
         });
 
         setQuestions(newQuestions as any);
+    };
+
+    const handleDeleteQuestion = (id: number) => {
+        if(showFeedback){
+            deleteFeedbackQuestion(id);
+        }
+        else{
+            deleteRsvpQuestion(id);
+        }
     };
 
     if (loading) return <p className="p-6 text-gray-400">Loading event...</p>;
@@ -213,9 +224,24 @@ export default function AwardEventPage() {
                 {(showFeedback ? feedbackQuestions : rsvpQuestions)
                     .sort((a, b) => (a.questionOrder ?? 0) - (b.questionOrder ?? 0))
                     .map((q) => (
-                        <div key={q.id || `new-${q.questionOrder}`} className="space-y-4 shadow-md p-4 rounded-md bg-white dark:bg-gray-800">
+                        <div key={q.id || `new-${q.questionOrder}`} className="space-y-4 shadow-md p-4 rounded-md bg-white dark:bg-gray-800 relative">
+                            {/* Delete button positioned in the top right */}
+                            {q.id && (
+                                <Button
+                                    variant="destructive"
+                                    className="cursor-pointer absolute top-2 right-2 text-gray-400 hover:text-red-600"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (confirm("Are you sure you want to delete this question?")) {
+                                            handleDeleteQuestion(q.id);
+                                        }
+                                    }}
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            )}
                             {/* Question content */}
-                            <div>
+                            <div className="pt-8">
                                 <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Question Text</label>
                                 <input
                                     type="text"

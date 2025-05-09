@@ -234,8 +234,9 @@ export default function NominationsPage() {
                                 </p>
                             </div>
 
+                            {/* Previous and Next Nomination */}
                             {category?.type === CategoryType.Individual && nominations.length > 1 && (
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 ml-auto">
                                     <Button
                                         variant="outline"
                                         className=" text-gray-400 hover:scale-[1.01]"
@@ -285,8 +286,8 @@ export default function NominationsPage() {
                                         <div className="flex items-center gap-2">
                                             <Bot className="h-5 w-5 text-[color:var(--color-brand)]" />
                                             <span className="text-sm font-semibold text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
-                                              AI Summary
-                                            </span>
+                          AI Summary
+                        </span>
                                         </div>
                                     </div>
                                     <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">
@@ -315,6 +316,8 @@ export default function NominationsPage() {
 
                                 </div>
                             )}
+
+                            {/* Answers */}
                             {currentNomination.answers?.length > 0 ? (
                                 currentNomination.answers.map((answer) => (
                                     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">

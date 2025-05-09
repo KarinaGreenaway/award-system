@@ -22,18 +22,39 @@ export function useJudgingRounds(processId: number | null) {
     };
 
     const createJudgingRound = async (data: any) => {
-        await Api.createJudgingRound(data);
-        await fetchRounds();
+        try {
+            await Api.createJudgingRound(data);
+            await fetchRounds();
+            alert("Round created successfully.");
+        }
+        catch (error) {
+            alert("Error creating round. Please try again.");
+            console.error(error);
+        }
     };
 
     const updateJudgingRound = async (id: number, data: any) => {
-        await Api.updateJudgingRound(id, data);
-        await fetchRounds();
+        try {
+            await Api.updateJudgingRound(id, data);
+            await fetchRounds();
+            alert("Round updated successfully.");
+        }
+        catch (error) {
+            alert("Error updating round. Please try again.");
+            console.error(error);
+        }
     };
 
     const deleteJudgingRound = async (id: number) => {
-        await Api.deleteJudgingRound(id);
-        await fetchRounds();
+        try {
+            await Api.deleteJudgingRound(id);
+            await fetchRounds();
+
+            alert("Round deleted successfully.");
+        } catch (error) {
+            alert("Error deleting round. Please try again.");
+            console.error(error);
+        }
     };
 
     useEffect(() => {

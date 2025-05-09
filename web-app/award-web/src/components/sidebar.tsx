@@ -38,9 +38,11 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
         { name: "Nominations", icon: Trophy, to: "/" },
         { name: "Announcements", icon: Megaphone, to: "/announcements" },
         { name: "Category Profile", icon: ClipboardEdit, to: "/category-profile" },
-        { name: "Awards Event", icon: Calendar, to: "/events" },
-        { name: "Feedback", icon: MessageCircle, to: "/feedback" },
-        ...(isAdmin ? [{ name: "Awards Management", icon: Shield, to: "admin/awards-management" }] : []),
+        ...(isAdmin ? [
+            { name: "Awards Management", icon: Shield, to: "admin/awards-management" },
+            { name: "Awards Event", icon: Calendar, to: "/events" },
+            { name: "Feedback", icon: MessageCircle, to: "/feedback" }
+        ] : []),
     ];
 
     useEffect(() => {

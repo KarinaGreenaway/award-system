@@ -84,9 +84,27 @@ public class RsvpController: ControllerBase
             }
         );
     }
-    
-    
-    
-    
+    [Authorize(Policy = "AdminOnlyPolicy")]
+    [HttpDelete("question/{questionId:int}")]
+    public async Task<ActionResult<bool>> DeleteRsvpFormQuestion(int questionId)
+    {
+        if (questionId <= 0)
+        {
+            _logger.LogWarning("Invalid Question ID {Id} provided.", questionId);
+            return BadRequest(new { Error = "Invalid Question ID provided." });
+        }
+
+        var response = await _rsvpService.DeleteRsvpFormQuestionAsync(questionId);
+        return response.Match<ActionResult>(
+            onSuccess: result => Ok(result),
+            onError: error =>
+            {
+                _logger.LogError("Failed to delete Rsvp form question with ID {Id}. Error: {Error}", questionId, error);
+                return error.ToLower().Contains("not found")
+                    ? NotFound(new { Error = error })
+                    : BadRequest(new { Error = error });
+            }
+        );
+    }
     
 }

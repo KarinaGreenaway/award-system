@@ -249,7 +249,9 @@ export default function AwardsManagementPage() {
                 ) : judgingRounds.length === 0 ? (
                     <p className="text-gray-400">No judging rounds for this process.</p>
                 ) : (
-                    judgingRounds.map((round) => (
+                    judgingRounds
+                        .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+                        .map((round) => (
                         <div key={round.id} className="mb-4 p-4 space-y-4 shadow-md p-4 rounded-md bg-white dark:bg-gray-800">
                             <div className="flex justify-between">
                                 <div>
@@ -339,6 +341,7 @@ export default function AwardsManagementPage() {
 
             {showRoundForm && selectedProcessId && (
                 <JudgingRoundForm
+                    previousRounds={judgingRounds}
                     initialData={editingRound ?? undefined}
                     isEditing={!!editingRound}
                     awardProcess={awardProcesses.find((p) => p.id === selectedProcessId)!}

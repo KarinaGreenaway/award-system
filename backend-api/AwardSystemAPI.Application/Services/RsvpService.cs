@@ -12,6 +12,7 @@ public interface IRsvpService
     Task<ApiResponse<IEnumerable<RsvpFormQuestionResponseDto>, string>> GetRsvpFormQuestionsByAwardCategoryAsync(int awardEventId);
     Task<ApiResponse<RsvpFormQuestionResponseDto, string>> CreateRsvpFormQuestionAsync(RsvpFormQuestionCreateDto dto);
     Task<ApiResponse<bool, string>> UpdateRsvpFormQuestionAsync(int questionId, RsvpFormQuestionUpdateDto dto);
+    Task<ApiResponse<bool, string>> DeleteRsvpFormQuestionAsync(int questionId);
 }
 
 public class RsvpService : IRsvpService
@@ -63,6 +64,21 @@ public class RsvpService : IRsvpService
 
         await _repository.UpdateAsync(entity);
         _logger.LogInformation("Updated RsvpFormQuestion with ID {Id}.", entity.Id);
+
+        return true;
+    }
+    
+    public async Task<ApiResponse<bool, string>> DeleteRsvpFormQuestionAsync(int questionId)
+    {
+        var entity = await _repository.GetByIdAsync(questionId);
+        if (entity == null)
+        {
+            _logger.LogWarning("RsvpFormQuestion with ID {Id} not found.", questionId);
+            return $"RsvpFormQuestion with ID {questionId} not found.";
+        }
+
+        await _repository.DeleteAsync(entity);
+        _logger.LogInformation("Deleted RsvpFormQuestion with ID {Id}.", entity.Id);
 
         return true;
     }

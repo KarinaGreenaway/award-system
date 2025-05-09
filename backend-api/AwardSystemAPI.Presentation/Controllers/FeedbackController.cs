@@ -69,7 +69,6 @@ public class FeedbackController : ControllerBase
         );
     }
     
-    // get feedback analytics
     [HttpGet("analytics/{awardEventId:int}")]
     public async Task<ActionResult<FeedbackAnalyticsResponseDto>> GetFeedbackAnalytics(int awardEventId)
     {
@@ -156,6 +155,28 @@ public class FeedbackController : ControllerBase
             onError: error =>
             {
                 _logger.LogError("Failed to update Feedback form question. Error: {Error}", error);
+                return BadRequest(new { Error = error });
+            }
+        );
+    }
+    
+    //delete feedback form question
+    [Authorize(Policy = "AdminOnlyPolicy")]
+    [HttpDelete("question/{questionId:int}")]
+    public async Task<ActionResult<bool>> DeleteFeedbackFormQuestion(int questionId)
+    {
+        if (questionId <= 0)
+        {
+            _logger.LogWarning("Invalid Feedback form question ID {Id} provided.", questionId);
+            return BadRequest(new { Error = "Invalid Feedback form question ID provided." });
+        }
+
+        var response = await _feedbackService.DeleteFeedbackFormQuestionAsync(questionId);
+        return response.Match<ActionResult>(
+            onSuccess: result => Ok(result),
+            onError: error =>
+            {
+                _logger.LogError("Failed to delete Feedback form question. Error: {Error}", error);
                 return BadRequest(new { Error = error });
             }
         );

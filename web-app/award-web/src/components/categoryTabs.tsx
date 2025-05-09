@@ -3,7 +3,7 @@ import { useCategories } from "@/hooks/useCategories";
 import {useSelectedCategory} from "@/context/CategoryProvider.tsx";
 
 export default function CategoryTabs() {
-    const { categories, loading } = useCategories(null);
+    const { categories, loading } = useCategories();
     const { selectedCategoryId, setSelectedCategoryId } = useSelectedCategory();
 
     const userId = Number(localStorage.getItem("mock_user_id"));
