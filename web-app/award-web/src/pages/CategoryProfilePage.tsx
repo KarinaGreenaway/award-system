@@ -218,7 +218,7 @@ export default function CategoryProfilePage() {
                 {/* Status Toggle */}
                 <div className="space-y-2 mb-6">
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                        Current Status: <span className="font-medium">{status}</span>
+                        Current Status: <span className="font-medium">{category?.profileStatus}</span>
                     </p>
                     <div className="flex items-center gap-3">
                         <span className={`text-sm font-medium ${status === "draft" ? "text-[color:var(--color-brand)]" : "text-gray-500 dark:text-gray-400"}`}>
@@ -242,7 +242,7 @@ export default function CategoryProfilePage() {
 
                 {/* Save */}
                 {isEditable && (
-                    <div className="pt-4">
+                    <div className="pt-4 flex justify-end">
                         <Button onClick={handleSave} className="btn-brand" disabled={isSaving}>
                             {isSaving ? "Saving..." : "Save"}
                         </Button>
@@ -256,7 +256,19 @@ export default function CategoryProfilePage() {
                     <h2 className="text-xl font-semibold text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]">
                         Nomination Questions
                     </h2>
+
+                    <div className="flex justify-end">
+                        {isEditable && (
+                            <Button
+                                className="btn-brand"
+                                onClick={saveNominationQuestions}
+                            >
+                                Save
+                            </Button>
+                        )}
+                    </div>
                 </div>
+
 
                 {nominationQuestions
                     .sort((a, b) => (a.questionOrder ?? 0) - (b.questionOrder ?? 0))
@@ -269,13 +281,17 @@ export default function CategoryProfilePage() {
                                     className="cursor-pointer absolute top-2 right-2 text-gray-400 hover:text-red-600"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        if (confirm("Are you sure you want to delete this question?")) {
+
+                                        if (!q.isNew && confirm("Are you sure you want to delete this question?")) {
+                                            handleDeleteQuestion(q.id);
+                                        } else if (q.isNew) {
                                             handleDeleteQuestion(q.id);
                                         }
                                     }}
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
+
                             )}
 
                             {/* Question content */}
@@ -354,17 +370,6 @@ export default function CategoryProfilePage() {
                         >
                             <Plus className="justify-center w-4 h-4 text-[color:var(--color-brand)] dark:text-white" />
                             New Question
-                        </Button>
-                    )}
-                </div>
-
-                <div className="flex justify-end mt-10">
-                    {isEditable && (
-                        <Button
-                            className="btn-brand"
-                            onClick={saveNominationQuestions}
-                        >
-                            Save Nomination Questions
                         </Button>
                     )}
                 </div>

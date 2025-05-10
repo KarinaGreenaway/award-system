@@ -41,10 +41,10 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, isSelected, onClick }) 
             <div className="mt-2 space-y-4">
                 {(isSelected ? review.answers : previewQs).map((qa, index) => (
                     <div key={index} className="mb-4">
-                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 line-clamp-2">
+                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                             {qa.question}
                         </p>
-                        <p className="text-sm text-gray-900 dark:text-white line-clamp-2">
+                        <p className={`text-sm text-gray-900 dark:text-white ${!isSelected ? 'line-clamp-2' : ''}`}>
                             {qa.answer}
                         </p>
                     </div>

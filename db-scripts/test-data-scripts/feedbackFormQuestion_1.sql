@@ -1,0 +1,5 @@
+INSERT INTO public."feedbackFormQuestion" ("Id", "EventId", "QuestionText", "ResponseType", "Tooltip", "QuestionOrder", "Options") VALUES (3, 1, 'How was your experience of the event space?', 0, null, 1, '[]');
+INSERT INTO public."feedbackFormQuestion" ("Id", "EventId", "QuestionText", "ResponseType", "Tooltip", "QuestionOrder", "Options") VALUES (1, 1, 'What is your overall rating of the event?', 2, null, 2, '["1", "2", "3", "4", "5"]');
+INSERT INTO public."feedbackFormQuestion" ("Id", "EventId", "QuestionText", "ResponseType", "Tooltip", "QuestionOrder", "Options") VALUES (2, 1, 'What was your experience of the music?', 0, null, 3, '[]');
+INSERT INTO public."feedbackFormQuestion" ("Id", "EventId", "QuestionText", "ResponseType", "Tooltip", "QuestionOrder", "Options") VALUES (4, 1, 'What was your experience of the food?', 0, null, 4, '[]');
+INSERT INTO public."feedbackFormQuestion" ("Id", "EventId", "QuestionText", "ResponseType", "Tooltip", "QuestionOrder", "Options") VALUES (5, 1, 'What would you rate the event?', 2, null, 5, '["1", "2", "3", "4", "5"]');

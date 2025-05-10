@@ -70,6 +70,26 @@ public class NominationRepository : GenericRepository<Nomination>, INominationRe
                 .Include(n => n.NomineeUser)
                 .Include(n => n.TeamMembers)
                 .ThenInclude(tm => tm.User)
+                .Where(n => n.NomineeId == nomineeId)
+                .ToListAsync()
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving nominations for nominee ID {NomineeId}.", nomineeId);
+            throw new Exception($"An error occurred while retrieving nominations for nominee with ID {nomineeId}.",
+                ex);
+        }
+    }
+    public async Task<IEnumerable<Nomination>> GetNominationsForNomineeIdTeamAndIndividualAsync(int nomineeId)
+    {
+        try
+        {
+            return await Context.Set<Nomination>()
+                .Include(n => n.Answers)
+                .Include(n => n.NomineeUser)
+                .Include(n => n.TeamMembers)
+                .ThenInclude(tm => tm.User)
                 .Where(n => n.NomineeId == nomineeId || n.TeamMembers.Any(tm => tm.Id == nomineeId))
                 .ToListAsync()
                 .ConfigureAwait(false);

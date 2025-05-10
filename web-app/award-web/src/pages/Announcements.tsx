@@ -47,7 +47,8 @@ export default function AnnouncementsPage() {
 
             setLoading(true);
             try {
-                const data = await Api.getAnnouncementsBySponsor(selectedCategoryId);
+                if (!selectedCategory?.sponsorId) return;
+                const data = await Api.getAnnouncementsBySponsor(selectedCategory.sponsorId);
                 setAnnouncements(data);
             } catch (err) {
                 console.error("Failed to fetch announcements", err);
@@ -77,7 +78,8 @@ export default function AnnouncementsPage() {
 
             setLoading(true);
             try {
-                const data = await Api.getAnnouncementsBySponsor(selectedCategoryId);
+                if (!selectedCategory?.sponsorId) return;
+                const data = await Api.getAnnouncementsBySponsor(selectedCategory.sponsorId);
                 setAnnouncements(data);
             } catch (err) {
                 console.error("Failed to fetch announcements", err);
@@ -161,6 +163,8 @@ export default function AnnouncementsPage() {
                 ? new Date(scheduledTime).toISOString()
                 : null;
 
+            const createdBy = isAdmin ? selectedCategory?.sponsorId : userId;
+
             const payload = {
                 title,
                 description,
@@ -169,6 +173,7 @@ export default function AnnouncementsPage() {
                 scheduledTime: isScheduled ? scheduledTime : null,
                 status,
                 audience: TargetAudience.MobileUsers,
+                createdBy:createdBy,
             } as CreateAnnouncementPayload;
 
             let response: Announcement | null = null;

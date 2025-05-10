@@ -31,6 +31,8 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
 
 
     const userRole = localStorage.getItem("mock_role");
+    const userName  = localStorage.getItem("mock_username");
+
     const isAdmin = userRole === "Admin";
 
     const navItems = [
@@ -138,12 +140,12 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                 </div>
             ) : (
                 <div>
-                    <div className="flex items-center justify-between gap-3 p-1 mt-4 flex-shrink-0" onClick={handleProfileClick}>
+                    <div className="flex items-center justify-between gap-3 p-1 mt-4 flex-shrink-0">
                         <div className="flex items-center gap-3">
-                            <div className="card-icon-wrap">
+                            <div className="pointer-cursor card-icon-wrap" onClick={handleProfileClick}>
                                 <User className="h-6 w-6 text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]" />
                             </div>
-                            <span className="text-sm text-text-light dark:text-text-dark">John</span>
+                            <span className="text-sm text-text-light dark:text-text-dark">{userName}</span>
                             <div className="absolute right-7">
                                 <ThemeToggle />
                             </div>

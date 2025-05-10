@@ -1,0 +1,4 @@
+INSERT INTO public."rsvpFormQuestion" ("Id", "EventId", "QuestionText", "ResponseType", "Tooltip", "QuestionOrder", "Options") VALUES (1, 1, 'Do you have any allergies? And if so what are the?', 0, 'Check if you need assistance. Test Edit.', 1, '["A", "never B", "sometimes C", "always D"]');
+INSERT INTO public."rsvpFormQuestion" ("Id", "EventId", "QuestionText", "ResponseType", "Tooltip", "QuestionOrder", "Options") VALUES (12, 1, 'Will you need a vegetarian option?', 1, '', 2, '[]');
+INSERT INTO public."rsvpFormQuestion" ("Id", "EventId", "QuestionText", "ResponseType", "Tooltip", "QuestionOrder", "Options") VALUES (2, 1, 'Will you need accommodation?', 1, 'Test tooltip 22 Test Success', 3, '["option a", "option b", "option c"]');
+INSERT INTO public."rsvpFormQuestion" ("Id", "EventId", "QuestionText", "ResponseType", "Tooltip", "QuestionOrder", "Options") VALUES (13, 1, 'Will you need travel compensated?', 0, '', 4, '[]');

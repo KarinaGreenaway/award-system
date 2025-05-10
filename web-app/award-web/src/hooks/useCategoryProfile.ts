@@ -109,14 +109,19 @@ export function useCategoryProfile(categoryId: number | null) {
 
     const deleteNominationQuestion = async (id: number) => {
         try {
-            // Call API to delete the question
-            await Api.deleteNominationQuestion(id);
+            const questionToDelete = nominationQuestions.find(q => q.id === id);
 
-            // Remove the question from the local state
-            setNominationQuestions(prevQuestions =>
-                prevQuestions.filter(q => q.id !== id)
-            );
-            alert("Question deleted successfully.");
+            if (questionToDelete?.isNew) {
+                setNominationQuestions(prevQuestions =>
+                    prevQuestions.filter(q => q.id !== id)
+                );
+            } else {
+                await Api.deleteNominationQuestion(id);
+                setNominationQuestions(prevQuestions =>
+                    prevQuestions.filter(q => q.id !== id)
+                );
+                alert("Question deleted successfully.");
+            }
         } catch (error) {
             alert("Error deleting question.");
             console.error(error);

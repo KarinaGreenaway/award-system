@@ -10,12 +10,15 @@ export default function LoginPage() {
     const handleMockLogin = () => {
         setLoading(true);
 
+        const name = role === "Admin" ? "Karina Greenaway" : "Jeff Nippard";
+
         // Simulate login delay
         setTimeout(() => {
             // Mock login storing fake token in session/localStorage
             localStorage.setItem("mock_token", "fake-jwt-token");
             localStorage.setItem("mock_role", role);
             localStorage.setItem("mock_user_id", "3");
+            localStorage.setItem("mock_username", name);
             navigate("/");
         }, 1000);
     };

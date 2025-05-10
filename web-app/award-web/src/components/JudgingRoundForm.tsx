@@ -50,8 +50,7 @@ const JudgingRoundForm: React.FC<JudgingRoundFormProps> = ({
             return;
         }
 
-        // Validate candidate count: must be less than or equal to the previous round
-        if (previousRounds.length > 0) {
+        if (previousRounds && previousRounds.length > 1) {
             const lastRound = previousRounds[previousRounds.length - 1];
             if (candidateCount > lastRound.candidateCount) {
                 setError('Candidate count must be less than or equal to the previous round.');
