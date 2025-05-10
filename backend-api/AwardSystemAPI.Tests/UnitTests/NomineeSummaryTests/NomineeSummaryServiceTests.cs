@@ -229,7 +229,7 @@ public class NomineeSummaryServiceTests
     {
         _repoMock.Setup(r => r.GetByNomineeIdAndCategoryIdAsync(2,3)).ReturnsAsync(null as NomineeSummary);
 
-        var result = await _service.UpdateNomineeSummaryTotalNominationCountyAsync(2,3);
+        var result = await _service.UpdateNomineeSummaryTotalNominationCountAsync(2,3);
 
         result.Match(
             onSuccess: _ =>
@@ -255,7 +255,7 @@ public class NomineeSummaryServiceTests
         _mapperMock.Setup(m => m.Map(It.IsAny<NomineeSummaryUpdateDto>(), entity));
         _repoMock.Setup(r => r.UpdateAsync(entity)).Returns(Task.CompletedTask);
 
-        var result = await _service.UpdateNomineeSummaryTotalNominationCountyAsync(2,3);
+        var result = await _service.UpdateNomineeSummaryTotalNominationCountAsync(2,3);
 
         result.Match(
             onSuccess: success =>

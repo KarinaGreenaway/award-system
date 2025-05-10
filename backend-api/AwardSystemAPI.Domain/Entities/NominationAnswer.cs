@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AwardSystemAPI.Domain.Entities;
 
 [Table("nominationAnswer")]
-[Index(nameof(NominationId), nameof(QuestionId), IsUnique = true)]
+[Index(nameof(NominationId), nameof(Question), IsUnique = true)]
 public class NominationAnswer
 {
     [Key]
@@ -15,7 +15,7 @@ public class NominationAnswer
     public int NominationId { get; set; }
 
     [Required]
-    public int QuestionId { get; set; }
+    public string Question { get; set; }
 
     [MaxLength(1000)]
     public string? Answer { get; set; } = string.Empty;

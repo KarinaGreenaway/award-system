@@ -1,70 +1,143 @@
+@import "tailwindcss";
 
+/* Custom theme (brand colors, layout colors) */
+@theme {
+    --color-brand: #f41c5e;
+    --color-brand-hover: #f64d81;
+    --color-brand-darker: #d30a48;
+    --color-sidebar-light: #ffffff;
+    --color-sidebar-lighter: #ffffff;
+    --color-sidebar-dark: #111827;
+    --color-content-light: #f3f4f6;
+    --color-content-dark: #1f2937;
+    --color-tabs-light: #e5e7eb;
+    --color-tabs-dark: #374151;
+    --color-text-light: #111827;
+    --color-text-dark: #d1d5db;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    --font-sans: "Inter", sans-serif;
+    --default-font-family: "Inter", sans-serif;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+@layer base {
+    html {
+        font-family: var(--font-sans);
+    }
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+
+.form-add-button {
+    @apply cursor-pointer
+    bg-white dark:bg-[color:var(--color-sidebar-dark)]
+        dark:border
+        dark:border-gray-500
+    w-full text-[color:var(--color-brand)] dark:text-white
+    hover:scale-[1.01] hover:font-semibold hover:shadow-md;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.form-add-button:disabled {
+    @apply opacity-70 cursor-not-allowed;
+    transform: none !important;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.form-add-button-icon {
+    @apply flex gap-4 p-1 px-2 rounded-lg
+    transition-all duration-200 ease-out transform
+    hover:scale-[1.01] active:scale-[0.98]
+    bg-[color:var(--color-brand)] text-white dark:text-white;
 }
+
+.btn-brand {
+    @apply cursor-pointer bg-[color:var(--color-brand)] text-white rounded-lg transition-all duration-200 ease-in-out transform;
+}
+
+.btn-brand:hover {
+    @apply bg-[color:var(--color-brand-hover)];
+}
+
+.btn-brand:active {
+    @apply scale-[0.98];
+}
+
+.btn-brand:focus {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+}
+
+.btn-brand:disabled {
+    @apply opacity-70 cursor-not-allowed;
+    transform: none !important;
+}
+
+.btn-secondary {
+    @apply cursor-pointer bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg transition-all duration-200 ease-in-out transform;
+}
+
+.btn-secondary:hover {
+    @apply bg-gray-300 dark:bg-gray-600;
+}
+
+.btn-secondary:active {
+    @apply scale-[0.98];
+}
+
+.btn-secondary:focus {
+    outline: 2px solid #d1d5db;
+    outline-offset: 2px;
+}
+
+.btn-secondary:disabled {
+    @apply opacity-70 cursor-not-allowed;
+    transform: none !important;
+}
+
+.file-input-brand {
+    @apply w-full text-sm text-[color:var(--color-text-light)] dark:text-[color:var(--color-text-dark)]
+    file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0
+    file:bg-[color:var(--color-brand)] file:text-white
+    dark:file:bg-[color:var(--color-brand)] dark:file:text-white
+    rounded-xl;
+}
+
+.card-interactive {
+    @apply cursor-pointer
+    transition-all duration-200 ease-out hover:scale-[1.01] active:scale-[0.98]
+    border border-transparent
+    bg-[color:var(--color-sidebar-light)] dark:bg-[color:var(--color-content-dark)] dark:shadow-gray-500 shadow-sm
+    hover:border-[color:var(--color-content-light)] dark:hover:border-[color:var(--color-content-dark)];
+}
+
+.card-interactive-selected {
+    @apply ring-2 ring-[color:var(--color-brand)];
+}
+
+.card-content-row {
+    @apply p-4 flex flex-row items-center justify-between;
+}
+
+.card-icon-wrap {
+    @apply p-2 rounded-full bg-[color:var(--color-tabs-light)] dark:bg-[color:var(--color-tabs-dark)];
+}
+
+.right-panel {
+    @apply lg:w-1/2 xl:w-1/2 flex-1 p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900 shadow-xl rounded-md ml-4 relative;
+}
+
+/* Hide default calendar icon in Chrome/Safari */
+.hide-native-datetime-icon::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    display: none;
+}
+

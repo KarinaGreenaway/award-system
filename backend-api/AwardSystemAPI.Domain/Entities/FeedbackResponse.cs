@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AwardSystemAPI.Domain.Entities
 {
     [Table("feedbackResponse")]
-    [Index(nameof(FeedbackId), nameof(QuestionId), IsUnique = true)]
+    [Index(nameof(FeedbackId), nameof(Question), IsUnique = true)]
     public class FeedbackResponse
     {
         [Key]
@@ -15,8 +15,9 @@ namespace AwardSystemAPI.Domain.Entities
         public int FeedbackId { get; set; }
 
         [Required]
-        public int QuestionId { get; set; }
+        public string Question { get; set; }
 
-        public string? Answer { get; set; }
+        [MaxLength(1000)]
+        public string? Answer { get; set; } = string.Empty;
     }
 }

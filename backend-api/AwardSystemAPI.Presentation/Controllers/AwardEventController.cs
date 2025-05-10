@@ -54,6 +54,28 @@ public class AwardEventController : ControllerBase
             }
         );
     }
+    
+    [HttpGet ("awardProcess/{id:int}")]
+    public async Task<ActionResult<AwardEventResponseDto>> GetByAwardProcessId(int id)
+    {
+        if (id <= 0)
+        {
+            _logger.LogWarning("Invalid AwardProcess ID {Id} provided.", id);
+            return BadRequest(new { Error = "Invalid AwardProcess ID provided." });
+        }
+
+        var response = await _awardEventService.GetAwardEventByAwardProcessIdAsync(id);
+        return response.Match<ActionResult>(
+            onSuccess: result => Ok(result),
+            onError: error =>
+            {
+                _logger.LogError("Failed to retrieve AwardEvent with ID {Id}. Error: {Error}", id, error);
+                return error.ToLower().Contains("not found")
+                    ? NotFound(new { Error = error })
+                    : BadRequest(new { Error = error });
+            }
+        );
+    }
 
     [HttpPost]
     public async Task<ActionResult<AwardEventResponseDto>> Create([FromBody] AwardEventCreateDto dto)

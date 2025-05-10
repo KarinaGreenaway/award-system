@@ -1,42 +1,35 @@
 using System.Text;
 using AwardSystemAPI.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace AwardSystemAPI.Application.Services;
 
 public interface IAiSummaryService
 {
-    Task<string> GenerateNominationSummaryAsync(Nomination nomination, IEnumerable<NominationAnswer> answers);
+    Task<string> GenerateNominationSummaryAsync(string promptData);
+    Task<string> GenerateAiFeedbackSummaryAsync(string feedbackJson);
 }
 
 public class AiSummaryService : IAiSummaryService
 {
+    private static readonly HttpClient client = new HttpClient();
+    private readonly IVertexAiService _vertexAiService;
     private readonly ILogger<AiSummaryService> _logger;
 
-    public AiSummaryService(ILogger<AiSummaryService> logger)
+    public AiSummaryService(ILogger<AiSummaryService> logger, IVertexAiService vertexAiService)
     {
         _logger = logger;
+        _vertexAiService = vertexAiService;
     }
 
-    public Task<string> GenerateNominationSummaryAsync(Nomination nomination, IEnumerable<NominationAnswer> answers)
+    public async Task<string> GenerateNominationSummaryAsync(string nominationJson)
     {
-        // TODO:Placeholder logic —  later call a real AI API here.
-
-        var sb = new StringBuilder();
-        sb.AppendLine("Summary of Nomination:");
-
-        if (!string.IsNullOrWhiteSpace(nomination.TeamName))
-            sb.AppendLine($"Team: {nomination.TeamName}");
-
-        if (nomination.NomineeId != null)
-            sb.AppendLine($"Nominee ID: {nomination.NomineeId}");
-
-        sb.AppendLine("Key Points:");
-        foreach (var answer in answers.Take(3)) // Take first 3 answers for brevity
-        {
-            sb.AppendLine($"- Q{answer.QuestionId}: {answer.Answer}");
-        }
-
-        return Task.FromResult(sb.ToString());
+        return await _vertexAiService.GenerateNominationSummaryAsync(nominationJson);
+    }
+    
+    public async Task<string> GenerateAiFeedbackSummaryAsync(string feedbackJson)
+    {
+        return await _vertexAiService.GenerateFeedbackSummaryAsync(feedbackJson);
     }
 }

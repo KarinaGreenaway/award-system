@@ -11,6 +11,7 @@ namespace AwardSystemAPI.Application.Services
     {
         Task<ApiResponse<IEnumerable<AwardProcessResponseDto>, string>> GetAllAwardProcessesAsync();
         Task<ApiResponse<AwardProcessResponseDto?, string>> GetAwardProcessByIdAsync(int id);
+        Task<ApiResponse<AwardProcessResponseDto, string>> GetActiveAwardProcessesAsync();
         Task<ApiResponse<AwardProcessResponseDto, string>> CreateAwardProcessAsync(AwardProcessCreateDto dto);
         Task<ApiResponse<bool, string>> UpdateAwardProcessAsync(int id, AwardProcessUpdateDto dto);
         Task<ApiResponse<bool, string>> DeleteAwardProcessAsync(int id);
@@ -18,12 +19,12 @@ namespace AwardSystemAPI.Application.Services
     
     public class AwardProcessService : IAwardProcessService
     {
-        private readonly IGenericRepository<AwardProcess> _repository;
+        private readonly IAwardProcessRepository _repository;
         private readonly ILogger<AwardProcessService> _logger;
         private readonly IMapper _mapper;
 
         public AwardProcessService(
-            IGenericRepository<AwardProcess> repository, 
+            IAwardProcessRepository repository, 
             ILogger<AwardProcessService> logger,
             IMapper mapper)
         {
@@ -50,12 +51,29 @@ namespace AwardSystemAPI.Application.Services
             var result = _mapper.Map<AwardProcessResponseDto>(process);
             return result;
         }
+        
+        public async Task<ApiResponse<AwardProcessResponseDto, string>> GetActiveAwardProcessesAsync()
+        {
+            var activeProcesses = await _repository.GetActiveAsync();
+            if (activeProcesses == null)
+            {
+                return "No active AwardProcess found.";
+            }
+            
+            var result = _mapper.Map<AwardProcessResponseDto>(activeProcesses);
+            return result;
+        }
 
         public async Task<ApiResponse<AwardProcessResponseDto, string>> CreateAwardProcessAsync(AwardProcessCreateDto dto)
         {
             var process = _mapper.Map<AwardProcess>(dto);
             process.CreatedAt = DateTime.UtcNow;
             process.UpdatedAt = DateTime.UtcNow;
+            
+            process.UpdatedAt = DateTime.SpecifyKind(process.UpdatedAt, DateTimeKind.Utc);
+            process.CreatedAt = DateTime.SpecifyKind(process.CreatedAt, DateTimeKind.Utc);
+            process.StartDate = DateTime.SpecifyKind(process.StartDate, DateTimeKind.Utc);
+            process.EndDate = DateTime.SpecifyKind(process.EndDate, DateTimeKind.Utc);
             
             await _repository.AddAsync(process);
             _logger.LogInformation("Created AwardProcess with ID {Id}.", process.Id);
@@ -75,6 +93,11 @@ namespace AwardSystemAPI.Application.Services
             _mapper.Map(dto, process);
             
             process.UpdatedAt = DateTime.UtcNow;
+            
+            process.UpdatedAt = DateTime.SpecifyKind(process.UpdatedAt, DateTimeKind.Utc);
+            process.CreatedAt = DateTime.SpecifyKind(process.CreatedAt, DateTimeKind.Utc);
+            process.StartDate = DateTime.SpecifyKind(process.StartDate, DateTimeKind.Utc);
+            process.EndDate = DateTime.SpecifyKind(process.EndDate, DateTimeKind.Utc);
 
             await _repository.UpdateAsync(process);
             _logger.LogInformation("Updated AwardProcess with ID {Id}.", id);

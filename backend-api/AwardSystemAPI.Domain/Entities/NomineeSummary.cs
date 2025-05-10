@@ -9,11 +9,22 @@ public class NomineeSummary
     [Key]
     public int Id { get; set; }
 
-    [Required]
-    public int NomineeId { get; set; }
+    public int? NomineeId { get; set; }
+    
+    [ForeignKey("NomineeId")]
+    public Users? Nominee { get; set; }
+    
+    public int? TeamNominationId { get; set; }
+    
+    [ForeignKey("TeamNominationId")]
+    public Nomination? TeamNomination { get; set; }
 
     [Required]
     public int CategoryId { get; set; }
+    
+    [Required]
+    [MaxLength(255)]
+    public string Location { get; set; } = string.Empty;
 
     [Range(0, int.MaxValue)]
     public int? TotalNominations { get; set; }

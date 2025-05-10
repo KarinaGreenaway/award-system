@@ -4,6 +4,7 @@ using AwardSystemAPI.Domain.Entities;
 using AwardSystemAPI.Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
 using AwardSystemAPI.Application.DTOs;
+using Newtonsoft.Json;
 
 namespace AwardSystemAPI.Application.Services;
 
@@ -14,19 +15,25 @@ public interface INominationService
     Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetNominationsByCreatorIdAsync(int creatorId);
     Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetNominationsForNomineeIdAsync(int nomineeId);
     Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetTeamNominationsForMemberAsync(int userId);
+    Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetNominationsByCategoryIdAsync(int categoryId);
 }
 
 public class NominationService : INominationService
 {
     private readonly INominationRepository _repository;
+    private readonly IGenericRepository<NominationAnswer> _answerRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<NominationService> _logger;
     private readonly IAiSummaryService _aiSummaryService;
     private readonly INomineeSummaryService _nomineeSummaryService;
     
-    public NominationService(INominationRepository repository, IMapper mapper, ILogger<NominationService> logger, IAiSummaryService aiSummaryService, INomineeSummaryService nomineeSummaryService)
+    public NominationService(INominationRepository repository,
+        IGenericRepository<NominationAnswer> answerRepository, IMapper mapper,
+        ILogger<NominationService> logger, IAiSummaryService aiSummaryService,
+        INomineeSummaryService nomineeSummaryService)
     {
         _repository = repository;
+        _answerRepository = answerRepository;
         _aiSummaryService = aiSummaryService;
         _nomineeSummaryService = nomineeSummaryService;
         _mapper = mapper;
@@ -55,15 +62,17 @@ public class NominationService : INominationService
         nomination.UpdatedAt = DateTime.UtcNow;
         nomination.CreatorId = userId;
 
-        nomination.AiSummary = await _aiSummaryService.GenerateNominationSummaryAsync(nomination, nominationAnswers);
+        var promptData = JsonConvert.SerializeObject(new
+        {
+            Answers = JsonConvert.SerializeObject(nominationAnswers)
+        });
+        
+        nomination.AiSummary = await _aiSummaryService.GenerateNominationSummaryAsync(promptData);
 
         await _repository.AddAsync(nomination);
         _logger.LogInformation("Created Nomination with ID {Id}.", nomination.Id);
 
-        if (nomination.NomineeId != null)
-        {
-            await TriggerNomineeSummaryUpdate(nomination);
-        }
+        await TriggerNomineeSummaryUpdate(nomination);
 
         var responseDto = _mapper.Map<NominationResponseDto>(nomination);
         return responseDto;
@@ -77,6 +86,7 @@ public class NominationService : INominationService
             _logger.LogWarning("Nomination with ID {Id} not found.", id);
             return $"Nomination with ID {id} not found.";
         }
+
         var responseDto = _mapper.Map<NominationResponseDto>(nomination);
         return responseDto;
     }
@@ -109,33 +119,63 @@ public class NominationService : INominationService
         return responseDtos.ToArray();
     }
 
+    public async Task<ApiResponse<IEnumerable<NominationResponseDto>, string>> GetNominationsByCategoryIdAsync(int categoryId)
+    {
+        var nominations = await _repository.GetNominationsByCategoryIdAsync(categoryId);
+        var responseDtos = _mapper.Map<IEnumerable<NominationResponseDto>>(nominations);
+        return responseDtos.ToArray();
+    }
     private async Task TriggerNomineeSummaryUpdate(Nomination nomination)
     {
-        if (nomination.NomineeId == null)
+        ApiResponse<NomineeSummaryResponseDto, string> nomineeSummaryAsync;
+        
+        if (nomination.NomineeId != null)
         {
-            _logger.LogWarning("Nominee ID is null for Nomination ID {NominationId}.", nomination.Id);
-            return;
+            nomineeSummaryAsync = await _nomineeSummaryService.GetNomineeSummaryAsync(nomination.NomineeId.Value, nomination.CategoryId);
+            
+            await nomineeSummaryAsync.Match(
+                onSuccess: async nomineeSummary =>
+                {
+                    await _nomineeSummaryService.UpdateNomineeSummaryTotalNominationCountAsync(nomination.NomineeId.Value, nomineeSummary.CategoryId);
+                    _logger.LogInformation("Updated NomineeSummary for Nominee ID {NomineeId}.", nomination.NomineeId.Value);
+                },
+                onError: async _ =>
+                {
+                    var nomineeSummary = new NomineeSummaryCreateDto
+                    {
+                        NomineeId = nomination.NomineeId.Value,
+                        CategoryId = nomination.CategoryId,
+                        Location = nomination.Location,
+                        TotalNominations = 1
+                    };
+                    await _nomineeSummaryService.CreateNomineeSummaryAsync(nomineeSummary);
+                    _logger.LogInformation("Created NomineeSummary for Nominee ID {NomineeId}.", nomination.NomineeId.Value);
+                }
+            );
+ 
+        }
+        else
+        {
+            nomineeSummaryAsync = await _nomineeSummaryService.GetTeamNominationSummaryAsync(nomination.Id, nomination.CategoryId);
+            
+            await nomineeSummaryAsync.Match(
+                onSuccess: _ => Task.CompletedTask,
+                onError: async _ =>
+                {
+                    var nomineeSummary = new NomineeSummaryCreateDto
+                    {
+                        NomineeId = null,
+                        TeamNominationId = nomination.Id,
+                        CategoryId = nomination.CategoryId,
+                        Location = nomination.Location,
+                        TotalNominations = 1
+                    };
+                    await _nomineeSummaryService.CreateNomineeSummaryAsync(nomineeSummary);
+                    _logger.LogInformation("Created NomineeSummary for Team Nomination ID {TeamNominationId}.", nomination.Id);
+                }
+            );
         }
         
-        var nomineeSummaryAsync = await _nomineeSummaryService.GetNomineeSummaryAsync(nomination.NomineeId.Value, nomination.CategoryId);
             
-        await nomineeSummaryAsync.Match(
-            onSuccess: async nomineeSummary =>
-            {
-                await _nomineeSummaryService.UpdateNomineeSummaryTotalNominationCountyAsync(nomineeSummary.NomineeId, nomineeSummary.CategoryId);
-                _logger.LogInformation("Updated NomineeSummary for Nominee ID {NomineeId}.", nomination.NomineeId.Value);
-            },
-            onError: async _ =>
-            {
-                var nomineeSummary = new NomineeSummaryCreateDto
-                {
-                    NomineeId = nomination.NomineeId.Value,
-                    CategoryId = nomination.CategoryId,
-                    TotalNominations = 1
-                };
-                await _nomineeSummaryService.CreateNomineeSummaryAsync(nomineeSummary);
-                _logger.LogInformation("Created NomineeSummary for Nominee ID {NomineeId}.", nomination.NomineeId.Value);
-            }
-        );
     }
 }

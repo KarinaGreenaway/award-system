@@ -1,0 +1,1 @@
+INSERT INTO public."awardEvent" ("Id", "Name", "Location", "EventDateTime", "Description", "Directions", "CreatedAt", "UpdatedAt", "AwardProcessId", "FeedbackSummary") VALUES (1, 'Annual Awards', 'London', '2025-05-23 07:00:00.000000', 'Celebration of achievements. Test Update Success. test', '', '2025-04-14 01:31:16.200340', '2025-05-05 03:24:07.235107', 1, null);

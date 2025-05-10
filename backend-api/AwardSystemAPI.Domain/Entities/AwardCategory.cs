@@ -8,6 +8,9 @@ namespace AwardSystemAPI.Domain.Entities
     {
         [Key]
         public int Id { get; set; }
+        
+        [Required]
+        public int AwardProcessId { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -31,6 +34,9 @@ namespace AwardSystemAPI.Domain.Entities
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        
+        [ForeignKey("SponsorId")]
+        public Users Sponsor { get; set; } = null!;
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

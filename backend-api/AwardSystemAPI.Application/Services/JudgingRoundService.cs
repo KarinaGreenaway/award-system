@@ -38,6 +38,11 @@ public class JudgingRoundService : IJudgingRoundService
             
         entity.CreatedAt = DateTime.UtcNow;
         entity.UpdatedAt = DateTime.UtcNow;
+        
+        entity.CreatedAt = DateTime.SpecifyKind(entity.CreatedAt, DateTimeKind.Utc);
+        entity.UpdatedAt = DateTime.SpecifyKind(entity.UpdatedAt, DateTimeKind.Utc);
+        entity.StartDate = DateTime.SpecifyKind(entity.StartDate, DateTimeKind.Utc);
+        entity.Deadline = DateTime.SpecifyKind(entity.Deadline, DateTimeKind.Utc);
 
         await _repository.AddAsync(entity);
         _logger.LogInformation("Created JudgingRound with ID {Id}.", entity.Id);
@@ -69,6 +74,10 @@ public class JudgingRoundService : IJudgingRoundService
 
         _mapper.Map(dto, entity);
         entity.UpdatedAt = DateTime.UtcNow;
+        
+        entity.UpdatedAt = DateTime.SpecifyKind(entity.UpdatedAt, DateTimeKind.Utc);
+        entity.StartDate = DateTime.SpecifyKind(entity.StartDate, DateTimeKind.Utc);
+        entity.Deadline = DateTime.SpecifyKind(entity.Deadline, DateTimeKind.Utc);
 
         await _repository.UpdateAsync(entity);
         _logger.LogInformation("Updated JudgingRound with ID {Id}.", id);

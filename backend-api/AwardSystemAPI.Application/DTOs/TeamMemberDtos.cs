@@ -22,4 +22,5 @@ public class TeamMemberResponseDto
     public int Id { get; set; }
     public int NominationId { get; set; }
     public int UserId { get; set; }
+    public string? TeamMemberName { get; set; }
 }

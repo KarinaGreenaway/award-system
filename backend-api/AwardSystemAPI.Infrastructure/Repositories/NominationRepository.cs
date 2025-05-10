@@ -10,6 +10,7 @@ public interface INominationRepository : IGenericRepository<Nomination>
     Task<IEnumerable<Nomination>> GetTeamNominationsForMemberAsync(int userId);
     Task<IEnumerable<Nomination>> GetNominationsForNomineeIdAsync(int nomineeId);
     Task<Nomination?> GetNominationByIdAsync(int id);
+    Task<IEnumerable<Nomination>> GetNominationsByCategoryIdAsync(int categoryId);
 }
 
 public class NominationRepository : GenericRepository<Nomination>, INominationRepository
@@ -66,7 +67,9 @@ public class NominationRepository : GenericRepository<Nomination>, INominationRe
         {
             return await Context.Set<Nomination>()
                 .Include(n => n.Answers)
+                .Include(n => n.NomineeUser)
                 .Include(n => n.TeamMembers)
+                .ThenInclude(tm => tm.User)
                 .Where(n => n.NomineeId == nomineeId || n.TeamMembers.Any(tm => tm.Id == nomineeId))
                 .ToListAsync()
                 .ConfigureAwait(false);
@@ -85,7 +88,9 @@ public class NominationRepository : GenericRepository<Nomination>, INominationRe
         {
             return await Context.Set<Nomination>()
                 .Include(n => n.Answers)
+                .Include(n => n.NomineeUser)
                 .Include(n => n.TeamMembers)
+                    .ThenInclude(tm => tm.User)
                 .FirstOrDefaultAsync(n => n.Id == id)
                 .ConfigureAwait(false);
         }
@@ -93,6 +98,25 @@ public class NominationRepository : GenericRepository<Nomination>, INominationRe
         {
             _logger.LogError(ex, "An error occurred while retrieving nomination with ID {Id}.", id);
             throw new Exception($"An error occurred while retrieving nomination with ID {id}.", ex);
+        }
+    }
+    
+    public async Task<IEnumerable<Nomination>> GetNominationsByCategoryIdAsync(int categoryId)
+    {
+        try
+        {
+            return await Context.Set<Nomination>()
+                .Include(n => n.Answers)
+                .Include(n => n.TeamMembers)
+                .Where(n => n.CategoryId == categoryId)
+                .ToListAsync()
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving nominations for category ID {CategoryId}.", categoryId);
+            throw new Exception($"An error occurred while retrieving nominations for category with ID {categoryId}.",
+                ex);
         }
     }
 }

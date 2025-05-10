@@ -14,6 +14,9 @@ public class AwardCategoryUpdateDto
         
     [Required]
     public int SponsorId { get; set; }
+    
+    [Required]
+    public int AwardProcessId { get; set; }
         
     [MaxLength(255)]
     public string? IntroductionVideo { get; set; }
@@ -23,4 +26,5 @@ public class AwardCategoryUpdateDto
     [Required]
     [MaxLength(50)]
     public string ProfileStatus { get; set; } = "draft";
+    
 }

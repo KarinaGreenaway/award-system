@@ -8,7 +8,9 @@ public class AwardCategoryProfile: Profile
 {
     public AwardCategoryProfile()
     {
-        CreateMap<AwardCategory, AwardCategoryResponseDto>();
+        CreateMap<AwardCategory, AwardCategoryResponseDto>()
+            .ForMember(dest => dest.SponsorName,
+                opt => opt.MapFrom(src => src.Sponsor.DisplayName));
         CreateMap<AwardCategoryCreateDto, AwardCategory>();
         CreateMap<AwardCategoryUpdateDto, AwardCategory>();
     }

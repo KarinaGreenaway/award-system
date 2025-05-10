@@ -4,11 +4,16 @@ namespace AwardSystemAPI.Application.DTOs;
 
 public class NomineeSummaryCreateDto
 {
-    [Required]
-    public int NomineeId { get; set; }
+    public int? NomineeId { get; set; }
+    
+    
+    public int? TeamNominationId { get; set; }
     
     [Required]
     public int CategoryId { get; set; }
+    
+    [Required]
+    public string Location { get; set; } = string.Empty;
     
     [Required]
     public int? TotalNominations { get; set; }
@@ -31,11 +36,15 @@ public class NomineeSummaryCreateDto
 
 public class NomineeSummaryUpdateDto
 {
-    [Required]
-    public int NomineeId { get; set; }
+    public int? NomineeId { get; set; }
+    
+    public int? TeamNominationId { get; set; }
     
     [Required]
     public int CategoryId { get; set; }
+    
+    [Required]
+    public string Location { get; set; } = string.Empty;
     
     [Required]
     public int? TotalNominations { get; set; }
@@ -54,9 +63,13 @@ public class NomineeSummaryResponseDto
 {
     public int Id { get; set; }
     
-    public int NomineeId { get; set; }
+    public int? NomineeId { get; set; }
+    
+    public int? TeamNominationId { get; set; }
     
     public int CategoryId { get; set; }
+    
+    public string Location { get; set; } = string.Empty;
     
     public int? TotalNominations { get; set; }
     
@@ -68,5 +81,24 @@ public class NomineeSummaryResponseDto
     
     public DateTime CreatedAt { get; set; }
     
+    public DateTime UpdatedAt { get; set; }
+}
+
+public class NomineeSummaryWithDetailedDto
+{
+    public int Id { get; set; }
+    public int? NomineeId { get; set; }
+    public string? NomineeName { get; set; }
+    
+    public int? TeamNominationId { get; set; }
+    public string? TeamName { get; set; }
+    public string Location { get; set; } = string.Empty;
+    
+    public int CategoryId { get; set; }
+    public int? TotalNominations { get; set; }
+    public bool IsPinned { get; set; }
+    public bool IsShortlisted { get; set; }
+    public bool IsWinner { get; set; }
+    public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

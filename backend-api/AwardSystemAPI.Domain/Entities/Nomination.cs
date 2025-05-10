@@ -24,10 +24,8 @@ public class Nomination
     // AI summary can be lengthy, so no max length is specified.
     public string? AiSummary { get; set; }
 
-    public int VoteCount { get; set; } = 0;
-
     [MaxLength(50)]
-    public string? Location { get; set; }
+    public string Location { get; set; }
 
     [Required]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -37,4 +35,7 @@ public class Nomination
     
     public ICollection<NominationAnswer> Answers { get; set; } = new List<NominationAnswer>();
     public ICollection<TeamMember> TeamMembers { get; set; } = new List<TeamMember>();
+    
+    [ForeignKey(nameof(NomineeId))]
+    public Users? NomineeUser { get; set; } = null!;
 }

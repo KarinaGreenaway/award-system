@@ -1,0 +1,8 @@
+INSERT INTO public.users ("Id", "ExternalId", "WorkEmail", "Role", "CreatedAt", "UpdatedAt", "DisplayName", "FirstName", "LastName") VALUES (2, 'ext-002', 'sponsor1@example.com', 'sponsor', '2025-04-13 19:31:16.017440', '2025-04-13 19:31:16.017440', 'Greg Deucette', 'Greg', 'Deucette');
+INSERT INTO public.users ("Id", "ExternalId", "WorkEmail", "Role", "CreatedAt", "UpdatedAt", "DisplayName", "FirstName", "LastName") VALUES (1, 'ext-001', 'user1@example.com', 'employee', '2025-04-13 19:31:16.017440', '2025-04-13 19:31:16.017440', 'Mike Israteal', 'Mike', 'Israteal');
+INSERT INTO public.users ("Id", "ExternalId", "WorkEmail", "Role", "CreatedAt", "UpdatedAt", "DisplayName", "FirstName", "LastName") VALUES (4, 'ext-004', 'user2@example.com', 'employee', '2025-04-13 19:31:16.017440', '2025-04-13 19:31:16.017440', 'Zeus Thomas', 'Zeus', 'Thomas');
+INSERT INTO public.users ("Id", "ExternalId", "WorkEmail", "Role", "CreatedAt", "UpdatedAt", "DisplayName", "FirstName", "LastName") VALUES (3, 'ext-003', 'admin1@example.com', 'admin', '2025-04-13 19:31:16.017440', '2025-04-13 19:31:16.017440', 'Jeff Nippard', 'Jeff', 'Nippard');
+INSERT INTO public.users ("Id", "ExternalId", "WorkEmail", "Role", "CreatedAt", "UpdatedAt", "DisplayName", "FirstName", "LastName") VALUES (5, 'ext-005', 'user5@example.com', 'employee', '2025-05-07 22:39:09.996786', '2025-05-07 22:39:09.996786', 'Karina Greenaway', 'Karina', 'Greenaway');
+INSERT INTO public.users ("Id", "ExternalId", "WorkEmail", "Role", "CreatedAt", "UpdatedAt", "DisplayName", "FirstName", "LastName") VALUES (6, 'ext-006', 'user6@example.com', 'employee', '2025-05-07 23:39:43.000000', '2025-05-07 22:39:53.713534', 'John Doe', 'John', 'Doe');
+
+

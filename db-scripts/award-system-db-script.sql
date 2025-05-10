@@ -1,6 +1,5 @@
 -- Drop tables in reverse dependency order (if needed)
 DROP TABLE IF EXISTS "judgingRound";
-DROP TABLE IF EXISTS "awardProcess";
 DROP TABLE IF EXISTS "notification";
 DROP TABLE IF EXISTS "announcement";
 DROP TABLE IF EXISTS "feedbackResponse";
@@ -17,12 +16,16 @@ DROP TABLE IF EXISTS "nomination";
 DROP TABLE IF EXISTS "nomineeSummary";
 DROP TABLE IF EXISTS "awardCategory";
 DROP TABLE IF EXISTS "mobileUserSettings";
+DROP TABLE IF EXISTS "awardProcess";
 DROP TABLE IF EXISTS "users";
 
 -- Create Users Table
 CREATE TABLE "users" (
     "Id" SERIAL PRIMARY KEY,
     "ExternalId" VARCHAR(255) NOT NULL UNIQUE,
+    "DisplayName" VARCHAR(255),
+    "FirstName"   VARCHAR(100),
+    "LastName"    VARCHAR(100),
     "WorkEmail" VARCHAR(255) NOT NULL UNIQUE,
     "Role" VARCHAR(50) NOT NULL,  -- e.g., 'employee', 'sponsor', 'admin'
     "CreatedAt" TIMESTAMP DEFAULT now(),
@@ -37,9 +40,20 @@ CREATE TABLE "mobileUserSettings" (
     "AiFunctionality" BOOLEAN DEFAULT true
 );
 
+-- Create Award Process Table
+CREATE TABLE "awardProcess" (
+    "Id" SERIAL PRIMARY KEY,
+    "AwardsName" VARCHAR(255) NOT NULL,
+    "StartDate" TIMESTAMP NOT NULL,
+    "EndDate" TIMESTAMP,
+    "CreatedAt" TIMESTAMP DEFAULT now(),
+    "UpdatedAt" TIMESTAMP DEFAULT now()
+);
+
 -- Create Award Category Table
 CREATE TABLE "awardCategory" (
     "Id" SERIAL PRIMARY KEY,
+	"AwardProcessId" INT REFERENCES "awardProcess"("Id"),
     "Name" VARCHAR(255) NOT NULL,
     "Type" VARCHAR(50) NOT NULL,  -- 'individual' or 'team'
     "SponsorId" INT REFERENCES "users"("Id"),
@@ -53,8 +67,10 @@ CREATE TABLE "awardCategory" (
 -- Create Nominee Summary Table
 CREATE TABLE "nomineeSummary" (
     "Id" SERIAL PRIMARY KEY,
-    "NomineeId" INT NOT NULL REFERENCES "users"("Id"),
+    "NomineeId" INT REFERENCES "users"("Id"),
+    "TeamNominationId" INT REFERENCES "nomination"("Id"),
     "CategoryId" INT NOT NULL REFERENCES "awardCategory"("Id"),
+    "Location" VARCHAR(50),
     "TotalNominations" INT DEFAULT 0,
     "IsPinned" BOOLEAN DEFAULT false,
     "IsShortlisted" BOOLEAN DEFAULT false,
@@ -71,7 +87,6 @@ CREATE TABLE "nomination" (
     "NomineeId" INT REFERENCES "users"("Id"),
     "TeamName" VARCHAR(255),
     "AiSummary" TEXT,
-    "VoteCount" INT DEFAULT 0,
     "Location" VARCHAR(50),
     "CreatedAt" TIMESTAMP DEFAULT now(),
     "UpdatedAt" TIMESTAMP DEFAULT now()
@@ -90,27 +105,30 @@ CREATE TABLE "nominationQuestion" (
     "Id" SERIAL PRIMARY KEY,
     "CategoryId" INT NOT NULL REFERENCES "awardCategory"("Id"),
     "QuestionText" TEXT NOT NULL,
-    "ResponseType" VARCHAR(50) NOT NULL DEFAULT 'text',
-    "Options" TEXT
+    "ResponseType" int NOT NULL DEFAULT 1,
+    "Options" jsonb,
+    "QuestionOrder" INT
 );
 
 -- Create Nomination Answer Table with surrogate key.
 CREATE TABLE "nominationAnswer" (
     "Id" SERIAL PRIMARY KEY,
     "NominationId" INT NOT NULL REFERENCES "nomination"("Id"),
-    "QuestionId" INT NOT NULL REFERENCES "nominationQuestion"("Id"),
+    "Question" TEXT NOT NULL,
     "Answer" TEXT,
-    CONSTRAINT "uq_nominationAnswer" UNIQUE ("NominationId", "QuestionId")
+    CONSTRAINT "uq_nominationAnswer" UNIQUE ("NominationId", "Question")
 );
 
 -- Create Award Event Table
 CREATE TABLE "awardEvent" (
     "Id" SERIAL PRIMARY KEY,
+    "AwardProcessId" INT NOT NULL REFERENCES "awardProcess"("Id"),
     "Name" VARCHAR(255) NOT NULL,
     "Location" VARCHAR(255) NOT NULL,
     "EventDateTime" TIMESTAMP NOT NULL,
     "Description" TEXT,
-    "Directions" VARCHAR(500) NOT NULL,
+    "Directions" VARCHAR(500),
+    "FeedbackSummary" TEXT,
     "CreatedAt" TIMESTAMP DEFAULT now(),
     "UpdatedAt" TIMESTAMP DEFAULT now()
 );
@@ -129,7 +147,8 @@ CREATE TABLE "rsvpFormQuestion" (
     "Id" SERIAL PRIMARY KEY,
     "EventId" INT NOT NULL REFERENCES "awardEvent"("Id"),
     "QuestionText" TEXT NOT NULL,
-    "ResponseType" VARCHAR(50) NOT NULL,  -- 'text', 'yes/no', 'multiple choice'
+    "ResponseType" INT NOT NULL,  -- 'text', 'yes/no', 'multiple choice'
+    "Options" jsonb,
     "Tooltip" TEXT,
     "QuestionOrder" INT
 );
@@ -156,7 +175,8 @@ CREATE TABLE "feedbackFormQuestion" (
     "Id" SERIAL PRIMARY KEY,
     "EventId" INT NOT NULL REFERENCES "awardEvent"("Id"),
     "QuestionText" TEXT NOT NULL,
-    "ResponseType" VARCHAR(50) NOT NULL,  -- 'text', 'yes/no', 'multiple choice'
+    "ResponseType" int NOT NULL DEFAULT 0,  -- 'text', 'yes/no', 'multiple choice'
+    "Options" jsonb,
     "Tooltip" TEXT,
     "QuestionOrder" INT
 );
@@ -165,9 +185,9 @@ CREATE TABLE "feedbackFormQuestion" (
 CREATE TABLE "feedbackResponse" (
     "Id" SERIAL PRIMARY KEY,
     "FeedbackId" INT NOT NULL REFERENCES "feedback"("Id"),
-    "QuestionId" INT NOT NULL REFERENCES "feedbackFormQuestion"("Id"),
+    "Question" TEXT NOT NULL,
     "Answer" TEXT,
-    CONSTRAINT "uq_feedbackResponse" UNIQUE ("FeedbackId", "QuestionId")
+    CONSTRAINT "uq_feedbackResponse" UNIQUE ("FeedbackId", "Question")
 );
 
 -- Create Announcement Table
@@ -193,17 +213,6 @@ CREATE TABLE "notification" (
     "Description" TEXT,
     "Read" BOOLEAN DEFAULT false,
     "CreatedAt" TIMESTAMP DEFAULT now()
-);
-
--- Create Award Process Table
-CREATE TABLE "awardProcess" (
-    "Id" SERIAL PRIMARY KEY,
-    "AwardsName" VARCHAR(255) NOT NULL,
-    "StartDate" TIMESTAMP NOT NULL,
-    "EndDate" TIMESTAMP,
-    "Status" VARCHAR(50) NOT NULL,  -- e.g., 'active', 'completed'
-    "CreatedAt" TIMESTAMP DEFAULT now(),
-    "UpdatedAt" TIMESTAMP DEFAULT now()
 );
 
 -- Create Judging Round Table

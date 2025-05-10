@@ -11,6 +11,7 @@ namespace AwardSystemAPI.Application.Services;
 public interface IAwardCategoryService
 {
     Task<ApiResponse<IEnumerable<AwardCategoryResponseDto>, string>> GetAllAwardCategoriesAsync();
+    Task<ApiResponse<IEnumerable<AwardCategoryResponseDto?>, string>> GetAwardCategoriesByAwardProcessIdAsync(int id);
     Task<ApiResponse<AwardCategoryResponseDto?, string>> GetAwardCategoryByIdAsync(int id);
     Task<ApiResponse<AwardCategoryResponseDto, string>> CreateAwardCategoryAsync(AwardCategoryCreateDto dto);
     Task<ApiResponse<bool, string>> UpdateAwardCategoryAsync(int id, AwardCategoryUpdateDto dto);
@@ -34,6 +35,18 @@ public class AwardCategoryService : IAwardCategoryService
     public async Task<ApiResponse<IEnumerable<AwardCategoryResponseDto>, string>> GetAllAwardCategoriesAsync()
     {
         var categories = await _repository.GetAllAsync();
+        var result = _mapper.Map<IEnumerable<AwardCategoryResponseDto>>(categories);
+        return result.ToArray();
+    }
+    
+    public async Task<ApiResponse<IEnumerable<AwardCategoryResponseDto?>, string>> GetAwardCategoriesByAwardProcessIdAsync(int id)
+    {
+        var categories = await _repository.GetByAwardProcessIdAsync(id);
+        if (categories == null)
+        {
+            _logger.LogWarning("No AwardCategory found for AwardProcess ID {Id}.", id);
+            return $"No AwardCategory found for AwardProcess ID {id}.";
+        }
         var result = _mapper.Map<IEnumerable<AwardCategoryResponseDto>>(categories);
         return result.ToArray();
     }

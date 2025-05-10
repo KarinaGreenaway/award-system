@@ -14,4 +14,7 @@ public class TeamMember
 
     [Required]
     public int UserId { get; set; }
+
+    [ForeignKey(nameof(UserId))]
+    public Users? User { get; set; } = null!;
 }
