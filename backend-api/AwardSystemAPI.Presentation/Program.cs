@@ -1,5 +1,6 @@
 using AwardSystemAPI.Application.BackgroundServices;
 using AwardSystemAPI.Application.Mappings;
+using AwardSystemAPI.Application.Options;
 using AwardSystemAPI.Application.Services;
 using AwardSystemAPI.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +49,15 @@ builder.Services.AddScoped<IBlobService, BlobService>();
 builder.Services.AddScoped<IPushNotificationService, PushNotificationService>();
 builder.Services.AddSingleton<IFirebaseNotificationService, FirebaseNotificationService>();
 // builder.Services.AddSingleton<IFirebaseMessagingClient, FirebaseMessagingClient>();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+builder.Services.Configure<VertexAiOptions>(
+    builder.Configuration.GetSection("VertexAi")
+);
+builder.Services.AddScoped<IVertexAiService, VertexAiService>();
 
 
 
