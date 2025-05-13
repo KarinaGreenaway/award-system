@@ -115,7 +115,7 @@
     @apply cursor-pointer
     transition-all duration-200 ease-out hover:scale-[1.01] active:scale-[0.98]
     border border-transparent
-    bg-[color:var(--color-sidebar-light)] dark:bg-[color:var(--color-content-dark)] dark:shadow-gray-500 shadow-sm
+    bg-[color:var(--color-sidebar-light)] dark:bg-gray-900 dark:shadow-gray-500 shadow-sm
     hover:border-[color:var(--color-content-light)] dark:hover:border-[color:var(--color-content-dark)];
 }
 

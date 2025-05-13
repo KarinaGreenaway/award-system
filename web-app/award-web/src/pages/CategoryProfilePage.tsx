@@ -211,7 +211,7 @@ export default function CategoryProfilePage() {
                         onChange={(e) => setParagraph(e.target.value)}
                         maxLength={300 * 6}
                         disabled={!isEditable}
-                        className="w-full rounded-md p-3 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                        className="w-full rounded-md p-3 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 no-scrollbar"
                     />
                 </div>
 
