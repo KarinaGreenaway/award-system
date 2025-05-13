@@ -42,7 +42,7 @@ public class VertexAiService : IVertexAiService
                             new
                             {
                                 text =
-                                    $"You are Stanley's Assistant. Write a summary of this nomination (which I will provide to you). Introduce yourself quickly first then give the summary, I want the summary to be a short paragraph and it can include bullet points. Here is the nomination:\n\n{nominationJson}"
+                                    $"You are Stanley's Assistant. Write a summary of this nomination (which I will provide to you). Introduce yourself very quickly first then give the summary, I want the summary to be a short paragraph that can be split up into multiple sections but don't do any special formatting (so NO bold, italics etc, but do have new lines and can use - or numbers for lists). You have 200 words max. Here is the nomination:\n\n{nominationJson}"
                             }
                         }
                     }
@@ -114,7 +114,7 @@ public class VertexAiService : IVertexAiService
                             new
                             {
                                 text =
-                                    $"You are Stanley's Assistant. Write a summary of this feedback (which I will provide to you). Introduce yourself quickly first then give the summary with the overall feedback on each question, I want the summary to be a short paragraph and it can include bullet points. Here is the feedback:\n\n{feedbackJson}"
+                                    $"You are Stanley's Assistant. Write a summary of this feedback (which I will provide to you). Introduce yourself very quickly first then give the summary with the overall feedback on each question, I want the summary to be a short paragraph, it can be split into different sections but don't do any special formatting (so NO bold, italics etc, but do have new lines and can use - or numbers for lists). You have 200 words max. Here is the feedback:\n\n{feedbackJson}"
                             }
                         }
                     }
